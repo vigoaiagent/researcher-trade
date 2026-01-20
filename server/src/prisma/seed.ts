@@ -39,44 +39,58 @@ async function main() {
     console.log(`✅ Demo user created: ${demoUser.id} (${demoUser.energyBalance} energy)`);
   }
 
-  // 创建测试研究员
-  const researchers = [
-    {
-      tgUserId: 'researcher_1',
-      tgChatId: '100001',
-      name: 'BTC分析师小王',
-      specialties: JSON.stringify(['BTC', '比特币', '链上数据']),
-      status: 'ONLINE',
-      recommendScore: 100,
-    },
-    {
-      tgUserId: 'researcher_2',
-      tgChatId: '100002',
-      name: 'BTC研究员老张',
-      specialties: JSON.stringify(['BTC', '比特币', '技术分析']),
-      status: 'ONLINE',
-      recommendScore: 95,
-    },
-    {
-      tgUserId: 'researcher_3',
-      tgChatId: '100003',
-      name: '贵金属专家李教授',
-      specialties: JSON.stringify(['贵金属', '黄金', '宏观经济']),
-      status: 'ONLINE',
-      recommendScore: 90,
-    },
-  ];
-
-  for (const researcher of researchers) {
-    await prisma.researcher.upsert({
-      where: { tgUserId: researcher.tgUserId },
-      update: {
-        status: researcher.status,
-        recommendScore: researcher.recommendScore,
+  // 检查是否有真实研究员（tgUserId 不是以 researcher_ 开头的）
+  const realResearcherCount = await prisma.researcher.count({
+    where: {
+      NOT: {
+        tgUserId: {
+          startsWith: 'researcher_',
+        },
       },
-      create: researcher,
-    });
-    console.log('✅ Researcher created:', researcher.name);
+    },
+  });
+
+  // 只有在没有真实研究员时才创建测试研究员
+  if (realResearcherCount === 0) {
+    console.log('⚠️ No real researchers found, creating test researchers...');
+
+    const researchers = [
+      {
+        tgUserId: 'researcher_1',
+        tgChatId: '100001',
+        name: 'BTC分析师小王',
+        specialties: JSON.stringify(['BTC', '比特币', '链上数据']),
+        status: 'ONLINE',
+        recommendScore: 100,
+      },
+      {
+        tgUserId: 'researcher_2',
+        tgChatId: '100002',
+        name: 'BTC研究员老张',
+        specialties: JSON.stringify(['BTC', '比特币', '技术分析']),
+        status: 'ONLINE',
+        recommendScore: 95,
+      },
+      {
+        tgUserId: 'researcher_3',
+        tgChatId: '100003',
+        name: '贵金属专家李教授',
+        specialties: JSON.stringify(['贵金属', '黄金', '宏观经济']),
+        status: 'ONLINE',
+        recommendScore: 90,
+      },
+    ];
+
+    for (const researcher of researchers) {
+      await prisma.researcher.upsert({
+        where: { tgUserId: researcher.tgUserId },
+        update: {},
+        create: researcher,
+      });
+      console.log('✅ Test researcher created:', researcher.name);
+    }
+  } else {
+    console.log(`✅ Found ${realResearcherCount} real researcher(s), skipping test researchers`);
   }
 
   console.log('🌱 Seeding completed!');
