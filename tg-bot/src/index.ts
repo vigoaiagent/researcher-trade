@@ -29,12 +29,9 @@ if (!BOT_TOKEN) {
   process.exit(1);
 }
 
-// 创建 Bot 实例 (禁用代理)
+// 创建 Bot 实例
 const bot = new TelegramBot(BOT_TOKEN, {
   polling: true,
-  request: {
-    proxy: false,
-  },
 });
 
 // 创建 Express 服务器 (用于接收后端通知)
