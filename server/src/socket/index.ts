@@ -111,6 +111,11 @@ export function setupSocket(io: Server, prisma: PrismaClient) {
       const { roomId, researcherId } = data;
       socket.join(`call:${roomId}`);
       console.log(`📞 Researcher ${researcherId} joined call room ${roomId}`);
+      console.log(`📞 Researcher socket id: ${socket.id}`);
+
+      // 检查房间内有哪些 socket
+      const roomSockets = io.sockets.adapter.rooms.get(`call:${roomId}`);
+      console.log(`📞 Sockets in room call:${roomId} after researcher join:`, roomSockets ? Array.from(roomSockets) : 'none');
 
       // 如果有等待中的 offer，发送给研究员
       const storedOffer = callOffers.get(roomId);
@@ -134,9 +139,11 @@ export function setupSocket(io: Server, prisma: PrismaClient) {
       const { roomId, userId, researcherId, consultationId, offer } = data;
 
       console.log(`📞 Call request from user ${userId} to researcher ${researcherId}`);
+      console.log(`📞 User socket id: ${socket.id}, joining room: call:${roomId}`);
 
       // 加入通话房间
       socket.join(`call:${roomId}`);
+      console.log(`📞 User joined room. Rooms for this socket:`, Array.from(socket.rooms));
 
       try {
         // 获取研究员信息
@@ -227,6 +234,11 @@ export function setupSocket(io: Server, prisma: PrismaClient) {
       const { roomId, answer, researcherId } = data;
       console.log(`📞 Researcher answered call in room ${roomId}`);
 
+      // 检查房间内有哪些 socket
+      const roomSockets = io.sockets.adapter.rooms.get(`call:${roomId}`);
+      console.log(`📞 Sockets in room call:${roomId}:`, roomSockets ? Array.from(roomSockets) : 'none');
+      console.log(`📞 Current socket id: ${socket.id}`);
+
       // 删除存储的offer
       const storedOffer = callOffers.get(roomId);
       callOffers.delete(roomId);
@@ -243,8 +255,9 @@ export function setupSocket(io: Server, prisma: PrismaClient) {
         console.log(`📞 Researcher ${rId} status set to BUSY`);
       }
 
-      // 转发answer给用户
-      socket.to(`call:${roomId}`).emit('call:answered', { answer });
+      // 转发answer给用户 - 使用 io.to 广播给房间内所有人（包括发送者）
+      console.log(`📞 Broadcasting call:answered to room call:${roomId}`);
+      io.to(`call:${roomId}`).emit('call:answered', { answer });
     });
 
     // 研究员拒绝通话
