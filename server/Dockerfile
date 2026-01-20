@@ -43,5 +43,5 @@ RUN mkdir -p uploads
 # Expose port
 EXPOSE 3000
 
-# Start the application
-CMD ["npm", "run", "start"]
+# Start the application with database migration
+CMD ["sh", "-c", "npx prisma db push --skip-generate && npm run start"]
