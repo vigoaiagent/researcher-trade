@@ -31,7 +31,14 @@ export function ResearcherCallPage() {
     const socket = getSocket();
 
     // 加入通话房间
+    console.log('📞 Researcher joining room:', roomId, 'socket connected:', socket.connected);
     socket.emit('call:join-room', { roomId, researcherId });
+
+    // 确认 socket 连接状态
+    socket.on('connect', () => {
+      console.log('📞 Socket connected, rejoining room');
+      socket.emit('call:join-room', { roomId, researcherId });
+    });
 
     // 页面关闭时发送结束通话
     const handleBeforeUnload = () => {
@@ -43,9 +50,14 @@ export function ResearcherCallPage() {
 
     // 监听用户的Offer
     socket.on('call:offer', (data: { offer: RTCSessionDescriptionInit; userId: string }) => {
-      console.log('Received offer from user:', data.userId);
-      setOffer(data.offer);
-      setStatus('idle'); // 等待研究员点击接听
+      console.log('📞 Received offer from user:', data.userId, 'offer type:', data.offer?.type);
+      if (data.offer) {
+        setOffer(data.offer);
+        setStatus('idle'); // 等待研究员点击接听
+        console.log('📞 Offer set, ready to accept');
+      } else {
+        console.error('📞 Received empty offer!');
+      }
     });
 
     // 监听用户挂断
@@ -63,13 +75,18 @@ export function ResearcherCallPage() {
       socket.off('call:offer');
       socket.off('call:ended');
       socket.off('call:ice-candidate');
+      socket.off('connect');
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [roomId, researcherId, status]);
 
   // 接听通话
   const handleAccept = async () => {
-    if (!offer || !roomId) return;
+    console.log('📞 handleAccept called, offer:', !!offer, 'roomId:', roomId);
+    if (!offer || !roomId) {
+      console.log('📞 Missing offer or roomId, cannot accept');
+      return;
+    }
 
     console.log('📞 Researcher accepting call in room:', roomId);
     setStatus('connecting');
@@ -227,6 +244,7 @@ export function ResearcherCallPage() {
             <div className="text-center text-[#848e9c] py-8">
               <Phone size={32} className="mx-auto mb-3 opacity-50" />
               <p>等待用户发起通话...</p>
+              <p className="text-xs mt-2">房间: {roomId?.slice(0, 20)}...</p>
             </div>
           )}
 
