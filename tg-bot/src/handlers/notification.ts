@@ -19,16 +19,16 @@ export function setupNotificationRoutes(
 ❓ 问题：${question}
 
 ⏱ 请在2分钟内回复
-直接回复本消息即可
+💡 直接「回复」本消息即可
       `.trim();
 
-      await bot.sendMessage(chatId, message);
+      const sentMessage = await bot.sendMessage(chatId, message);
 
-      // 设置待回复状态 - 首次回答阶段
-      setPendingReply(parseInt(chatId), consultationId, 'first_answer');
+      // 设置待回复状态 - 首次回答阶段，包含消息ID用于多咨询支持
+      setPendingReply(parseInt(chatId), consultationId, 'first_answer', undefined, sentMessage.message_id);
       pendingReplies.set(parseInt(chatId), consultationId);
 
-      res.json({ success: true });
+      res.json({ success: true, messageId: sentMessage.message_id });
     } catch (error) {
       console.error('Notification error:', error);
       res.status(500).json({ error: 'Failed to send notification' });
@@ -43,19 +43,19 @@ export function setupNotificationRoutes(
       const message = `
 ✅ 用户选择了您！
 
-进入1v1对话，剩余2轮交流机会。
+进入1v1对话，剩余追问机会。
 用户的追问会直接发送给您，请注意查收。
 
 💡 提示：优质的服务可以获得更高评分和推荐权重
       `.trim();
 
-      await bot.sendMessage(chatId, message);
+      const sentMessage = await bot.sendMessage(chatId, message);
 
       // 更新待回复状态 - 进入1v1对话阶段
-      setPendingReply(parseInt(chatId), consultationId, 'chatting');
+      setPendingReply(parseInt(chatId), consultationId, 'chatting', undefined, sentMessage.message_id);
       pendingReplies.set(parseInt(chatId), consultationId);
 
-      res.json({ success: true });
+      res.json({ success: true, messageId: sentMessage.message_id });
     } catch (error) {
       console.error('Selected notification error:', error);
       res.status(500).json({ error: 'Failed to send notification' });
@@ -74,16 +74,16 @@ ${message}
 
 📝 剩余对话轮次：${roundsLeft}
 ⏱ 请在10分钟内回复
-直接回复本消息即可
+💡 直接「回复」本消息即可
       `.trim();
 
-      await bot.sendMessage(chatId, notification);
+      const sentMessage = await bot.sendMessage(chatId, notification);
 
-      // 设置待回复状态 - 1v1对话阶段
-      setPendingReply(parseInt(chatId), consultationId, 'chatting');
+      // 设置待回复状态 - 1v1对话阶段，包含消息ID
+      setPendingReply(parseInt(chatId), consultationId, 'chatting', undefined, sentMessage.message_id);
       pendingReplies.set(parseInt(chatId), consultationId);
 
-      res.json({ success: true });
+      res.json({ success: true, messageId: sentMessage.message_id });
     } catch (error) {
       console.error('Follow-up notification error:', error);
       res.status(500).json({ error: 'Failed to send notification' });
