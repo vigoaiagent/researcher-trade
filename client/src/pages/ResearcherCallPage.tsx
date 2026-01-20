@@ -33,6 +33,14 @@ export function ResearcherCallPage() {
     // 加入通话房间
     socket.emit('call:join-room', { roomId, researcherId });
 
+    // 页面关闭时发送结束通话
+    const handleBeforeUnload = () => {
+      if (status === 'connected' || status === 'connecting') {
+        socket.emit('call:end', { roomId });
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
     // 监听用户的Offer
     socket.on('call:offer', (data: { offer: RTCSessionDescriptionInit; userId: string }) => {
       console.log('Received offer from user:', data.userId);
@@ -55,8 +63,9 @@ export function ResearcherCallPage() {
       socket.off('call:offer');
       socket.off('call:ended');
       socket.off('call:ice-candidate');
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [roomId, researcherId]);
+  }, [roomId, researcherId, status]);
 
   // 接听通话
   const handleAccept = async () => {

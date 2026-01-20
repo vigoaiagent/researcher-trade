@@ -301,8 +301,28 @@ export function setupSocket(io: Server, prisma: PrismaClient) {
     });
 
     // 断开连接
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
       console.log(`🔌 Client disconnected: ${socket.id}`);
+
+      // 检查是否有正在进行的通话需要清理
+      for (const [roomId, researcherId] of activeCallResearchers.entries()) {
+        // 检查这个 socket 是否在这个通话房间中
+        const roomSockets = io.sockets.adapter.rooms.get(`call:${roomId}`);
+        if (!roomSockets || roomSockets.size === 0) {
+          // 房间空了，恢复研究员状态
+          console.log(`📞 Cleaning up call room ${roomId}, restoring researcher ${researcherId} to ONLINE`);
+          try {
+            await prisma.researcher.update({
+              where: { id: researcherId },
+              data: { status: 'ONLINE' },
+            });
+            activeCallResearchers.delete(roomId);
+            callOffers.delete(roomId);
+          } catch (err) {
+            console.error(`📞 Failed to restore researcher status:`, err);
+          }
+        }
+      }
     });
   });
 
