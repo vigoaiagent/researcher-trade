@@ -199,13 +199,15 @@ export function setupSocket(io: Server, prisma: PrismaClient) {
           console.error(`📞 Failed to send TG Bot notification:`, tgError);
         }
 
-        // 存储offer，等待研究员接听
+        // 存储offer，等待研究员接听（包括用户的 socket id）
         callOffers.set(roomId, {
           offer,
           userId,
           researcherId,
           timestamp: Date.now(),
+          userSocketId: socket.id,
         });
+        console.log(`📞 Stored offer with user socket id: ${socket.id}`);
 
         // 设置超时 (60秒)
         setTimeout(() => {
@@ -234,17 +236,17 @@ export function setupSocket(io: Server, prisma: PrismaClient) {
       const { roomId, answer, researcherId } = data;
       console.log(`📞 Researcher answered call in room ${roomId}`);
 
-      // 检查房间内有哪些 socket
-      const roomSockets = io.sockets.adapter.rooms.get(`call:${roomId}`);
-      console.log(`📞 Sockets in room call:${roomId}:`, roomSockets ? Array.from(roomSockets) : 'none');
-      console.log(`📞 Current socket id: ${socket.id}`);
-
-      // 删除存储的offer
+      // 获取存储的offer信息
       const storedOffer = callOffers.get(roomId);
-      callOffers.delete(roomId);
+      if (!storedOffer) {
+        console.log(`📞 No stored offer found for room ${roomId}`);
+        return;
+      }
+
+      console.log(`📞 User socket id from stored offer: ${storedOffer.userSocketId}`);
 
       // 设置研究员状态为 BUSY
-      const rId = researcherId || storedOffer?.researcherId;
+      const rId = researcherId || storedOffer.researcherId;
       if (rId) {
         await prisma.researcher.update({
           where: { id: rId },
@@ -255,9 +257,19 @@ export function setupSocket(io: Server, prisma: PrismaClient) {
         console.log(`📞 Researcher ${rId} status set to BUSY`);
       }
 
-      // 转发answer给用户 - 使用 io.to 广播给房间内所有人（包括发送者）
-      console.log(`📞 Broadcasting call:answered to room call:${roomId}`);
+      // 直接发送 answer 给用户的 socket（不依赖房间）
+      console.log(`📞 Sending call:answered directly to user socket: ${storedOffer.userSocketId}`);
+      io.to(storedOffer.userSocketId).emit('call:answered', { answer });
+
+      // 同时也广播给房间（备用）
       io.to(`call:${roomId}`).emit('call:answered', { answer });
+
+      // 清理存储的 offer（但保留 userSocketId 用于后续 ICE 候选交换）
+      // 不删除，改为存储研究员的 socket id
+      callOffers.set(roomId, {
+        ...storedOffer,
+        researcherSocketId: socket.id,
+      } as any);
     });
 
     // 研究员拒绝通话
@@ -272,8 +284,25 @@ export function setupSocket(io: Server, prisma: PrismaClient) {
     // ICE候选交换
     socket.on('call:ice-candidate', (data: { roomId: string; candidate: RTCIceCandidateInit }) => {
       const { roomId, candidate } = data;
-      // 转发ICE候选给房间内的其他人
-      socket.to(`call:${roomId}`).emit('call:ice-candidate', { candidate });
+
+      // 获取存储的信息
+      const storedOffer = callOffers.get(roomId) as any;
+      if (storedOffer) {
+        // 判断发送者是用户还是研究员，发给对方
+        if (socket.id === storedOffer.userSocketId && storedOffer.researcherSocketId) {
+          // 用户发的，转给研究员
+          io.to(storedOffer.researcherSocketId).emit('call:ice-candidate', { candidate });
+        } else if (socket.id === storedOffer.researcherSocketId && storedOffer.userSocketId) {
+          // 研究员发的，转给用户
+          io.to(storedOffer.userSocketId).emit('call:ice-candidate', { candidate });
+        } else {
+          // 房间广播（备用）
+          socket.to(`call:${roomId}`).emit('call:ice-candidate', { candidate });
+        }
+      } else {
+        // 房间广播（备用）
+        socket.to(`call:${roomId}`).emit('call:ice-candidate', { candidate });
+      }
     });
 
     // 结束通话
@@ -335,6 +364,7 @@ const callOffers = new Map<string, {
   userId: string;
   researcherId: string;
   timestamp: number;
+  userSocketId: string;  // 存储用户的 socket id
 }>();
 
 // 存储正在通话的研究员 (roomId -> researcherId)
