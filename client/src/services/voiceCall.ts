@@ -1,26 +1,30 @@
 // WebRTC Voice Call Service with Recording
 // 语音通话服务，带录音功能用于风控
 
-// STUN/TURN服务器配置
+// STUN/TURN服务器配置 (Metered.ca)
 const ICE_SERVERS: RTCIceServer[] = [
-  // Google STUN servers
-  { urls: 'stun:stun.l.google.com:19302' },
-  { urls: 'stun:stun1.l.google.com:19302' },
-  // 公共 TURN 服务器 (用于 NAT 穿透)
   {
-    urls: 'turn:openrelay.metered.ca:80',
-    username: 'openrelayproject',
-    credential: 'openrelayproject',
+    urls: 'stun:stun.relay.metered.ca:80',
   },
   {
-    urls: 'turn:openrelay.metered.ca:443',
-    username: 'openrelayproject',
-    credential: 'openrelayproject',
+    urls: 'turn:global.relay.metered.ca:80',
+    username: '273a4bfd469f8eb24cf0656e',
+    credential: '1arp7CYEuR2CMT3l',
   },
   {
-    urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-    username: 'openrelayproject',
-    credential: 'openrelayproject',
+    urls: 'turn:global.relay.metered.ca:80?transport=tcp',
+    username: '273a4bfd469f8eb24cf0656e',
+    credential: '1arp7CYEuR2CMT3l',
+  },
+  {
+    urls: 'turn:global.relay.metered.ca:443',
+    username: '273a4bfd469f8eb24cf0656e',
+    credential: '1arp7CYEuR2CMT3l',
+  },
+  {
+    urls: 'turns:global.relay.metered.ca:443?transport=tcp',
+    username: '273a4bfd469f8eb24cf0656e',
+    credential: '1arp7CYEuR2CMT3l',
   },
 ];
 
