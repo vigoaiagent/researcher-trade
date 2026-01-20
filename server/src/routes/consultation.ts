@@ -51,8 +51,12 @@ export async function consultationRoutes(fastify: FastifyInstance) {
 
         if (targetResearcher.status !== 'ONLINE') {
           await sessionManager.refundConsultation(consultation.id);
+          const errorMsg = targetResearcher.status === 'BUSY'
+            ? 'Target researcher is in a call'
+            : 'Target researcher is offline';
           return reply.status(400).send({
-            error: 'Target researcher is offline',
+            error: errorMsg,
+            status: targetResearcher.status,
             refunded: true,
           });
         }

@@ -223,12 +223,25 @@ export function setupSocket(io: Server, prisma: PrismaClient) {
     });
 
     // 研究员发送Answer
-    socket.on('call:answer', (data: { roomId: string; answer: RTCSessionDescriptionInit }) => {
-      const { roomId, answer } = data;
+    socket.on('call:answer', async (data: { roomId: string; answer: RTCSessionDescriptionInit; researcherId?: string }) => {
+      const { roomId, answer, researcherId } = data;
       console.log(`📞 Researcher answered call in room ${roomId}`);
 
       // 删除存储的offer
+      const storedOffer = callOffers.get(roomId);
       callOffers.delete(roomId);
+
+      // 设置研究员状态为 BUSY
+      const rId = researcherId || storedOffer?.researcherId;
+      if (rId) {
+        await prisma.researcher.update({
+          where: { id: rId },
+          data: { status: 'BUSY' },
+        });
+        // 记录正在通话的研究员
+        activeCallResearchers.set(roomId, rId);
+        console.log(`📞 Researcher ${rId} status set to BUSY`);
+      }
 
       // 转发answer给用户
       socket.to(`call:${roomId}`).emit('call:answered', { answer });
@@ -256,6 +269,18 @@ export function setupSocket(io: Server, prisma: PrismaClient) {
       console.log(`📞 Call ended in room ${roomId}`);
 
       callOffers.delete(roomId);
+
+      // 恢复研究员状态为 ONLINE
+      const researcherId = activeCallResearchers.get(roomId);
+      if (researcherId) {
+        await prisma.researcher.update({
+          where: { id: researcherId },
+          data: { status: 'ONLINE' },
+        });
+        activeCallResearchers.delete(roomId);
+        console.log(`📞 Researcher ${researcherId} status set back to ONLINE`);
+      }
+
       socket.to(`call:${roomId}`).emit('call:ended');
 
       // 离开通话房间
@@ -278,6 +303,9 @@ const callOffers = new Map<string, {
   researcherId: string;
   timestamp: number;
 }>();
+
+// 存储正在通话的研究员 (roomId -> researcherId)
+const activeCallResearchers = new Map<string, string>();
 
 // WebRTC类型声明
 interface RTCSessionDescriptionInit {
