@@ -92,12 +92,22 @@ export const useCallStore = create<CallStore>((set, get) => ({
       // 发送通话请求到服务器（会通知TG Bot）
       console.log('📞 Sending call request to server');
       const socket = getSocket();
+      console.log('📞 Socket connected:', socket.connected, 'Socket id:', socket.id);
+
       socket.emit('call:request', {
         roomId,
         userId,
         researcherId,
         consultationId,
         offer,
+      });
+
+      // 监听连接状态变化
+      socket.on('connect', () => {
+        console.log('📞 Socket reconnected, id:', socket.id);
+      });
+      socket.on('disconnect', (reason) => {
+        console.log('📞 Socket disconnected:', reason);
       });
 
       // 监听研究员接听
@@ -205,6 +215,8 @@ export const useCallStore = create<CallStore>((set, get) => ({
     socket.off('call:rejected');
     socket.off('call:timeout');
     socket.off('call:ended');
+    socket.off('connect');
+    socket.off('disconnect');
 
     set({ status: 'ended' });
   },
