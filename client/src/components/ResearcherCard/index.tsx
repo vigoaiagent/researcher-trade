@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Star, MessageSquare, ExternalLink, Award, Shield, Flame, TrendingUp, Clock, Target, Zap, Quote, X, ChevronRight } from 'lucide-react';
 import type { ResearcherAnswer, ResearcherBadge } from '../../types';
 import { researcherApi } from '../../services/api';

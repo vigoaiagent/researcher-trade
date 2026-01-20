@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Calendar, Globe2, Radio, Clock, Users, Play, Bell, BellOff, Crown, ChevronLeft, ChevronRight, Check, Download, Mail } from 'lucide-react';
+import { X, Calendar, Globe2, Radio, Clock, Users, Play, Bell, BellOff, Crown, ChevronLeft, ChevronRight, Check, Download } from 'lucide-react';
 import { useUserStore } from '../stores/userStore';
 import type { UserLevel } from '../types';
 
