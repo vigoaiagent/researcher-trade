@@ -1,3 +1,4 @@
+# Force rebuild v2
 FROM node:20-alpine AS builder
 
 WORKDIR /app
@@ -44,4 +45,4 @@ RUN mkdir -p uploads
 EXPOSE 3000
 
 # Start the application with database migration
-CMD ["sh", "-c", "npx prisma db push --skip-generate && npm run start"]
+CMD ["sh", "-c", "echo 'Starting server...' && echo \"DATABASE_URL set: ${DATABASE_URL:+yes}\" && npx prisma db push --skip-generate && echo 'Database ready!' && npm run start"]
