@@ -94,6 +94,8 @@ class VoiceCallService {
 
     const pc = new RTCPeerConnection({
       iceServers: ICE_SERVERS,
+      // 强制使用 TURN 中继（用于跨网络通话）
+      iceTransportPolicy: 'relay',
     });
 
     // 添加本地音频轨道
@@ -201,7 +203,15 @@ class VoiceCallService {
     if (!this.peerConnection) return;
     this.peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
-        console.log('📞 Local ICE candidate:', event.candidate.candidate.substring(0, 50) + '...');
+        // 解析候选类型
+        const candidateStr = event.candidate.candidate;
+        let candidateType = 'unknown';
+        if (candidateStr.includes('typ host')) candidateType = 'host (本地)';
+        else if (candidateStr.includes('typ srflx')) candidateType = 'srflx (STUN)';
+        else if (candidateStr.includes('typ relay')) candidateType = 'relay (TURN)';
+        else if (candidateStr.includes('typ prflx')) candidateType = 'prflx (peer reflexive)';
+
+        console.log(`📞 ICE candidate [${candidateType}]:`, candidateStr.substring(0, 80));
         callback(event.candidate);
       } else {
         console.log('📞 ICE gathering complete');
