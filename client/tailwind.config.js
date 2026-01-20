@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-import tailwindTokens from '../template/tailwind-token.json';
+import tailwindTokens from './tailwind-token.json';
 
 export default {
   content: [
