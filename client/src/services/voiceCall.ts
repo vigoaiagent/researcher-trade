@@ -90,6 +90,8 @@ class VoiceCallService {
 
   // 创建PeerConnection
   createPeerConnection(): RTCPeerConnection {
+    console.log('📞 Creating PeerConnection with ICE servers:', ICE_SERVERS);
+
     const pc = new RTCPeerConnection({
       iceServers: ICE_SERVERS,
     });
@@ -97,12 +99,14 @@ class VoiceCallService {
     // 添加本地音频轨道
     if (this.localStream) {
       this.localStream.getTracks().forEach(track => {
+        console.log('📞 Adding local track:', track.kind);
         pc.addTrack(track, this.localStream!);
       });
     }
 
     // 处理远程流
     pc.ontrack = (event) => {
+      console.log('📞 Received remote track:', event.track.kind);
       this.remoteStream = event.streams[0];
       this.onRemoteStream?.(event.streams[0]);
 
@@ -110,14 +114,33 @@ class VoiceCallService {
       this.startRecording();
     };
 
+    // ICE gathering 状态
+    pc.onicegatheringstatechange = () => {
+      console.log('📞 ICE gathering state:', pc.iceGatheringState);
+    };
+
     // ICE连接状态
     pc.oniceconnectionstatechange = () => {
-      console.log('ICE connection state:', pc.iceConnectionState);
+      console.log('📞 ICE connection state:', pc.iceConnectionState);
 
-      if (pc.iceConnectionState === 'connected') {
+      if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
         this.onStatusChange?.('connected');
         this.startDurationTimer();
       } else if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed') {
+        console.log('📞 ICE connection failed or disconnected');
+        this.onStatusChange?.('failed');
+        this.endCall();
+      }
+    };
+
+    // 连接状态（更可靠）
+    pc.onconnectionstatechange = () => {
+      console.log('📞 Connection state:', pc.connectionState);
+      if (pc.connectionState === 'connected') {
+        this.onStatusChange?.('connected');
+        this.startDurationTimer();
+      } else if (pc.connectionState === 'failed') {
+        console.log('📞 Connection failed');
         this.onStatusChange?.('failed');
         this.endCall();
       }
@@ -131,8 +154,10 @@ class VoiceCallService {
   async createOffer(): Promise<RTCSessionDescriptionInit> {
     if (!this.peerConnection) throw new Error('PeerConnection not created');
 
+    console.log('📞 Creating offer...');
     const offer = await this.peerConnection.createOffer();
     await this.peerConnection.setLocalDescription(offer);
+    console.log('📞 Offer created and local description set');
     return offer;
   }
 
@@ -140,25 +165,34 @@ class VoiceCallService {
   async createAnswer(offer: RTCSessionDescriptionInit): Promise<RTCSessionDescriptionInit> {
     if (!this.peerConnection) throw new Error('PeerConnection not created');
 
+    console.log('📞 Setting remote description (offer)...');
     await this.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    console.log('📞 Creating answer...');
     const answer = await this.peerConnection.createAnswer();
     await this.peerConnection.setLocalDescription(answer);
+    console.log('📞 Answer created and local description set');
     return answer;
   }
 
   // 设置远程Answer
   async setRemoteAnswer(answer: RTCSessionDescriptionInit): Promise<void> {
     if (!this.peerConnection) throw new Error('PeerConnection not created');
+    console.log('📞 Setting remote description (answer)...');
     await this.peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+    console.log('📞 Remote answer set successfully');
   }
 
   // 添加ICE候选
   async addIceCandidate(candidate: RTCIceCandidateInit): Promise<void> {
-    if (!this.peerConnection) return;
+    if (!this.peerConnection) {
+      console.log('📞 Cannot add ICE candidate: no peer connection');
+      return;
+    }
     try {
+      console.log('📞 Adding ICE candidate:', candidate.candidate?.substring(0, 50) + '...');
       await this.peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
     } catch (error) {
-      console.error('Error adding ICE candidate:', error);
+      console.error('📞 Error adding ICE candidate:', error);
     }
   }
 
@@ -167,7 +201,10 @@ class VoiceCallService {
     if (!this.peerConnection) return;
     this.peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
+        console.log('📞 Local ICE candidate:', event.candidate.candidate.substring(0, 50) + '...');
         callback(event.candidate);
+      } else {
+        console.log('📞 ICE gathering complete');
       }
     };
   }

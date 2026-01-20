@@ -43,6 +43,7 @@ export const useCallStore = create<CallStore>((set, get) => ({
 
   // 用户发起通话
   initiateCall: async (userId, researcherId, researcherName, consultationId) => {
+    console.log('📞 Initiating call to researcher:', researcherId);
     set({
       status: 'requesting',
       researcherId,
@@ -52,10 +53,13 @@ export const useCallStore = create<CallStore>((set, get) => ({
 
     try {
       // 获取麦克风权限
+      console.log('📞 Getting local stream...');
       await voiceCallService.getLocalStream();
+      console.log('📞 Local stream acquired');
 
       // 生成房间ID
       const roomId = `call-${consultationId}-${Date.now()}`;
+      console.log('📞 Room ID:', roomId);
       set({ roomId, status: 'waiting' });
 
       // 设置回调
@@ -77,6 +81,7 @@ export const useCallStore = create<CallStore>((set, get) => ({
 
       // 监听ICE候选
       voiceCallService.onIceCandidate((candidate) => {
+        console.log('📞 Sending ICE candidate to remote');
         const socket = getSocket();
         socket.emit('call:ice-candidate', { roomId, candidate });
       });
@@ -85,6 +90,7 @@ export const useCallStore = create<CallStore>((set, get) => ({
       const offer = await voiceCallService.createOffer();
 
       // 发送通话请求到服务器（会通知TG Bot）
+      console.log('📞 Sending call request to server');
       const socket = getSocket();
       socket.emit('call:request', {
         roomId,
@@ -96,29 +102,34 @@ export const useCallStore = create<CallStore>((set, get) => ({
 
       // 监听研究员接听
       socket.on('call:answered', async (data: { answer: RTCSessionDescriptionInit }) => {
+        console.log('📞 Received answer from researcher');
         set({ status: 'connecting' });
         await voiceCallService.setRemoteAnswer(data.answer);
       });
 
       // 监听ICE候选
       socket.on('call:ice-candidate', async (data: { candidate: RTCIceCandidateInit }) => {
+        console.log('📞 Received ICE candidate from remote');
         await voiceCallService.addIceCandidate(data.candidate);
       });
 
       // 监听通话被拒绝
       socket.on('call:rejected', () => {
+        console.log('📞 Call rejected by researcher');
         set({ status: 'failed', error: '研究员拒绝了通话请求' });
         voiceCallService.endCall();
       });
 
       // 监听通话超时
       socket.on('call:timeout', () => {
+        console.log('📞 Call request timed out');
         set({ status: 'failed', error: '通话请求超时，研究员未响应' });
         voiceCallService.endCall();
       });
 
       // 监听对方挂断
       socket.on('call:ended', () => {
+        console.log('📞 Call ended by remote');
         get().endCall();
       });
 

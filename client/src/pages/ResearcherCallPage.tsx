@@ -47,6 +47,7 @@ export function ResearcherCallPage() {
 
     // 监听ICE候选
     socket.on('call:ice-candidate', async (data: { candidate: RTCIceCandidateInit }) => {
+      console.log('📞 Researcher received ICE candidate from user');
       await voiceCallService.addIceCandidate(data.candidate);
     });
 
@@ -61,24 +62,32 @@ export function ResearcherCallPage() {
   const handleAccept = async () => {
     if (!offer || !roomId) return;
 
+    console.log('📞 Researcher accepting call in room:', roomId);
     setStatus('connecting');
     setError(null);
 
     try {
       // 获取麦克风权限
+      console.log('📞 Researcher getting local stream...');
       await voiceCallService.getLocalStream();
+      console.log('📞 Researcher local stream acquired');
 
       // 设置回调
       voiceCallService.setCallbacks({
-        onStatusChange: setStatus,
+        onStatusChange: (s) => {
+          console.log('📞 Researcher status change:', s);
+          setStatus(s);
+        },
         onDurationChange: setDuration,
         onRemoteStream: (stream) => {
+          console.log('📞 Researcher received remote stream');
           if (audioRef.current) {
             audioRef.current.srcObject = stream;
             audioRef.current.play().catch(console.error);
           }
         },
         onError: (err) => {
+          console.log('📞 Researcher error:', err);
           setError(err);
           setStatus('failed');
         },
@@ -89,6 +98,7 @@ export function ResearcherCallPage() {
 
       // 监听ICE候选
       voiceCallService.onIceCandidate((candidate) => {
+        console.log('📞 Researcher sending ICE candidate');
         const socket = getSocket();
         socket.emit('call:ice-candidate', { roomId, candidate });
       });
@@ -97,10 +107,12 @@ export function ResearcherCallPage() {
       const answer = await voiceCallService.createAnswer(offer);
 
       // 发送Answer给用户
+      console.log('📞 Researcher sending answer');
       const socket = getSocket();
-      socket.emit('call:answer', { roomId, answer });
+      socket.emit('call:answer', { roomId, answer, researcherId });
 
     } catch (err: any) {
+      console.error('📞 Researcher accept error:', err);
       setError(err.message);
       setStatus('failed');
     }
