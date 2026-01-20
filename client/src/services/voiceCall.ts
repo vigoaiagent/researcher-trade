@@ -1,13 +1,27 @@
 // WebRTC Voice Call Service with Recording
 // 语音通话服务，带录音功能用于风控
 
-// 免费STUN/TURN服务器配置
+// STUN/TURN服务器配置
 const ICE_SERVERS: RTCIceServer[] = [
+  // Google STUN servers
   { urls: 'stun:stun.l.google.com:19302' },
   { urls: 'stun:stun1.l.google.com:19302' },
-  { urls: 'stun:stun2.l.google.com:19302' },
-  // 如需更好的NAT穿透，可以添加TURN服务器
-  // { urls: 'turn:your-turn-server.com:3478', username: 'user', credential: 'pass' },
+  // 公共 TURN 服务器 (用于 NAT 穿透)
+  {
+    urls: 'turn:openrelay.metered.ca:80',
+    username: 'openrelayproject',
+    credential: 'openrelayproject',
+  },
+  {
+    urls: 'turn:openrelay.metered.ca:443',
+    username: 'openrelayproject',
+    credential: 'openrelayproject',
+  },
+  {
+    urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+    username: 'openrelayproject',
+    credential: 'openrelayproject',
+  },
 ];
 
 export type CallStatus = 'idle' | 'requesting' | 'waiting' | 'connecting' | 'connected' | 'ended' | 'failed';
