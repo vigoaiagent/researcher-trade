@@ -53,9 +53,16 @@ export async function callRoutes(fastify: FastifyInstance) {
         }
       }
 
-      const roomId = fields.roomId || data.fields?.roomId?.value || '';
-      const duration = parseInt(fields.duration || data.fields?.duration?.value || '0');
-      const timestamp = fields.timestamp || data.fields?.timestamp?.value;
+      const getFieldValue = (field: any): string => {
+        if (!field) return '';
+        if (typeof field === 'string') return field;
+        if (Array.isArray(field)) return field[0]?.value || '';
+        return field.value || '';
+      };
+
+      const roomId = fields.roomId || getFieldValue(data.fields?.roomId) || '';
+      const duration = parseInt(fields.duration || getFieldValue(data.fields?.duration) || '0');
+      const timestamp = fields.timestamp || getFieldValue(data.fields?.timestamp);
 
       if (!roomId) {
         // 删除已上传的文件

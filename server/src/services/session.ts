@@ -1,4 +1,4 @@
-import { PrismaClient, ConsultationStatus } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { Server } from 'socket.io';
 import { updateRecommendScore, SCORE_RULES } from './matching.js';
 
