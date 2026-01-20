@@ -1,0 +1,185 @@
+// Prisma Schema for Researcher Customer Service System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// 用户表
+model User {
+  id            String   @id @default(uuid())
+  walletAddress String   @unique @map("wallet_address")
+  isWhitelist   Boolean  @default(false) @map("is_whitelist")
+  energyBalance Int      @default(100) @map("energy_balance")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  consultations Consultation[]
+  ratings       Rating[]
+
+  @@map("users")
+}
+
+// 研究员表
+model Researcher {
+  id              String           @id @default(uuid())
+  tgUserId        String           @unique @map("tg_user_id")
+  tgChatId        String           @map("tg_chat_id")
+  name            String
+  avatar          String?
+  specialties     String           @default("[]") // JSON string: ["BTC", "贵金属", "Perpdex"]
+  status          String           @default("OFFLINE") // ONLINE, OFFLINE, BUSY
+  ratingScore     Float            @default(5.0) @map("rating_score")
+  serviceCount    Int              @default(0) @map("service_count")
+  responseTimeAvg Int              @default(60) @map("response_time_avg")
+  recommendScore  Int              @default(100) @map("recommend_score")
+  walletAddress   String?          @map("wallet_address")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  consultationResearchers ConsultationResearcher[]
+  ratings                 Rating[]
+
+  @@map("researchers")
+}
+
+// 咨询会话表
+model Consultation {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  context     String?
+  question    String
+  status      String    @default("PENDING") // PENDING, WAITING_SELECT, IN_PROGRESS, COMPLETED, TIMEOUT, CANCELLED
+  energyCost  Int       @default(10) @map("energy_cost")
+  roundsUsed  Int       @default(0) @map("rounds_used")
+  maxRounds   Int       @default(10) @map("max_rounds")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  closedAt    DateTime? @map("closed_at")
+  timeoutAt   DateTime? @map("timeout_at")
+
+  user                    User                     @relation(fields: [userId], references: [id])
+  consultationResearchers ConsultationResearcher[]
+  messages                Message[]
+  rating                  Rating?
+
+  @@map("consultations")
+}
+
+// 会话-研究员关联表
+model ConsultationResearcher {
+  id             String    @id @default(uuid())
+  consultationId String    @map("consultation_id")
+  researcherId   String    @map("researcher_id")
+  firstAnswer    String?   @map("first_answer")
+  isSelected     Boolean   @default(false) @map("is_selected")
+  answeredAt     DateTime? @map("answered_at")
+  notifiedAt     DateTime  @default(now()) @map("notified_at")
+
+  consultation Consultation @relation(fields: [consultationId], references: [id])
+  researcher   Researcher   @relation(fields: [researcherId], references: [id])
+
+  @@unique([consultationId, researcherId])
+  @@map("consultation_researchers")
+}
+
+// 消息表
+model Message {
+  id             String   @id @default(uuid())
+  consultationId String   @map("consultation_id")
+  senderType     String   @map("sender_type") // USER, RESEARCHER
+  senderId       String   @map("sender_id")
+  content        String
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  consultation Consultation @relation(fields: [consultationId], references: [id])
+  // Note: senderId is polymorphic - can be User ID or Researcher ID based on senderType
+
+  @@map("messages")
+}
+
+// 评价表
+model Rating {
+  id             String   @id @default(uuid())
+  consultationId String   @unique @map("consultation_id")
+  researcherId   String   @map("researcher_id")
+  userId         String   @map("user_id")
+  score          Int
+  comment        String?
+  isDisputed     Boolean  @default(false) @map("is_disputed") // 是否在申诉中
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  consultation Consultation  @relation(fields: [consultationId], references: [id])
+  researcher   Researcher    @relation(fields: [researcherId], references: [id])
+  user         User          @relation(fields: [userId], references: [id])
+  appeal       RatingAppeal?
+
+  @@map("ratings")
+}
+
+// 评价申诉表
+model RatingAppeal {
+  id         String    @id @default(uuid())
+  ratingId   String    @unique @map("rating_id")
+  reason     String    // 申诉理由
+  status     String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  adminNote  String?   @map("admin_note") // 管理员备注
+  createdAt  DateTime  @default(now()) @map("created_at")
+  resolvedAt DateTime? @map("resolved_at")
+
+  rating Rating @relation(fields: [ratingId], references: [id])
+
+  @@map("rating_appeals")
+}
+
+// 能量值变动记录
+model EnergyTransaction {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  amount    Int
+  type      String   // RECHARGE, CONSULTATION, REFUND, REWARD
+  refId     String?  @map("ref_id")
+  remark    String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("energy_transactions")
+}
+
+// 通话录音记录 (风控)
+model CallRecording {
+  id         String   @id @default(uuid())
+  roomId     String   @map("room_id")
+  filePath   String   @map("file_path")
+  fileName   String   @map("file_name")
+  fileSize   Int      @map("file_size")
+  duration   Int      @default(0)
+  recordedAt DateTime @default(now()) @map("recorded_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([roomId])
+  @@map("call_recordings")
+}
+
+// 用户订阅研究员（按月计费）
+model UserFavoriteResearcher {
+  id            String    @id @default(uuid())
+  userId        String    @map("user_id")
+  researcherId  String    @map("researcher_id")
+
+  // 订阅状态
+  isActive      Boolean   @default(true) @map("is_active")    // 当前是否有效
+  autoRenew     Boolean   @default(true) @map("auto_renew")   // 是否自动续费
+
+  // 计费信息
+  monthlyCost   Int       @default(50) @map("monthly_cost")   // 月费（能量值）
+  subscribedAt  DateTime  @default(now()) @map("subscribed_at") // 首次订阅时间
+  expiresAt     DateTime  @map("expires_at")                  // 当前周期到期时间
+
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@unique([userId, researcherId])
+  @@map("user_favorite_researchers")
+}

@@ -1,0 +1,386 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * --- SODEX DESIGN SYSTEM & TOKENS ---
+ * Professional Crypto Trading Dark Theme
+ */
+:root {
+  /* Background Colors */
+  --bg-app: #0b0e11;           /* Deepest Black */
+  --bg-panel: #181a20;         /* Panel Background */
+  --bg-surface: #2b3139;       /* Hover/Input */
+  --bg-highlight: #474d57;
+
+  /* Brand Colors */
+  --brand-green: #0ecb81;      /* Sodex Green */
+  --brand-green-dim: rgba(14, 203, 129, 0.12);
+  --brand-red: #f6465d;        /* Sodex Red */
+  --brand-red-dim: rgba(246, 70, 93, 0.12);
+  --brand-yellow: #f0b90b;     /* Warning/Highlight */
+  --brand-blue: #60a5fa;       /* MA25 Line */
+
+  /* Text Colors */
+  --text-main: #eaecef;
+  --text-value: #b7bdc6;         /* Softer value display */
+  --text-muted: #848e9c;
+  --text-dim: #5e6673;
+
+  /* Border Colors */
+  --border-light: #2b3139;
+
+  /* Legacy Variables (for backwards compatibility with existing components) */
+  --background-bg-black-primary-rgb: 11 14 17;
+  --background-bg-black-primary-alt-rgb: 24 26 32;
+  --background-bg-black-secondary-rgb: 43 49 57;
+  --background-bg-black-tertiary-rgb: 71 77 87;
+  --background-bg-success-primary-rgb: 14 203 129;
+  --background-bg-success-secondary-rgb: 95 222 174;
+  --background-bg-success-tertiary-rgb: 25 43 39;
+  --background-bg-error-primary-rgb: 246 70 93;
+  --background-bg-error-secondary-rgb: 234 106 130;
+  --background-bg-error-tertiary-rgb: 38 24 30;
+  --background-bg-warning-primary-rgb: 240 185 11;
+  --background-bg-light-primary-rgb: 234 236 239;
+  --background-bg-light-secondary-rgb: 132 142 156;
+
+  --border-border-primary-rgb: 43 49 57;
+  --border-border-secondary-rgb: 27 27 31;
+  --border-border-success-rgb: 14 203 129;
+  --border-border-error-rgb: 246 70 93;
+  --border-border-light-primary-rgb: 234 236 239;
+  --border-border-light-secondary-rgb: 132 142 156;
+
+  --foreground-fg-primary-rgb: 234 236 239;
+  --foreground-fg-primary-alt-rgb: 11 14 17;
+  --foreground-fg-secondary-rgb: 132 142 156;
+  --foreground-fg-sucess-rgb: 14 203 129;
+  --foreground-fg-error-rgb: 246 70 93;
+  --foreground-fg-warning-rgb: 240 185 11;
+  --text-text-primary-rgb: 234 236 239;
+  --text-text-primary-alt-rgb: 11 14 17;
+  --text-text-secondary-rgb: 132 142 156;
+  --text-text-success-primary-rgb: 14 203 129;
+  --text-text-success-error-rgb: 246 70 93;
+  --text-text-success-warning-rgb: 240 185 11;
+
+  /* Font Stacks */
+  --font-mono: 'DIN', 'JetBrains Mono', 'SF Mono', 'Monaco', monospace;
+  --font-sans: 'Binance Plex', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* 防止移动端地址栏显示/隐藏导致的跳动 */
+html {
+  height: 100%;
+  height: -webkit-fill-available;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  font-size: 12px;
+  /* 移动端高度修复 */
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+  /* 防止 iOS 橡皮筋效果 */
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+  /* 防止触摸高亮 */
+  -webkit-tap-highlight-color: transparent;
+  /* 防止选中文字 */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 允许输入框选中 */
+input, textarea {
+  -webkit-user-select: auto;
+  user-select: auto;
+}
+
+#root {
+  height: 100%;
+  height: 100dvh;
+  height: -webkit-fill-available;
+  overflow: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg-surface); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--bg-highlight); }
+
+/* === UTILITY CLASSES === */
+
+/* Color Utilities */
+.text-green { color: var(--brand-green); }
+.text-red { color: var(--brand-red); }
+.text-yellow { color: var(--brand-yellow); }
+.bg-green-dim { background-color: var(--brand-green-dim); }
+.bg-red-dim { background-color: var(--brand-red-dim); }
+
+/* Typography */
+.font-mono-num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+  font-family: var(--font-mono);
+}
+
+/* Line Clamp */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* === ANIMATIONS === */
+
+/* Robo-Cat Blink Animation */
+@keyframes blink {
+  0%, 96%, 100% { transform: scaleY(1); }
+  98% { transform: scaleY(0.1); }
+}
+.cat-eye {
+  animation: blink 4s infinite;
+  transform-origin: center;
+}
+
+/* Float Animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.cat-avatar {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Animated cat (when actively responding) */
+@keyframes cat-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  25% { transform: translateY(-3px) scale(1.02); }
+  50% { transform: translateY(0) scale(1); }
+  75% { transform: translateY(-2px) scale(1.01); }
+}
+.cat-animated {
+  animation: cat-bounce 0.8s ease-in-out infinite;
+}
+.cat-animated .cat-eye {
+  animation: blink 1s infinite;
+}
+
+/* Pulse Animation */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(14, 203, 129, 0.4); }
+  50% { opacity: 0.8; box-shadow: 0 0 20px 5px rgba(14, 203, 129, 0.2); }
+}
+
+/* Status Dot Pulse */
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.status-dot-pulse {
+  animation: status-pulse 2s ease-in-out infinite;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Slide In Animation */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* === COMPONENT STYLES === */
+
+/* Glass Panel Effect */
+.glass-panel {
+  background: rgba(24, 26, 32, 0.95);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  border: 1px solid var(--border-light);
+}
+
+/* Chart Crosshair */
+.crosshair { cursor: crosshair; }
+.crosshair:hover .crosshair-lines { display: block; }
+.crosshair-lines { display: none; pointer-events: none; }
+
+/* Input Focus Ring */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+}
+
+/* Override browser autofill styles */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px var(--bg-surface) inset !important;
+  -webkit-text-fill-color: var(--text-main) !important;
+  caret-color: var(--text-main);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Caret color for dark theme */
+input, textarea {
+  caret-color: var(--brand-yellow);
+}
+
+/* Text selection color */
+::selection {
+  background-color: rgba(240, 185, 11, 0.3);
+  color: var(--text-main);
+}
+
+::-moz-selection {
+  background-color: rgba(240, 185, 11, 0.3);
+  color: var(--text-main);
+}
+
+/* Button Base */
+.btn-primary {
+  background-color: var(--brand-green);
+  color: #000;
+  font-weight: 600;
+  border-radius: 4px;
+  transition: opacity 0.2s;
+}
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  background-color: var(--bg-surface);
+  color: var(--text-muted);
+  font-weight: 600;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.btn-secondary:hover {
+  color: var(--text-main);
+}
+
+/* Panel Headers */
+.panel-header {
+  height: 32px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* Data Row */
+.data-row {
+  display: flex;
+  padding: 1px 12px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.1s;
+}
+.data-row:hover {
+  background-color: var(--bg-surface);
+}
+
+/* Form Input */
+.form-input {
+  background-color: var(--bg-surface);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 8px 12px;
+  color: var(--text-main);
+  font-size: 12px;
+  transition: border-color 0.2s;
+}
+.form-input:focus {
+  border-color: var(--brand-yellow);
+}
+.form-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Tab Navigation */
+.tab-item {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--text-muted);
+  border-top: 2px solid transparent;
+  transition: all 0.2s;
+}
+.tab-item:hover {
+  color: var(--text-main);
+}
+.tab-item.active {
+  color: var(--brand-yellow);
+  border-top-color: var(--brand-yellow);
+  background-color: var(--bg-surface);
+}
+
+/* === MOBILE OPTIMIZATIONS === */
+
+/* 移动端：减少动画以防止跳动 */
+@media (max-width: 768px) {
+  /* 禁用可能导致跳动的动画 */
+  .animate-pulse {
+    animation: none !important;
+  }
+
+  /* 减少ticker动画频率 */
+  .ticker-scroll {
+    animation-duration: 60s !important;
+  }
+
+  /* 固定高度防止重排 */
+  .fixed-mobile-height {
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+  }
+
+  /* 防止 iOS safari 底部安全区域问题 */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  /* 隐藏一些桌面端才需要的元素 */
+  .desktop-only {
+    display: none !important;
+  }
+}

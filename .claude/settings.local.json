@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(lsof:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker compose:*)",
+      "Bash(open:*)",
+      "Bash(brew services:*)",
+      "Bash(redis-cli:*)",
+      "Bash(npm run dev:*)",
+      "Bash(/Applications/Docker.app/Contents/Resources/bin/docker compose up -d)",
+      "Bash(brew list:*)",
+      "Bash(mysql:*)"
+    ],
+    "defaultMode": "bypassPermissions"
+  }
+}

@@ -1,0 +1,191 @@
+{
+  "backgroundColor": {
+    "black-primary": "rgb(var(--background-bg-black-primary-rgb) / <alpha-value>)",
+    "black-primary-alt": "rgb(var(--background-bg-black-primary-alt-rgb) / <alpha-value>)",
+    "black-secondary": "rgb(var(--background-bg-black-secondary-rgb) / <alpha-value>)",
+    "black-tertiary": "rgb(var(--background-bg-black-tertiary-rgb) / <alpha-value>)",
+    "error-primary": "rgb(var(--background-bg-error-primary-rgb) / <alpha-value>)",
+    "error-secondary": "rgb(var(--background-bg-error-secondary-rgb) / <alpha-value>)",
+    "error-tertiary": "rgb(var(--background-bg-error-tertiary-rgb) / <alpha-value>)",
+    "error-tertiary-alt": "rgb(var(--background-bg-error-tertiary-alt-rgb) / <alpha-value>)",
+    "light-primary": "rgb(var(--background-bg-light-primary-rgb) / <alpha-value>)",
+    "light-secondary": "rgb(var(--background-bg-light-secondary-rgb) / <alpha-value>)",
+    "success-primary": "rgb(var(--background-bg-success-primary-rgb) / <alpha-value>)",
+    "success-secondary": "rgb(var(--background-bg-success-secondary-rgb) / <alpha-value>)",
+    "success-tertiary": "rgb(var(--background-bg-success-tertiary-rgb) / <alpha-value>)",
+    "success-tertiary-alt": "rgb(var(--background-bg-success-tertiary-alt-rgb) / <alpha-value>)",
+    "warning-primary": "rgb(var(--background-bg-warning-primary-rgb) / <alpha-value>)",
+    "warning-secondary": "rgb(var(--background-bg-warning-secondary-rgb) / <alpha-value>)",
+    "warning-tertiary": "rgb(var(--background-bg-warning-tertiary-rgb) / <alpha-value>)",
+    "warning-tertiary-alt": "rgb(var(--background-bg-warning-tertiary-alt-rgb) / <alpha-value>)",
+    "black-primary-rgb": "var(--background-bg-black-primary-rgb)",
+    "black-primary-alt-rgb": "var(--background-bg-black-primary-alt-rgb)",
+    "black-secondary-rgb": "var(--background-bg-black-secondary-rgb)",
+    "black-tertiary-rgb": "var(--background-bg-black-tertiary-rgb)",
+    "error-primary-rgb": "var(--background-bg-error-primary-rgb)",
+    "error-secondary-rgb": "var(--background-bg-error-secondary-rgb)",
+    "error-tertiary-rgb": "var(--background-bg-error-tertiary-rgb)",
+    "error-tertiary-alt-rgb": "var(--background-bg-error-tertiary-alt-rgb)",
+    "light-primary-rgb": "var(--background-bg-light-primary-rgb)",
+    "light-secondary-rgb": "var(--background-bg-light-secondary-rgb)",
+    "success-primary-rgb": "var(--background-bg-success-primary-rgb)",
+    "success-secondary-rgb": "var(--background-bg-success-secondary-rgb)",
+    "success-tertiary-rgb": "var(--background-bg-success-tertiary-rgb)",
+    "success-tertiary-alt-rgb": "var(--background-bg-success-tertiary-alt-rgb)",
+    "warning-primary-rgb": "var(--background-bg-warning-primary-rgb)",
+    "warning-secondary-rgb": "var(--background-bg-warning-secondary-rgb)",
+    "warning-tertiary-rgb": "var(--background-bg-warning-tertiary-rgb)",
+    "warning-tertiary-alt-rgb": "var(--background-bg-warning-tertiary-alt-rgb)"
+  },
+  "textColor": {
+    "error": "rgb(var(--foreground-fg-error-rgb) / <alpha-value>)",
+    "primary": "rgb(var(--text-text-primary-rgb) / <alpha-value>)",
+    "primary-alt": "rgb(var(--text-text-primary-alt-rgb) / <alpha-value>)",
+    "secondary": "rgb(var(--text-text-secondary-rgb) / <alpha-value>)",
+    "sucess": "rgb(var(--foreground-fg-sucess-rgb) / <alpha-value>)",
+    "warning": "rgb(var(--foreground-fg-warning-rgb) / <alpha-value>)",
+    "success-error": "rgb(var(--text-text-success-error-rgb) / <alpha-value>)",
+    "success-primary": "rgb(var(--text-text-success-primary-rgb) / <alpha-value>)",
+    "success-warning": "rgb(var(--text-text-success-warning-rgb) / <alpha-value>)",
+    "error-rgb": "var(--foreground-fg-error-rgb)",
+    "primary-rgb": "var(--text-text-primary-rgb)",
+    "primary-alt-rgb": "var(--text-text-primary-alt-rgb)",
+    "secondary-rgb": "var(--text-text-secondary-rgb)",
+    "sucess-rgb": "var(--foreground-fg-sucess-rgb)",
+    "warning-rgb": "var(--foreground-fg-warning-rgb)",
+    "success-error-rgb": "var(--text-text-success-error-rgb)",
+    "success-primary-rgb": "var(--text-text-success-primary-rgb)",
+    "success-warning-rgb": "var(--text-text-success-warning-rgb)"
+  },
+  "borderColor": {
+    "error": "rgb(var(--border-border-error-rgb) / <alpha-value>)",
+    "light-primary": "rgb(var(--border-border-light-primary-rgb) / <alpha-value>)",
+    "light-secondary": "rgb(var(--border-border-light-secondary-rgb) / <alpha-value>)",
+    "primary": "rgb(var(--border-border-primary-rgb) / <alpha-value>)",
+    "secondary": "rgb(var(--border-border-secondary-rgb) / <alpha-value>)",
+    "success": "rgb(var(--border-border-success-rgb) / <alpha-value>)",
+    "warning": "rgb(var(--border-border-warning-rgb) / <alpha-value>)",
+    "error-rgb": "var(--border-border-error-rgb)",
+    "light-primary-rgb": "var(--border-border-light-primary-rgb)",
+    "light-secondary-rgb": "var(--border-border-light-secondary-rgb)",
+    "primary-rgb": "var(--border-border-primary-rgb)",
+    "secondary-rgb": "var(--border-border-secondary-rgb)",
+    "success-rgb": "var(--border-border-success-rgb)",
+    "warning-rgb": "var(--border-border-warning-rgb)"
+  },
+  "extend": {
+    "fontSize": {
+      "display-2xl": [
+        "72px",
+        {
+          "lineHeight": "56px"
+        }
+      ],
+      "display-lg": [
+        "48px",
+        {
+          "lineHeight": "48px"
+        }
+      ],
+      "display-md": [
+        "36px",
+        {
+          "lineHeight": "40px"
+        }
+      ],
+      "display-sm": [
+        "30px",
+        {
+          "lineHeight": "36px"
+        }
+      ],
+      "display-xl": [
+        "60px",
+        {
+          "lineHeight": "52px"
+        }
+      ],
+      "display-xs": [
+        "24px",
+        {
+          "lineHeight": "32px"
+        }
+      ],
+      "lg": [
+        "18px",
+        {
+          "lineHeight": "28px"
+        }
+      ],
+      "base": [
+        "16px",
+        {
+          "lineHeight": "24px"
+        }
+      ],
+      "sm": [
+        "14px",
+        {
+          "lineHeight": "20px"
+        }
+      ],
+      "xl": [
+        "20px",
+        {
+          "lineHeight": "30px"
+        }
+      ],
+      "xs": [
+        "12px",
+        {
+          "lineHeight": "16px"
+        }
+      ]
+    },
+    "width": {
+      "max-width": "720px",
+      "2xl": "1024px",
+      "3xl": "1280px",
+      "4xl": "1440px",
+      "5xl": "1600px",
+      "6xl": "1920px",
+      "lg": "640px",
+      "md": "560px",
+      "sm": "480px",
+      "xl": "768px",
+      "xs": "384px",
+      "xxs": "320px"
+    },
+    "spacing": {
+      "10xl": "128px",
+      "11xl": "160px",
+      "2xl": "20px",
+      "3xl": "24px",
+      "4xl": "32px",
+      "5xl": "40px",
+      "6xl": "48px",
+      "7xl": "64px",
+      "8xl": "80px",
+      "9xl": "96px",
+      "lg": "12px",
+      "md": "8px",
+      "md-alt": "10px",
+      "sm": "6px",
+      "xl": "16px",
+      "xs": "4px",
+      "xxs": "2px"
+    },
+    "borderRadius": {
+      "2xl": "16px",
+      "3xl": "20px",
+      "4xl": "24px",
+      "full": "9999px",
+      "lg": "10px",
+      "md": "8px",
+      "sm": "6px",
+      "xl": "12px",
+      "xs": "4px",
+      "xxs": "2px"
+    }
+  }
+}

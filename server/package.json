@@ -1,0 +1,36 @@
+{
+  "name": "researcher-server",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Researcher Customer Service System - Backend",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "tsx src/prisma/seed.ts"
+  },
+  "dependencies": {
+    "@fastify/cors": "^8.5.0",
+    "@fastify/multipart": "^8.3.1",
+    "@fastify/static": "^6.12.0",
+    "@fastify/websocket": "^8.3.0",
+    "@prisma/client": "^5.7.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.0",
+    "fastify": "^4.25.0",
+    "node-cron": "^3.0.3",
+    "socket.io": "^4.7.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/node-cron": "^3.0.11",
+    "prisma": "^5.7.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0"
+  }
+}
