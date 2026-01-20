@@ -39,6 +39,7 @@ model Researcher {
   responseTimeAvg Int              @default(60) @map("response_time_avg")
   recommendScore  Int              @default(100) @map("recommend_score")
   walletAddress   String?          @map("wallet_address")
+  totalEarnings   Int              @default(0) @map("total_earnings") // 累计收入（能量值）
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
 

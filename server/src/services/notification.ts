@@ -72,13 +72,15 @@ export async function notifyResearcherFollowUp(
 export async function notifyResearcherCompleted(
   researcher: Researcher,
   consultationId: string,
-  rating?: number
+  rating?: number,
+  earnings?: number
 ): Promise<void> {
   try {
     await api.post(`${TG_BOT_API_URL}/notify/completed`, {
       chatId: researcher.tgChatId,
       consultationId,
       rating,
+      earnings,
     });
   } catch (error) {
     console.error('Failed to notify researcher completed:', error);

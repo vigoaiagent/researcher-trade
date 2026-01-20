@@ -92,7 +92,7 @@ ${message}
 
   // 对话结束通知
   app.post('/notify/completed', async (req, res) => {
-    const { chatId, consultationId, rating } = req.body;
+    const { chatId, consultationId, rating, earnings } = req.body;
 
     try {
       let ratingText = '';
@@ -100,8 +100,13 @@ ${message}
         ratingText = `\n用户评价：${'⭐'.repeat(rating)}`;
       }
 
+      let earningsText = '';
+      if (earnings && earnings > 0) {
+        earningsText = `\n💰 本次收入：+${earnings} 能量`;
+      }
+
       const message = `
-✅ 对话结束${ratingText}
+✅ 对话结束${ratingText}${earningsText}
 
 感谢您的专业服务！
 继续保持在线状态接收新咨询。

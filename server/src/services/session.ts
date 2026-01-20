@@ -1,6 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import { Server } from 'socket.io';
 import { updateRecommendScore, SCORE_RULES } from './matching.js';
+import { notifyResearcherCompleted } from './notification.js';
+
+// 研究员收入比例（用户支付能量的80%）
+const RESEARCHER_INCOME_RATIO = 0.8;
 
 /**
  * 会话状态机 - 管理咨询会话的生命周期
@@ -279,7 +283,23 @@ export class SessionManager {
   /**
    * 完成咨询
    */
-  async completeConsultation(consultationId: string) {
+  async completeConsultation(consultationId: string, rating?: number) {
+    // 获取咨询详情和选中的研究员
+    const consultation = await this.prisma.consultation.findUnique({
+      where: { id: consultationId },
+      include: {
+        consultationResearchers: {
+          where: { isSelected: true },
+          include: { researcher: true },
+        },
+      },
+    });
+
+    if (!consultation) {
+      throw new Error('Consultation not found');
+    }
+
+    // 更新咨询状态
     await this.prisma.consultation.update({
       where: { id: consultationId },
       data: {
@@ -288,9 +308,34 @@ export class SessionManager {
       },
     });
 
+    // 计算并发放研究员收入
+    const selectedCR = consultation.consultationResearchers[0];
+    let earnings = 0;
+
+    if (selectedCR) {
+      const researcher = selectedCR.researcher;
+      earnings = Math.floor(consultation.energyCost * RESEARCHER_INCOME_RATIO);
+
+      // 更新研究员累计收入
+      await this.prisma.researcher.update({
+        where: { id: researcher.id },
+        data: {
+          totalEarnings: { increment: earnings },
+        },
+      });
+
+      // 通知研究员对话结束，包含收入信息
+      await notifyResearcherCompleted(researcher, consultationId, rating, earnings);
+
+      console.log(`[Session] Researcher ${researcher.name} earned ${earnings} energy from consultation ${consultationId}`);
+    }
+
     this.io.to(`consultation:${consultationId}`).emit('consultation_completed', {
       consultationId,
+      earnings,
     });
+
+    return { earnings };
   }
 
   /**

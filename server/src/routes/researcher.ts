@@ -127,6 +127,7 @@ export async function researcherRoutes(fastify: FastifyInstance) {
         ratingScore: researcher.ratingScore,
         serviceCount: researcher.serviceCount,
         recommendScore: researcher.recommendScore,
+        totalEarnings: researcher.totalEarnings,
       },
       monthly: {
         services: monthlyServices,

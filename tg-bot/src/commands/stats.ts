@@ -29,6 +29,7 @@ ${statusEmoji[data.researcher.status]} 当前状态：${data.researcher.status}
 ⭐ 评分：${data.researcher.ratingScore.toFixed(1)}
 🏆 推荐分：${data.researcher.recommendScore}
 📈 总服务次数：${data.researcher.serviceCount}
+💰 累计收入：${data.researcher.totalEarnings || 0} 能量
 
 📅 本月统计
 ├ 服务次数：${data.monthly.services}
