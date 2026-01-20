@@ -1,5 +1,8 @@
-# Force rebuild v2
+# Force rebuild v3
 FROM node:20-alpine AS builder
+
+# Install OpenSSL for Prisma
+RUN apk add --no-cache openssl openssl-dev
 
 WORKDIR /app
 
@@ -22,6 +25,9 @@ RUN npm run build
 
 # Production stage
 FROM node:20-alpine AS runner
+
+# Install OpenSSL for Prisma
+RUN apk add --no-cache openssl
 
 WORKDIR /app
 
