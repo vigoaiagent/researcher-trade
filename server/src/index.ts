@@ -5,6 +5,7 @@ import { Server } from 'socket.io';
 import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -69,20 +70,27 @@ fastify.get('/health', async () => {
   return { status: 'ok', timestamp: new Date().toISOString() };
 });
 
-// Serve static files from client/dist
+// Serve static files from client/dist (only if directory exists - for local dev)
 const clientDistPath = path.join(__dirname, '../../client/dist');
-await fastify.register(fastifyStatic, {
-  root: clientDistPath,
-  prefix: '/',
-});
+if (fs.existsSync(clientDistPath)) {
+  await fastify.register(fastifyStatic, {
+    root: clientDistPath,
+    prefix: '/',
+  });
 
-// SPA fallback - serve index.html for non-API routes
-fastify.setNotFoundHandler(async (request, reply) => {
-  if (request.url.startsWith('/api/')) {
+  // SPA fallback - serve index.html for non-API routes
+  fastify.setNotFoundHandler(async (request, reply) => {
+    if (request.url.startsWith('/api/')) {
+      return reply.status(404).send({ error: 'Not found' });
+    }
+    return reply.sendFile('index.html');
+  });
+} else {
+  // Production: frontend is served by Vercel, just handle API 404s
+  fastify.setNotFoundHandler(async (request, reply) => {
     return reply.status(404).send({ error: 'Not found' });
-  }
-  return reply.sendFile('index.html');
-});
+  });
+}
 
 const start = async () => {
   try {
