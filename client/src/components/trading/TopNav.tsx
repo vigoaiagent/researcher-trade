@@ -30,8 +30,8 @@ const fmt = (num: number) =>
 const fmtDecimal = (num: number) =>
   num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-// Format timestamp
-const formatTime = (timestamp: number) => {
+// Format timestamp - uses translation function passed as parameter
+const formatTimeWithT = (timestamp: number, t: (key: string) => string) => {
   const date = new Date(timestamp);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
@@ -39,10 +39,10 @@ const formatTime = (timestamp: number) => {
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
 
-  if (diffMins < 1) return '刚刚';
-  if (diffMins < 60) return `${diffMins}分钟前`;
-  if (diffHours < 24) return `${diffHours}小时前`;
-  if (diffDays < 7) return `${diffDays}天前`;
+  if (diffMins < 1) return t('time.justNow');
+  if (diffMins < 60) return `${diffMins} ${t('time.minutesAgo')}`;
+  if (diffHours < 24) return `${diffHours} ${t('time.hoursAgo')}`;
+  if (diffDays < 7) return `${diffDays} ${t('time.daysAgo')}`;
   return `${date.getMonth() + 1}/${date.getDate()}`;
 };
 
@@ -177,7 +177,7 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                       <div className="fixed inset-0 md:absolute md:inset-auto md:top-full md:right-0 md:mt-2 w-full h-full md:w-[480px] md:h-auto md:max-h-[85vh] bg-[var(--bg-panel)] md:border md:border-[var(--border-light)] md:rounded-xl shadow-xl z-[200] flex flex-col overflow-hidden">
                       {/* Mobile Header */}
                       <div className="flex md:hidden items-center justify-between p-4 border-b border-[var(--border-light)]">
-                        <span className="text-[16px] font-bold text-[var(--text-main)]">我的等级</span>
+                        <span className="text-[16px] font-bold text-[var(--text-main)]">{t('levelDropdown.myLevel')}</span>
                         <button
                           onClick={() => setShowLevelDropdown(false)}
                           className="p-2 hover:bg-[var(--bg-surface)] rounded-lg transition-colors"
@@ -221,7 +221,7 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                             onMouseLeave={() => setShowEnergyGuide(false)}
                           >
                             <div className="text-[14px] md:text-[16px] text-[var(--text-muted)] hover:text-[var(--brand-green)] transition">
-                              可用能量 <span className="text-[12px]">ⓘ</span>
+                              {t('levelDropdown.availableEnergy')} <span className="text-[12px]">ⓘ</span>
                             </div>
                             <div className="text-[22px] md:text-[26px] font-bold text-[var(--brand-green)]">
                               ⚡ {fmtDecimal(user.energyAvailable ?? 0)}
@@ -265,7 +265,7 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                         {/* Boost/Shield 标签 - 始终显示 */}
                         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0 mb-2">
                           <span className="text-[14px] md:text-[16px] text-[var(--text-muted)]">
-                            {nextLevel ? '升级进度' : '最高等级'}
+                            {nextLevel ? t('levelDropdown.upgradeProgress') : t('levelDropdown.maxLevel')}
                           </span>
                           <div className="flex items-center gap-2 md:gap-3 flex-wrap">
                             {/* Boost Tag */}
@@ -286,15 +286,15 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                                 <div className="hidden md:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-[280px] p-4 bg-[var(--bg-panel)] border border-[var(--border-light)] rounded-xl shadow-xl z-[300] text-left">
                                   <div className="flex items-center gap-2 mb-2">
                                     <Rocket size={18} className="text-[var(--brand-yellow)]" />
-                                    <span className="text-[14px] font-bold text-[var(--text-main)]">能量铸造加成 (Boost)</span>
+                                    <span className="text-[14px] font-bold text-[var(--text-main)]">{t('boost.title')}</span>
                                   </div>
                                   <div className="space-y-2 text-[13px] text-[var(--text-muted)]">
-                                    <p>持有 SoSo 代币可获得能量铸造加成，<span className="text-[var(--brand-yellow)] font-medium">最高 +10%</span>。</p>
-                                    <p>• 最低持有: {fmt(SOSO_BOOST_CONFIG.threshold)} SoSo</p>
-                                    <p>• 满额持有: {fmt(SOSO_BOOST_CONFIG.maxHolding)} SoSo</p>
-                                    <p className="text-[12px] text-[var(--text-dim)] mt-2">例: 交易产生 $100 手续费，正常获得 100 能量，+10% Boost 后获得 110 能量。</p>
+                                    <p>{t('boost.description')}</p>
+                                    <p>• {t('boost.minHold')}: {fmt(SOSO_BOOST_CONFIG.threshold)} SoSo</p>
+                                    <p>• {t('boost.maxHold')}: {fmt(SOSO_BOOST_CONFIG.maxHolding)} SoSo</p>
+                                    <p className="text-[12px] text-[var(--text-dim)] mt-2">{t('boost.example')}</p>
                                   </div>
-                                  <div className="text-[12px] text-[var(--brand-yellow)] mt-2">点击查看详情</div>
+                                  <div className="text-[12px] text-[var(--brand-yellow)] mt-2">{t('boost.clickDetails')}</div>
                                 </div>
                               )}
                             </div>
@@ -316,17 +316,17 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                                 <div className="hidden md:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-[280px] p-4 bg-[var(--bg-panel)] border border-[var(--border-light)] rounded-xl shadow-xl z-[300] text-left">
                                   <div className="flex items-center gap-2 mb-2">
                                     <Shield size={18} className="text-[var(--brand-green)]" />
-                                    <span className="text-[14px] font-bold text-[var(--text-main)]">能量护盾 (Shield)</span>
+                                    <span className="text-[14px] font-bold text-[var(--text-main)]">{t('shield.title')}</span>
                                   </div>
                                   <div className="space-y-2 text-[13px] text-[var(--text-muted)]">
-                                    <p>质押 SSI 可保护部分能量<span className="text-[var(--brand-green)] font-medium">不参与每周衰减</span>。</p>
-                                    <p className="font-medium text-[var(--text-main)]">Shield 保底额度:</p>
-                                    <p>• 普通质押: 50 能量/周</p>
-                                    <p>• Core SSI ($200k+): 150 能量/周</p>
-                                    <p>• VIP SSI ($1M+): 500 能量/周</p>
-                                    <p className="text-[12px] text-[var(--text-dim)] mt-2">Core SSI 还可解锁电话咨询服务。</p>
+                                    <p>{t('shield.description')}</p>
+                                    <p className="font-medium text-[var(--text-main)]">{t('shield.shieldAmount')}:</p>
+                                    <p>• {t('shield.normalStake')}</p>
+                                    <p>• {t('shield.coreSSI')}</p>
+                                    <p>• {t('shield.vipSSI')}</p>
+                                    <p className="text-[12px] text-[var(--text-dim)] mt-2">{t('shield.coreUnlock')}</p>
                                   </div>
-                                  <div className="text-[12px] text-[var(--brand-green)] mt-2">点击查看详情</div>
+                                  <div className="text-[12px] text-[var(--brand-green)] mt-2">{t('shield.clickDetails')}</div>
                                 </div>
                               )}
                             </div>
@@ -348,7 +348,7 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                             {/* 显示升级目标 */}
                             <div className="flex items-center justify-end mt-2 text-[12px]">
                               <span className="text-[var(--brand-yellow)]">
-                                升级到 {nextLevel} 需交易约 ${fmt(Math.ceil((LEVEL_CONFIG[nextLevel].minFees - (user.fees30d ?? 0)) / 0.0007))}
+                                {t('levelDropdown.upgradeTo').replace('{level}', nextLevel).replace('{amount}', fmt(Math.ceil((LEVEL_CONFIG[nextLevel].minFees - (user.fees30d ?? 0)) / 0.0007)))}
                               </span>
                             </div>
                           </>
@@ -360,21 +360,21 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                             <div className="flex items-center justify-between mb-3">
                               <div className="flex items-center gap-2">
                                 <Rocket size={20} className="text-[var(--brand-yellow)]" />
-                                <span className="text-[18px] font-bold text-[var(--text-main)]">能量 Boost</span>
+                                <span className="text-[18px] font-bold text-[var(--text-main)]">{t('boost.energyBoost')}</span>
                               </div>
                               <button
                                 className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[var(--brand-yellow)] hover:opacity-80 transition"
                               >
                                 <Plus size={16} className="text-black" />
-                                <span className="text-[14px] font-bold text-black">购买 SoSo</span>
+                                <span className="text-[14px] font-bold text-black">{t('boost.buySoSo')}</span>
                               </button>
                             </div>
                             <div className="text-[16px] text-[var(--text-muted)]">
-                              持有 SoSo 可获得能量铸造加成，最高 +10%
+                              {t('boost.holdSoSo')}
                             </div>
                             <div className="text-[14px] text-[var(--text-dim)] mt-2">
-                              当前持有: {fmt(user.sosoHolding ?? 0)} SoSo
-                              {sosoBoost === 0 && ` (需 ${fmt(SOSO_BOOST_CONFIG.threshold)}+ 激活)`}
+                              {t('boost.currentHold')}: {fmt(user.sosoHolding ?? 0)} SoSo
+                              {sosoBoost === 0 && ` ${t('boost.needToActivate').replace('{amount}', fmt(SOSO_BOOST_CONFIG.threshold))}`}
                             </div>
                           </div>
                         )}
@@ -385,23 +385,23 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                             <div className="flex items-center justify-between mb-3">
                               <div className="flex items-center gap-2">
                                 <Shield size={20} className="text-[var(--brand-green)]" />
-                                <span className="text-[18px] font-bold text-[var(--text-main)]">能量 Shield</span>
+                                <span className="text-[18px] font-bold text-[var(--text-main)]">{t('shield.energyShield')}</span>
                               </div>
                               <button
                                 className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[var(--brand-green)] hover:opacity-80 transition"
                               >
                                 <Plus size={16} className="text-black" />
-                                <span className="text-[14px] font-bold text-black">质押 SSI</span>
+                                <span className="text-[14px] font-bold text-black">{t('shield.stakeSSIBtn')}</span>
                               </button>
                             </div>
                             <div className="text-[16px] text-[var(--text-muted)]">
-                              质押 SSI 可保护能量不被衰减，每周保护 {shieldAmount > 0 ? shieldAmount.toFixed(0) : '?'} 能量
+                              {t('shield.stakeSSI').replace('{amount}', shieldAmount > 0 ? shieldAmount.toFixed(0) : '?')}
                             </div>
                             <div className="text-[14px] text-[var(--text-dim)] mt-2">
-                              当前质押: ${fmt(user.ssiStaked ?? 0)} SSI
+                              {t('shield.currentStake')}: ${fmt(user.ssiStaked ?? 0)} SSI
                               {ssiTier !== 'none' && (
                                 <span className="ml-1 text-[var(--brand-green)]">
-                                  ({ssiTier === 'vip' ? 'VIP' : ssiTier === 'core' ? 'Core' : '普通'})
+                                  ({ssiTier === 'vip' ? 'VIP' : ssiTier === 'core' ? 'Core' : t('shield.normal')})
                                 </span>
                               )}
                             </div>
@@ -419,7 +419,7 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                           }`}
                           onClick={() => setDropdownTab('overview')}
                         >
-                          概览
+                          {t('levelDropdown.overview')}
                         </button>
                         <button
                           className={`flex-1 py-2.5 md:py-3 text-[15px] md:text-[18px] font-medium transition-colors ${
@@ -429,7 +429,7 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                           }`}
                           onClick={() => setDropdownTab('history')}
                         >
-                          历史记录
+                          {t('levelDropdown.history')}
                         </button>
                       </div>
 
@@ -438,7 +438,7 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                         <>
                           {/* Level Milestones - Simplified */}
                           <div className="p-4 md:p-5 border-b border-[var(--border-light)]">
-                            <div className="text-[14px] md:text-[16px] text-[var(--text-muted)] mb-3">等级权益</div>
+                            <div className="text-[14px] md:text-[16px] text-[var(--text-muted)] mb-3">{t('levelDropdown.levelBenefits')}</div>
                             <div className="space-y-2 md:space-y-3">
                               {(Object.keys(LEVEL_CONFIG) as UserLevel[]).map((level) => {
                                 const levelConfig = LEVEL_CONFIG[level];
@@ -476,7 +476,7 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                                     </span>
                                     {isCurrentLevel && (
                                       <span className="text-[11px] md:text-[13px] px-2 md:px-3 py-1 md:py-1.5 bg-[var(--brand-yellow)] text-black rounded font-bold shrink-0">
-                                        当前
+                                        {t('levelDropdown.current')}
                                       </span>
                                     )}
                                   </div>
@@ -492,8 +492,8 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                           {(user.energyHistory?.length ?? 0) === 0 ? (
                             <div className="text-center py-8 md:py-10 text-[var(--text-dim)]">
                               <Clock size={40} className="mx-auto mb-3 opacity-50 md:w-12 md:h-12" />
-                              <div className="text-[16px] md:text-[18px]">暂无能量记录</div>
-                              <div className="text-[13px] md:text-[15px] mt-2">交易后将显示能量变动</div>
+                              <div className="text-[16px] md:text-[18px]">{t('levelDropdown.noHistory')}</div>
+                              <div className="text-[13px] md:text-[15px] mt-2">{t('levelDropdown.tradeToSee')}</div>
                             </div>
                           ) : (
                             <div className="space-y-2 md:space-y-3">
@@ -519,7 +519,7 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                                           {tx.description}
                                         </div>
                                         <div className="text-[12px] md:text-[14px] text-[var(--text-dim)] mt-0.5 md:mt-1">
-                                          {formatTime(tx.timestamp)} · 余额 {fmtDecimal(tx.balance)}
+                                          {formatTimeWithT(tx.timestamp, t)} · {t('levelDropdown.balance')} {fmtDecimal(tx.balance)}
                                         </div>
                                       </div>
                                       <div
@@ -552,11 +552,11 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                     ? 'bg-gradient-to-r from-[var(--brand-yellow)] to-[#FF9500] animate-pulse'
                     : 'bg-[var(--bg-surface)]'
                 }`}
-                title={hasTrialVoucher() ? '免费体验券' : '体验券已使用'}
+                title={hasTrialVoucher() ? t('trialVoucher.freeTrialBtn') : t('trialVoucher.usedBtn')}
               >
                 <Ticket size={14} className={hasTrialVoucher() ? 'text-black' : 'text-[var(--text-dim)]'} />
                 <span className={`text-[11px] font-bold hidden sm:inline ${hasTrialVoucher() ? 'text-black' : 'text-[var(--text-dim)]'}`}>
-                  {hasTrialVoucher() ? '免费体验' : '已使用'}
+                  {hasTrialVoucher() ? t('trialVoucher.freeTrialBtn') : t('trialVoucher.usedBtn')}
                 </span>
               </button>
             )}

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, ChevronRight, ChevronLeft, Sparkles, Crown, MessageCircle, Zap, FileText, Calendar, Gift, HelpCircle } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 interface OnboardingStep {
   id: string;
@@ -21,67 +22,68 @@ const targetSelectors: Record<string, string> = {
   roadshow: '[data-onboarding="roadshow"]',
 };
 
-const steps: OnboardingStep[] = [
+// Steps will be generated dynamically with translations
+const getSteps = (t: (key: string) => string): OnboardingStep[] => [
   {
     id: 'welcome',
     icon: <Gift className="text-[var(--brand-yellow)]" size={32} />,
-    title: '欢迎加入 SoDEX',
-    description: '这里有顶级研究员为你服务，AI助手24小时在线，还有独家研报和路演直播。',
-    highlight: '🎁 送你一张免费体验券',
+    title: t('onboarding.welcome.title'),
+    description: t('onboarding.welcome.description'),
+    highlight: t('onboarding.welcome.highlight'),
     position: 'center',
   },
   {
     id: 'level',
     icon: <Crown className="text-[#FFD700]" size={32} />,
-    title: '你的专属等级',
-    description: '点击右上角查看你的等级。等级越高，享受的专属服务越多——从独家研报到1v1研究员通话。',
-    tip: 'Bronze → Silver → Gold → Diamond，一路解锁更多权益',
-    highlight: '交易即升级，越活跃等级越高',
+    title: t('onboarding.level.title'),
+    description: t('onboarding.level.description'),
+    tip: t('onboarding.level.tip'),
+    highlight: t('onboarding.level.highlight'),
     position: 'topNav',
   },
   {
     id: 'energy',
     icon: <Zap className="text-[var(--brand-yellow)]" size={32} />,
-    title: '你的能量值',
-    description: '能量是你的专属权益通证。用能量解锁研究员1v1咨询、深度研报、私密社群等高端服务。',
-    tip: '持有 SoSo/SSI 代币可获得额外能量加成',
-    highlight: '越活跃的交易者，能量越充沛',
+    title: t('onboarding.energy.title'),
+    description: t('onboarding.energy.description'),
+    tip: t('onboarding.energy.tip'),
+    highlight: t('onboarding.energy.highlight'),
     position: 'topNav',
   },
   {
     id: 'ai-chat',
     icon: <MessageCircle className="text-[var(--brand-green)]" size={32} />,
-    title: '你的智能助手',
-    description: '点击右下角的小猫，随时获得AI市场分析，或直接连线专业研究员获取独家观点。',
-    tip: '你有一张免费券，可以免费体验研究员服务',
-    highlight: '👉 点击小猫开始探索',
+    title: t('onboarding.aiChat.title'),
+    description: t('onboarding.aiChat.description'),
+    tip: t('onboarding.aiChat.tip'),
+    highlight: t('onboarding.aiChat.highlight'),
     position: 'chat',
     hasDetailGuide: true,
   },
   {
     id: 'reports',
     icon: <FileText className="text-[var(--brand-yellow)]" size={32} />,
-    title: '独家研报',
-    description: '底部滚动的是研究员们的最新研报。升级等级即可解锁完整内容，把握先机。',
-    tip: '还可以直接在研报详情页预约与研究员通话',
-    highlight: '独家观点，抢先一步',
+    title: t('onboarding.reports.title'),
+    description: t('onboarding.reports.description'),
+    tip: t('onboarding.reports.tip'),
+    highlight: t('onboarding.reports.highlight'),
     position: 'ticker',
   },
   {
     id: 'roadshow',
     icon: <Calendar className="text-[var(--brand-yellow)]" size={32} />,
-    title: '路演直播',
-    description: '顶部是即将开始的直播活动。与研究员实时互动，第一时间获取市场解读。',
-    tip: '点击日历图标查看全部活动安排',
-    highlight: '直播互动，实时问答',
+    title: t('onboarding.roadshow.title'),
+    description: t('onboarding.roadshow.description'),
+    tip: t('onboarding.roadshow.tip'),
+    highlight: t('onboarding.roadshow.highlight'),
     position: 'ticker',
   },
   {
     id: 'start',
     icon: <Sparkles className="text-[var(--brand-green)]" size={32} />,
-    title: '准备就绪！',
-    description: '点击右下角的小猫，用你的免费体验券开启第一次研究员咨询吧！',
-    highlight: '🚀 开始你的交易之旅',
+    title: t('onboarding.ready.title'),
+    description: t('onboarding.ready.description'),
+    highlight: t('onboarding.ready.highlight'),
     position: 'center',
   },
 ];
@@ -221,6 +223,10 @@ interface OnboardingGuideProps {
 export function OnboardingGuide({ isOpen, onComplete, onSkip, onOpenResearcherGuide }: OnboardingGuideProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
+
+  // Generate steps with translations
+  const steps = getSteps(t);
 
   // 重置步骤当关闭后重新打开
   useEffect(() => {
@@ -297,7 +303,7 @@ export function OnboardingGuide({ isOpen, onComplete, onSkip, onOpenResearcherGu
             onClick={handleSkip}
             className="flex items-center gap-1 text-[13px] text-[var(--text-muted)] hover:text-[var(--text-main)] transition"
           >
-            跳过
+            {t('onboarding.skip')}
             <X size={16} />
           </button>
         </div>
@@ -348,7 +354,7 @@ export function OnboardingGuide({ isOpen, onComplete, onSkip, onOpenResearcherGu
               }}
               className="mt-4 w-full py-2.5 bg-[var(--brand-green)] text-black rounded-lg text-[14px] font-medium hover:opacity-90 transition"
             >
-              查看研究员服务详细指引
+              {t('onboarding.viewResearcherGuide')}
             </button>
           )}
         </div>
@@ -365,7 +371,7 @@ export function OnboardingGuide({ isOpen, onComplete, onSkip, onOpenResearcherGu
             }`}
           >
             <ChevronLeft size={18} />
-            上一步
+            {t('onboarding.prev')}
           </button>
 
           <span className="text-[13px] text-[var(--text-dim)]">
@@ -376,7 +382,7 @@ export function OnboardingGuide({ isOpen, onComplete, onSkip, onOpenResearcherGu
             onClick={handleNext}
             className="flex items-center gap-1 px-5 py-2 rounded-lg text-[14px] font-medium bg-[var(--brand-yellow)] text-black hover:opacity-90 transition"
           >
-            {isLastStep ? '开始使用' : '下一步'}
+            {isLastStep ? t('onboarding.start') : t('onboarding.next')}
             {!isLastStep && <ChevronRight size={18} />}
           </button>
         </div>

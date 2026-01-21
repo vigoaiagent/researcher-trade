@@ -119,27 +119,27 @@ function TradingPage() {
       {
         id: 'alert_1',
         symbol: 'BTC/USDT',
-        title: '美联储会议纪要释放鸽派信号',
-        summary: '美联储最新会议纪要显示，多数委员支持在年内降息，风险资产或将受益。',
+        title: t('mockAlerts.fedMinutes'),
+        summary: t('mockAlerts.fedSummary'),
         source: 'Reuters',
-        time: '刚刚',
+        time: t('time.justNow'),
         isUrgent: true,
       },
       {
         id: 'alert_2',
         symbol: 'ETH/USDT',
-        title: 'Vitalik 发布以太坊路线图更新',
-        summary: 'Vitalik Buterin 详细介绍了以太坊未来两年的技术升级计划。',
+        title: t('mockAlerts.vitalikRoadmap'),
+        summary: t('mockAlerts.vitalikSummary'),
         source: 'The Block',
-        time: '5分钟前',
+        time: `5 ${t('time.minutesAgo')}`,
       },
       {
         id: 'alert_3',
         symbol: 'SOL/USDT',
-        title: 'Solana 生态 TVL 创历史新高',
-        summary: 'Solana 链上总锁仓量突破 100 亿美元，DeFi 生态持续繁荣。',
+        title: t('mockAlerts.solanaTVL'),
+        summary: t('mockAlerts.solanaSummary'),
         source: 'DefiLlama',
-        time: '10分钟前',
+        time: `10 ${t('time.minutesAgo')}`,
         isUrgent: true,
       },
     ];
@@ -313,7 +313,7 @@ function TradingPage() {
                 <div className="w-full border-t border-[var(--border-light)]" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-[var(--bg-panel)] text-[var(--text-muted)]">快速体验</span>
+                <span className="px-2 bg-[var(--bg-panel)] text-[var(--text-muted)]">{t('login.quickDemo')}</span>
               </div>
             </div>
 
@@ -339,7 +339,7 @@ function TradingPage() {
                   <div className="text-left">
                     <div className="text-[12px] text-[var(--text-main)] font-medium">{demoUser.name}</div>
                     <div className="text-[10px] text-[var(--text-muted)]">
-                      ⚡ {demoUser.energyAvailable} 能量
+                      ⚡ {demoUser.energyAvailable} {t('topNav.energy')}
                     </div>
                   </div>
                 </button>

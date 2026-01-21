@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, ChevronRight, ChevronLeft, MessageCircle, Zap, Crown, FileText, Phone, Gift, ArrowRight, CheckCircle } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 interface GuideStep {
   id: string;
@@ -13,51 +14,52 @@ interface GuideStep {
   image?: string;
 }
 
-const guideSteps: GuideStep[] = [
+// Steps will be generated dynamically with translations
+const getGuideSteps = (t: (key: string) => string): GuideStep[] => [
   {
     id: 'intro',
     icon: <MessageCircle className="text-[var(--brand-green)]" size={28} />,
-    title: '研究员咨询服务',
-    description: '与专业加密货币分析师一对一交流，获取个性化的交易建议和市场分析。',
-    action: { label: '了解更多', highlight: false },
+    title: t('researcherGuide.intro.title'),
+    description: t('researcherGuide.intro.description'),
+    action: { label: t('researcherGuide.intro.action'), highlight: false },
   },
   {
     id: 'entry',
     icon: <ArrowRight className="text-[var(--brand-yellow)]" size={28} />,
-    title: '如何进入',
-    description: '点击右下角的猫咪图标，在弹出的面板中选择「研究员」标签页，即可开始咨询。',
-    action: { label: '去试试', highlight: true },
+    title: t('researcherGuide.entry.title'),
+    description: t('researcherGuide.entry.description'),
+    action: { label: t('researcherGuide.entry.action'), highlight: true },
   },
   {
     id: 'energy',
     icon: <Zap className="text-[var(--brand-yellow)]" size={28} />,
-    title: '能量消耗',
-    description: '每次咨询消耗 10 能量，可进行 10 轮对话。交易产生的手续费会自动转化为能量。',
+    title: t('researcherGuide.energy.title'),
+    description: t('researcherGuide.energy.description'),
   },
   {
     id: 'level',
     icon: <Crown className="text-[#FFD700]" size={28} />,
-    title: '等级要求',
-    description: 'Gold 及以上等级可使用研究员服务。等级由 30 天交易手续费决定，达到 $1,000 手续费即可升级到 Gold。',
+    title: t('researcherGuide.level.title'),
+    description: t('researcherGuide.level.description'),
   },
   {
     id: 'trial',
     icon: <Gift className="text-[var(--brand-green)]" size={28} />,
-    title: '新手体验券',
-    description: '新用户赠送一张免费体验券，无需 Gold 等级也可体验一次研究员咨询服务。点击顶部的票券图标领取。',
-    action: { label: '去领取', highlight: true },
+    title: t('researcherGuide.trial.title'),
+    description: t('researcherGuide.trial.description'),
+    action: { label: t('researcherGuide.trial.action'), highlight: true },
   },
   {
     id: 'reports',
     icon: <FileText className="text-[var(--brand-yellow)]" size={28} />,
-    title: 'VIP 研报',
-    description: '底部状态栏会滚动展示最新研报。点击可查看详情，Gold 会员可阅读完整内容并与研究员互动。',
+    title: t('researcherGuide.reports.title'),
+    description: t('researcherGuide.reports.description'),
   },
   {
     id: 'call',
     icon: <Phone className="text-[var(--brand-green)]" size={28} />,
-    title: '预约通话',
-    description: '在研报详情页可以预约与研究员的 1v1 语音/视频通话，获得更深入的分析服务。',
+    title: t('researcherGuide.call.title'),
+    description: t('researcherGuide.call.description'),
   },
 ];
 
@@ -91,6 +93,10 @@ interface ResearcherServiceGuideProps {
 export function ResearcherServiceGuide({ isOpen, onClose, onComplete, onAction }: ResearcherServiceGuideProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
+  const { t } = useTranslation();
+
+  // Generate steps with translations
+  const guideSteps = getGuideSteps(t);
 
   useEffect(() => {
     if (isOpen) {
@@ -136,7 +142,7 @@ export function ResearcherServiceGuide({ isOpen, onClose, onComplete, onAction }
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border-light)] bg-gradient-to-r from-[var(--brand-green)]/10 to-[var(--brand-yellow)]/10">
           <div className="flex items-center gap-2">
             <MessageCircle size={20} className="text-[var(--brand-green)]" />
-            <span className="text-[15px] font-bold text-[var(--text-main)]">研究员服务指南</span>
+            <span className="text-[15px] font-bold text-[var(--text-main)]">{t('researcherGuide.title')}</span>
           </div>
           <button
             onClick={onClose}
@@ -210,7 +216,7 @@ export function ResearcherServiceGuide({ isOpen, onClose, onComplete, onAction }
             }`}
           >
             <ChevronLeft size={16} />
-            上一步
+            {t('researcherGuide.prev')}
           </button>
 
           <span className="text-[12px] text-[var(--text-dim)]">
@@ -224,11 +230,11 @@ export function ResearcherServiceGuide({ isOpen, onClose, onComplete, onAction }
             {isLastStep ? (
               <>
                 <CheckCircle size={16} />
-                完成
+                {t('researcherGuide.done')}
               </>
             ) : (
               <>
-                下一步
+                {t('researcherGuide.next')}
                 <ChevronRight size={16} />
               </>
             )}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Gift, Sparkles, MessageCircle, ArrowRight, X, RotateCcw, CheckCircle } from 'lucide-react';
 import { useChatStore } from '../stores/chatStore';
+import { useTranslation } from '../i18n';
 
 export const TRIAL_VOUCHER_KEY = 'sodex_trial_voucher_used';
 
@@ -29,6 +30,7 @@ export function NewUserWelcomeModal({ isOpen: externalOpen, onClose: externalClo
   const [step, setStep] = useState<'welcome' | 'coupon' | 'used'>('welcome');
   const { openChat, setServiceMode, setPhase } = useChatStore();
   const [voucherAvailable, setVoucherAvailable] = useState(hasTrialVoucher());
+  const { t } = useTranslation();
 
   const isOpen = externalOpen ?? internalOpen;
 
@@ -97,10 +99,10 @@ export function NewUserWelcomeModal({ isOpen: externalOpen, onClose: externalClo
               </div>
 
               <h2 className="text-2xl font-bold text-[var(--text-main)] mb-2">
-                欢迎来到 SoDEX! 🎉
+                {t('welcome.title')}
               </h2>
               <p className="text-[var(--text-muted)] text-base">
-                感谢您加入我们的交易平台
+                {t('welcome.subtitle')}
               </p>
             </div>
 
@@ -113,10 +115,10 @@ export function NewUserWelcomeModal({ isOpen: externalOpen, onClose: externalClo
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-[var(--brand-yellow)]">
-                      新手专属福利
+                      {t('welcome.newUserBenefit')}
                     </h3>
                     <p className="text-sm text-[var(--text-muted)]">
-                      限时赠送
+                      {t('welcome.limitedOffer')}
                     </p>
                   </div>
                 </div>
@@ -124,15 +126,15 @@ export function NewUserWelcomeModal({ isOpen: externalOpen, onClose: externalClo
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-[var(--text-main)] font-medium text-lg">
-                        研究员咨询体验券
+                        {t('welcome.researcherVoucher')}
                       </p>
                       <p className="text-sm text-[var(--text-muted)] mt-1">
-                        免费体验 1 次专属研究员咨询 (10轮对话)
+                        {t('welcome.voucherDesc')}
                       </p>
                     </div>
                     <div className="text-right">
-                      <span className="text-2xl font-bold text-[var(--brand-green)]">免费</span>
-                      <p className="text-xs text-[var(--text-dim)] line-through">10 能量</p>
+                      <span className="text-2xl font-bold text-[var(--brand-green)]">{t('welcome.free')}</span>
+                      <p className="text-xs text-[var(--text-dim)] line-through">10 {t('topNav.energy')}</p>
                     </div>
                   </div>
                 </div>
@@ -143,12 +145,12 @@ export function NewUserWelcomeModal({ isOpen: externalOpen, onClose: externalClo
                 onClick={handleClaimCoupon}
                 className="w-full py-4 bg-gradient-to-r from-[var(--brand-yellow)] to-[#FF9500] text-black rounded-xl font-bold text-lg hover:opacity-90 transition flex items-center justify-center gap-2"
               >
-                立即领取
+                {t('welcome.claimNow')}
                 <ArrowRight size={20} />
               </button>
 
               <p className="text-center text-xs text-[var(--text-dim)] mt-4">
-                体验券有效期 7 天，每位用户限领 1 次
+                {t('welcome.voucherValidity')}
               </p>
             </div>
           </>
@@ -177,10 +179,10 @@ export function NewUserWelcomeModal({ isOpen: externalOpen, onClose: externalClo
               </div>
 
               <h2 className="text-2xl font-bold text-[var(--text-main)] mb-2">
-                领取成功! 🎁
+                {t('welcome.claimSuccess')}
               </h2>
               <p className="text-[var(--text-muted)] text-base">
-                体验券已存入您的账户
+                {t('welcome.voucherAdded')}
               </p>
             </div>
 
@@ -193,12 +195,12 @@ export function NewUserWelcomeModal({ isOpen: externalOpen, onClose: externalClo
 
                 <div className="flex items-center justify-between text-black">
                   <div>
-                    <p className="text-sm opacity-80">研究员咨询</p>
-                    <p className="text-xl font-bold">体验券 × 1</p>
+                    <p className="text-sm opacity-80">{t('welcome.researcherConsult')}</p>
+                    <p className="text-xl font-bold">{t('welcome.voucherCount')}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-3xl font-bold">10轮</p>
-                    <p className="text-sm opacity-80">免费对话</p>
+                    <p className="text-3xl font-bold">{t('welcome.freeRounds')}</p>
+                    <p className="text-sm opacity-80">{t('welcome.freeChat')}</p>
                   </div>
                 </div>
 
@@ -206,26 +208,26 @@ export function NewUserWelcomeModal({ isOpen: externalOpen, onClose: externalClo
                 <div className="border-t border-dashed border-black/30 my-4" />
 
                 <div className="flex items-center justify-between text-sm text-black/70">
-                  <span>有效期：7 天</span>
-                  <span>使用次数：1 次</span>
+                  <span>{t('welcome.validity')}</span>
+                  <span>{t('welcome.useCount')}</span>
                 </div>
               </div>
 
               {/* How to use */}
               <div className="bg-[var(--bg-surface)] rounded-lg p-4 mb-6">
-                <h4 className="text-sm font-medium text-[var(--text-main)] mb-3">如何使用？</h4>
+                <h4 className="text-sm font-medium text-[var(--text-main)] mb-3">{t('welcome.howToUse')}</h4>
                 <div className="space-y-2 text-sm text-[var(--text-muted)]">
                   <div className="flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-[var(--brand-yellow)] text-black text-xs flex items-center justify-center font-bold">1</span>
-                    <span>点击下方按钮进入咨询</span>
+                    <span>{t('welcome.step1')}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-[var(--brand-yellow)] text-black text-xs flex items-center justify-center font-bold">2</span>
-                    <span>输入您的交易问题</span>
+                    <span>{t('welcome.step2')}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-[var(--brand-yellow)] text-black text-xs flex items-center justify-center font-bold">3</span>
-                    <span>选择心仪的研究员开始对话</span>
+                    <span>{t('welcome.step3')}</span>
                   </div>
                 </div>
               </div>
@@ -236,13 +238,13 @@ export function NewUserWelcomeModal({ isOpen: externalOpen, onClose: externalClo
                   onClick={handleClose}
                   className="flex-1 py-3 bg-[var(--bg-surface)] text-[var(--text-muted)] rounded-xl font-medium hover:text-[var(--text-main)] transition"
                 >
-                  稍后使用
+                  {t('welcome.useLater')}
                 </button>
                 <button
                   onClick={handleStartExperience}
                   className="flex-1 py-3 bg-[var(--brand-green)] text-black rounded-xl font-bold hover:opacity-90 transition flex items-center justify-center gap-2"
                 >
-                  立即体验
+                  {t('welcome.startNow')}
                   <ArrowRight size={18} />
                 </button>
               </div>
@@ -267,10 +269,10 @@ export function NewUserWelcomeModal({ isOpen: externalOpen, onClose: externalClo
               </div>
 
               <h2 className="text-2xl font-bold text-[var(--text-main)] mb-2">
-                体验券已使用
+                {t('welcome.voucherUsed')}
               </h2>
               <p className="text-[var(--text-muted)] text-base">
-                您的免费体验券已经用过了
+                {t('welcome.voucherUsedDesc')}
               </p>
             </div>
 
@@ -283,12 +285,12 @@ export function NewUserWelcomeModal({ isOpen: externalOpen, onClose: externalClo
 
                 <div className="flex items-center justify-between text-[var(--text-muted)]">
                   <div>
-                    <p className="text-sm opacity-80">研究员咨询</p>
-                    <p className="text-xl font-bold">体验券 × 0</p>
+                    <p className="text-sm opacity-80">{t('welcome.researcherConsult')}</p>
+                    <p className="text-xl font-bold">{t('welcome.voucherZero')}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-2xl font-bold line-through">10轮</p>
-                    <p className="text-sm opacity-80">已使用</p>
+                    <p className="text-2xl font-bold line-through">{t('welcome.freeRounds')}</p>
+                    <p className="text-sm opacity-80">{t('welcome.alreadyUsed')}</p>
                   </div>
                 </div>
 
@@ -296,25 +298,25 @@ export function NewUserWelcomeModal({ isOpen: externalOpen, onClose: externalClo
                 <div className="border-t border-dashed border-[var(--border-light)] my-4" />
 
                 <div className="text-center text-sm text-[var(--text-dim)]">
-                  体验券已于之前使用
+                  {t('welcome.voucherUsedBefore')}
                 </div>
               </div>
 
               {/* Info */}
               <div className="bg-[var(--bg-surface)] rounded-lg p-4 mb-6">
-                <h4 className="text-sm font-medium text-[var(--text-main)] mb-3">如何继续使用研究员服务？</h4>
+                <h4 className="text-sm font-medium text-[var(--text-main)] mb-3">{t('welcome.howToContinue')}</h4>
                 <div className="space-y-2 text-sm text-[var(--text-muted)]">
                   <div className="flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-[var(--brand-green)]/20 text-[var(--brand-green)] text-xs flex items-center justify-center font-bold">1</span>
-                    <span>交易获取能量（手续费=能量）</span>
+                    <span>{t('welcome.earnEnergy')}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-[var(--brand-green)]/20 text-[var(--brand-green)] text-xs flex items-center justify-center font-bold">2</span>
-                    <span>使用 10 能量开始研究员咨询</span>
+                    <span>{t('welcome.useEnergy')}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-[var(--brand-green)]/20 text-[var(--brand-green)] text-xs flex items-center justify-center font-bold">3</span>
-                    <span>升级到 Gold 等级解锁更多服务</span>
+                    <span>{t('welcome.upgradeGold')}</span>
                   </div>
                 </div>
               </div>
@@ -326,13 +328,13 @@ export function NewUserWelcomeModal({ isOpen: externalOpen, onClose: externalClo
                   className="flex-1 py-3 bg-[var(--bg-surface)] text-[var(--text-muted)] rounded-xl font-medium hover:text-[var(--text-main)] transition flex items-center justify-center gap-2"
                 >
                   <RotateCcw size={16} />
-                  重新体验(演示)
+                  {t('welcome.resetDemo')}
                 </button>
                 <button
                   onClick={handleClose}
                   className="flex-1 py-3 bg-[var(--brand-yellow)] text-black rounded-xl font-bold hover:opacity-90 transition"
                 >
-                  我知道了
+                  {t('welcome.gotIt')}
                 </button>
               </div>
             </div>
