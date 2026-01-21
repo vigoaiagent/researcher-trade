@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { X, Calendar, Clock, Phone, Video, ChevronLeft, ChevronRight, Check, Zap, Star, AlertCircle, Mail, Download } from 'lucide-react';
 import { useUserStore } from '../stores/userStore';
+import { useTranslation, useLanguage } from '../i18n';
 
 // Google Calendar icon component
 const GoogleCalendarIcon = () => (
@@ -176,7 +177,7 @@ DESCRIPTION:${description}
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
-DESCRIPTION:预约提醒：${title}
+DESCRIPTION:Reminder: ${title}
 END:VALARM
 END:VEVENT
 END:VCALENDAR`;
@@ -202,6 +203,9 @@ export function AppointmentBooking({
   onConfirm
 }: AppointmentBookingProps) {
   const { user } = useUserStore();
+  const { t } = useTranslation();
+  const { language } = useLanguage();
+  const locale = language === 'zh' ? 'zh-CN' : 'en-US';
   const [step, setStep] = useState<'date' | 'time' | 'confirm' | 'success'>('date');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
@@ -264,7 +268,7 @@ export function AppointmentBooking({
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('zh-CN', {
+    return date.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -279,7 +283,7 @@ export function AppointmentBooking({
     return date < today;
   };
 
-  const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+  const weekDays = t('booking.weekdays') as unknown as string[];
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
@@ -297,13 +301,13 @@ export function AppointmentBooking({
             )}
             <div>
               <h2 className="text-[16px] font-bold text-[var(--text-main)]">
-                {step === 'success' ? '预约成功' : '预约 1v1 咨询'}
+                {step === 'success' ? t('booking.appointmentSuccess') : t('booking.book1v1')}
               </h2>
               <p className="text-[12px] text-[var(--text-muted)]">
-                {step === 'date' && '选择日期'}
-                {step === 'time' && '选择时间'}
-                {step === 'confirm' && '确认预约'}
-                {step === 'success' && '已发送预约请求'}
+                {step === 'date' && t('booking.selectDate')}
+                {step === 'time' && t('booking.selectTime')}
+                {step === 'confirm' && t('booking.confirmAppointment')}
+                {step === 'success' && t('booking.requestSent')}
               </p>
             </div>
           </div>
@@ -349,7 +353,7 @@ export function AppointmentBooking({
             <div>
               {/* Type Selection */}
               <div className="mb-5">
-                <label className="text-[13px] text-[var(--text-muted)] mb-2 block">咨询方式</label>
+                <label className="text-[13px] text-[var(--text-muted)] mb-2 block">{t('booking.consultationType')}</label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     onClick={() => setAppointmentType('voice')}
@@ -362,11 +366,11 @@ export function AppointmentBooking({
                     <Phone size={18} className={appointmentType === 'voice' ? 'text-[var(--brand-yellow)]' : 'text-[var(--text-muted)]'} />
                     <div className="text-left">
                       <div className={`text-[14px] font-medium ${appointmentType === 'voice' ? 'text-[var(--brand-yellow)]' : 'text-[var(--text-main)]'}`}>
-                        语音通话
+                        {t('booking.voiceCall')}
                       </div>
                       <div className="text-[12px] text-[var(--text-muted)] flex items-center gap-1">
                         <Zap size={10} />
-                        {researcher.voicePrice} 能量/30分钟
+                        {researcher.voicePrice} {t('booking.energyPer30min')}
                       </div>
                     </div>
                   </button>
@@ -381,11 +385,11 @@ export function AppointmentBooking({
                     <Video size={18} className={appointmentType === 'video' ? 'text-[var(--brand-yellow)]' : 'text-[var(--text-muted)]'} />
                     <div className="text-left">
                       <div className={`text-[14px] font-medium ${appointmentType === 'video' ? 'text-[var(--brand-yellow)]' : 'text-[var(--text-main)]'}`}>
-                        视频通话
+                        {t('booking.videoCall')}
                       </div>
                       <div className="text-[12px] text-[var(--text-muted)] flex items-center gap-1">
                         <Zap size={10} />
-                        {researcher.videoPrice} 能量/30分钟
+                        {researcher.videoPrice} {t('booking.energyPer30min')}
                       </div>
                     </div>
                   </button>
@@ -402,7 +406,7 @@ export function AppointmentBooking({
                     <ChevronLeft size={18} className="text-[var(--text-muted)]" />
                   </button>
                   <span className="text-[14px] font-medium text-[var(--text-main)]">
-                    {currentMonth.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' })}
+                    {currentMonth.toLocaleDateString(locale, { year: 'numeric', month: 'long' })}
                   </span>
                   <button
                     onClick={handleNextMonth}
@@ -457,7 +461,7 @@ export function AppointmentBooking({
                 </div>
               </div>
 
-              <label className="text-[13px] text-[var(--text-muted)] mb-3 block">选择时间段</label>
+              <label className="text-[13px] text-[var(--text-muted)] mb-3 block">{t('booking.selectTime')}</label>
 
               <div className="grid grid-cols-4 gap-2">
                 {timeSlots.map((slot) => (
@@ -483,7 +487,7 @@ export function AppointmentBooking({
                   onClick={() => setStep('confirm')}
                   className="w-full mt-5 py-3 rounded-xl bg-[var(--brand-yellow)] text-black font-bold hover:opacity-90 transition"
                 >
-                  下一步
+                  {t('common.next')}
                 </button>
               )}
             </div>
@@ -497,16 +501,16 @@ export function AppointmentBooking({
                 <div className="flex items-center justify-between p-3 bg-[var(--bg-surface)] rounded-lg">
                   <div className="flex items-center gap-2">
                     <Calendar size={16} className="text-[var(--text-muted)]" />
-                    <span className="text-[13px] text-[var(--text-muted)]">日期</span>
+                    <span className="text-[13px] text-[var(--text-muted)]">{t('booking.date')}</span>
                   </div>
                   <span className="text-[14px] text-[var(--text-main)]">
-                    {selectedDate.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', weekday: 'short' })}
+                    {selectedDate.toLocaleDateString(locale, { month: 'short', day: 'numeric', weekday: 'short' })}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-[var(--bg-surface)] rounded-lg">
                   <div className="flex items-center gap-2">
                     <Clock size={16} className="text-[var(--text-muted)]" />
-                    <span className="text-[13px] text-[var(--text-muted)]">时间</span>
+                    <span className="text-[13px] text-[var(--text-muted)]">{t('booking.time')}</span>
                   </div>
                   <span className="text-[14px] text-[var(--text-main)]">{selectedTime}</span>
                 </div>
@@ -517,30 +521,30 @@ export function AppointmentBooking({
                     ) : (
                       <Video size={16} className="text-[var(--text-muted)]" />
                     )}
-                    <span className="text-[13px] text-[var(--text-muted)]">方式</span>
+                    <span className="text-[13px] text-[var(--text-muted)]">{t('booking.method')}</span>
                   </div>
                   <span className="text-[14px] text-[var(--text-main)]">
-                    {appointmentType === 'voice' ? '语音通话' : '视频通话'}
+                    {appointmentType === 'voice' ? t('booking.voiceCall') : t('booking.videoCall')}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-[var(--bg-surface)] rounded-lg">
                   <div className="flex items-center gap-2">
                     <Zap size={16} className="text-[var(--brand-yellow)]" />
-                    <span className="text-[13px] text-[var(--text-muted)]">费用</span>
+                    <span className="text-[13px] text-[var(--text-muted)]">{t('booking.cost')}</span>
                   </div>
-                  <span className="text-[14px] text-[var(--brand-yellow)] font-bold">{price} 能量</span>
+                  <span className="text-[14px] text-[var(--brand-yellow)] font-bold">{price} {t('booking.energy')}</span>
                 </div>
               </div>
 
               {/* Topic */}
               <div className="mb-5">
                 <label className="text-[13px] text-[var(--text-muted)] mb-2 block">
-                  咨询主题 <span className="text-[var(--text-dim)]">(选填)</span>
+                  {t('booking.topic')} <span className="text-[var(--text-dim)]">({t('booking.optional')})</span>
                 </label>
                 <textarea
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
-                  placeholder="简单描述你想咨询的问题..."
+                  placeholder={t('booking.topicPlaceholder')}
                   className="w-full p-3 bg-[var(--bg-surface)] border border-[var(--border-light)] rounded-lg text-[14px] text-[var(--text-main)] placeholder:text-[var(--text-dim)] resize-none h-20 focus:outline-none focus:border-[var(--brand-yellow)]"
                 />
               </div>
@@ -550,9 +554,9 @@ export function AppointmentBooking({
                 <div className="mb-4 p-3 bg-[var(--brand-red)]/10 border border-[var(--brand-red)]/30 rounded-lg flex items-start gap-2">
                   <AlertCircle size={16} className="text-[var(--brand-red)] shrink-0 mt-0.5" />
                   <div>
-                    <div className="text-[13px] text-[var(--brand-red)] font-medium">能量不足</div>
+                    <div className="text-[13px] text-[var(--brand-red)] font-medium">{t('booking.insufficientEnergy')}</div>
                     <div className="text-[12px] text-[var(--text-muted)]">
-                      当前能量 {energyAvailable}，需要 {price} 能量
+                      {t('booking.currentEnergy')} {energyAvailable}, {t('booking.need')} {price} {t('booking.energy')}
                     </div>
                   </div>
                 </div>
@@ -568,7 +572,7 @@ export function AppointmentBooking({
                 }`}
               >
                 <Check size={18} />
-                确认预约
+                {t('booking.confirmAppointment')}
               </button>
             </div>
           )}
@@ -579,31 +583,31 @@ export function AppointmentBooking({
               <div className="w-14 h-14 rounded-full bg-[var(--brand-green)]/20 flex items-center justify-center mx-auto mb-3">
                 <Check size={28} className="text-[var(--brand-green)]" />
               </div>
-              <h3 className="text-[17px] font-bold text-[var(--text-main)] mb-1">预约请求已发送</h3>
+              <h3 className="text-[17px] font-bold text-[var(--text-main)] mb-1">{t('booking.requestSent')}</h3>
               <p className="text-[13px] text-[var(--text-muted)] mb-4">
-                等待研究员确认后，系统会通过消息通知你
+                {t('booking.waitingConfirmation')}
               </p>
 
               {/* 预约详情 */}
               <div className="p-3 bg-[var(--bg-surface)] rounded-xl mb-4">
-                <div className="text-[12px] text-[var(--text-muted)] mb-1">预约详情</div>
+                <div className="text-[12px] text-[var(--text-muted)] mb-1">{t('booking.appointmentDetails')}</div>
                 <div className="text-[15px] text-[var(--text-main)] font-medium">
-                  {selectedDate.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })} {selectedTime}
+                  {selectedDate.toLocaleDateString(locale, { month: 'short', day: 'numeric' })} {selectedTime}
                 </div>
                 <div className="text-[12px] text-[var(--text-muted)]">
-                  与 {researcher.name} 的{appointmentType === 'voice' ? '语音' : '视频'}通话 · 30分钟
+                  {t('booking.callWith')} {researcher.name} · {appointmentType === 'voice' ? t('booking.voice') : t('booking.video')} · 30{t('booking.minutes')}
                 </div>
               </div>
 
               {/* 添加到日历 */}
               <div className="mb-4">
-                <div className="text-[12px] text-[var(--text-muted)] mb-2">添加到日历，获取提醒</div>
+                <div className="text-[12px] text-[var(--text-muted)] mb-2">{t('booking.addToCalendar')}</div>
                 <div className="grid grid-cols-2 gap-2">
                   {/* Google Calendar */}
                   <a
                     href={generateGoogleCalendarUrl(
-                      `SoDEX 咨询: ${researcher.name}`,
-                      `与研究员 ${researcher.name} 的${appointmentType === 'voice' ? '语音' : '视频'}咨询\n主题: ${topic || '未指定'}`,
+                      `SoDEX: ${researcher.name}`,
+                      `${t('booking.callWith')} ${researcher.name} · ${appointmentType === 'voice' ? t('booking.voice') : t('booking.video')}\n${t('booking.topic')}: ${topic || t('booking.notSpecified')}`,
                       selectedDate,
                       selectedTime
                     )}
@@ -612,15 +616,15 @@ export function AppointmentBooking({
                     className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg bg-[var(--bg-surface)] hover:bg-[var(--bg-highlight)] border border-[var(--border-light)] transition"
                   >
                     <GoogleCalendarIcon />
-                    <span className="text-[12px] text-[var(--text-main)]">Google 日历</span>
+                    <span className="text-[12px] text-[var(--text-main)]">{t('booking.googleCalendar')}</span>
                   </a>
 
                   {/* Apple Calendar (ICS Download) */}
                   <button
                     onClick={() => {
                       const icsContent = generateICSContent(
-                        `SoDEX 咨询: ${researcher.name}`,
-                        `与研究员 ${researcher.name} 的${appointmentType === 'voice' ? '语音' : '视频'}咨询。主题: ${topic || '未指定'}`,
+                        `SoDEX: ${researcher.name}`,
+                        `${t('booking.callWith')} ${researcher.name} · ${appointmentType === 'voice' ? t('booking.voice') : t('booking.video')}. ${t('booking.topic')}: ${topic || t('booking.notSpecified')}`,
                         selectedDate,
                         selectedTime
                       );
@@ -629,7 +633,7 @@ export function AppointmentBooking({
                     className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg bg-[var(--bg-surface)] hover:bg-[var(--bg-highlight)] border border-[var(--border-light)] transition"
                   >
                     <AppleCalendarIcon />
-                    <span className="text-[12px] text-[var(--text-main)]">Apple 日历</span>
+                    <span className="text-[12px] text-[var(--text-main)]">{t('booking.appleCalendar')}</span>
                   </button>
                 </div>
 
@@ -637,8 +641,8 @@ export function AppointmentBooking({
                 <button
                   onClick={() => {
                     const icsContent = generateICSContent(
-                      `SoDEX 咨询: ${researcher.name}`,
-                      `与研究员 ${researcher.name} 的${appointmentType === 'voice' ? '语音' : '视频'}咨询。主题: ${topic || '未指定'}`,
+                      `SoDEX: ${researcher.name}`,
+                      `${t('booking.callWith')} ${researcher.name} · ${appointmentType === 'voice' ? t('booking.voice') : t('booking.video')}. ${t('booking.topic')}: ${topic || t('booking.notSpecified')}`,
                       selectedDate,
                       selectedTime
                     );
@@ -647,7 +651,7 @@ export function AppointmentBooking({
                   className="w-full mt-2 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-[12px] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface)] transition"
                 >
                   <Download size={14} />
-                  下载 .ics 文件（Outlook/其他日历）
+                  {t('booking.downloadIcs')}
                 </button>
               </div>
 
@@ -657,8 +661,8 @@ export function AppointmentBooking({
                   <div className="flex items-center gap-2">
                     <Mail size={16} className="text-[var(--brand-yellow)]" />
                     <div className="text-left">
-                      <div className="text-[13px] text-[var(--text-main)]">邮件提醒</div>
-                      <div className="text-[11px] text-[var(--text-muted)]">预约前 30 分钟发送提醒邮件</div>
+                      <div className="text-[13px] text-[var(--text-main)]">{t('booking.emailReminder')}</div>
+                      <div className="text-[11px] text-[var(--text-muted)]">{t('booking.emailReminderDesc')}</div>
                     </div>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
@@ -672,7 +676,7 @@ export function AppointmentBooking({
                 onClick={onClose}
                 className="w-full py-2.5 rounded-xl bg-[var(--brand-yellow)] text-black font-bold hover:opacity-90 transition"
               >
-                完成
+                {t('booking.done')}
               </button>
             </div>
           )}

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Phone, PhoneOff, Mic, MicOff, Loader2 } from 'lucide-react';
 import { useCallStore } from '../../stores/callStore';
 import { VoiceCallService } from '../../services/voiceCall';
+import { useTranslation } from '../../i18n';
 
 // 格式化时长的辅助函数
 const formatDuration = VoiceCallService.formatDuration;
@@ -14,6 +15,7 @@ interface VoiceCallUIProps {
 }
 
 export function VoiceCallUI({ userId, researcherId, researcherName, consultationId }: VoiceCallUIProps) {
+  const { t } = useTranslation();
   const {
     status,
     isMuted,
@@ -56,7 +58,7 @@ export function VoiceCallUI({ userId, researcherId, researcherName, consultation
           className="flex items-center gap-2 px-3 py-2 bg-[var(--brand-green)] text-white text-[11px] rounded-lg hover:opacity-90 transition-opacity"
         >
           <Phone size={14} />
-          语音通话
+          {t('chatPanel.voiceCall')}
         </button>
         <audio ref={audioRef} autoPlay />
       </div>
@@ -74,7 +76,7 @@ export function VoiceCallUI({ userId, researcherId, researcherName, consultation
             </div>
             <div>
               <div className="text-[12px] font-medium text-[var(--text-main)]">
-                {status === 'requesting' ? '正在请求通话...' : '等待研究员接听...'}
+                {status === 'requesting' ? t('voiceCall.requesting') : t('voiceCall.waitingAnswer')}
               </div>
               <div className="text-[10px] text-[var(--text-muted)]">{researcherName}</div>
             </div>
@@ -87,11 +89,11 @@ export function VoiceCallUI({ userId, researcherId, researcherName, consultation
           className="w-full py-2 bg-[var(--brand-red)] text-white text-[11px] rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
         >
           <PhoneOff size={14} />
-          取消
+          {t('common.cancel')}
         </button>
 
         <div className="text-[9px] text-[var(--text-muted)] text-center mt-2">
-          通话将被录音用于服务质量监控
+          {t('voiceCall.recordingNotice')}
         </div>
 
         <audio ref={audioRef} autoPlay />
@@ -105,7 +107,7 @@ export function VoiceCallUI({ userId, researcherId, researcherName, consultation
       <div className="bg-[var(--bg-surface)] rounded-lg p-4">
         <div className="flex items-center justify-center gap-2 mb-3">
           <Loader2 size={20} className="text-[var(--brand-green)] animate-spin" />
-          <span className="text-[12px] text-[var(--text-main)]">正在建立连接...</span>
+          <span className="text-[12px] text-[var(--text-main)]">{t('voiceCall.connecting')}</span>
         </div>
         <audio ref={audioRef} autoPlay />
       </div>
@@ -122,7 +124,7 @@ export function VoiceCallUI({ userId, researcherId, researcherName, consultation
               <Phone size={20} className="text-white" />
             </div>
             <div>
-              <div className="text-[12px] font-medium text-[var(--text-main)]">通话中</div>
+              <div className="text-[12px] font-medium text-[var(--text-main)]">{t('voiceCall.inCall')}</div>
               <div className="text-[10px] text-[var(--text-muted)]">{researcherName}</div>
             </div>
           </div>
@@ -155,7 +157,7 @@ export function VoiceCallUI({ userId, researcherId, researcherName, consultation
 
         <div className="flex items-center justify-center gap-1 mt-3">
           <span className="w-2 h-2 bg-[var(--brand-red)] rounded-full animate-pulse"></span>
-          <span className="text-[9px] text-[var(--text-muted)]">录音中</span>
+          <span className="text-[9px] text-[var(--text-muted)]">{t('voiceCall.recording')}</span>
         </div>
 
         <audio ref={audioRef} autoPlay />
@@ -169,7 +171,7 @@ export function VoiceCallUI({ userId, researcherId, researcherName, consultation
       <div className="bg-[var(--bg-surface)] rounded-lg p-4">
         <div className="text-center mb-3">
           <PhoneOff size={24} className="mx-auto text-[var(--brand-red)] mb-2" />
-          <div className="text-[12px] text-[var(--brand-red)]">通话失败</div>
+          <div className="text-[12px] text-[var(--brand-red)]">{t('voiceCall.failed')}</div>
           {error && <div className="text-[10px] text-[var(--text-muted)] mt-1">{error}</div>}
         </div>
 
@@ -177,7 +179,7 @@ export function VoiceCallUI({ userId, researcherId, researcherName, consultation
           onClick={reset}
           className="w-full py-2 bg-[var(--bg-app)] text-[var(--text-main)] text-[11px] rounded-lg hover:bg-[var(--bg-highlight)] transition-colors"
         >
-          关闭
+          {t('common.close')}
         </button>
 
         <audio ref={audioRef} autoPlay />

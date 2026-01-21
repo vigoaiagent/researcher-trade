@@ -1,8 +1,10 @@
 import { useAlertStore } from '../stores/alertStore';
 import type { DoNotDisturbDuration } from '../stores/alertStore';
 import { X, ThumbsUp, ThumbsDown, ChevronRight, Newspaper, Settings, Bell, BellOff, Clock } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 export function CatBubbleAlert() {
+  const { t } = useTranslation();
   const { currentAlert, showBubble, alerts, dismissedIds, setFeedback, openPanel, closeBubble, openSettings } = useAlertStore();
 
   // 计算未读数量
@@ -22,7 +24,7 @@ export function CatBubbleAlert() {
           <div className="flex items-center gap-2">
             <Newspaper size={14} className="text-[var(--brand-yellow)]" />
             <span className="text-[12px] font-medium text-[var(--text-main)]">
-              与你的持仓相关
+              {t('alerts.relatedToHoldings')}
             </span>
             {unreadCount > 1 && (
               <span className="text-[10px] px-1.5 py-0.5 bg-[var(--brand-yellow)]/20 text-[var(--brand-yellow)] rounded">
@@ -37,7 +39,7 @@ export function CatBubbleAlert() {
                 openSettings();
               }}
               className="p-1 hover:bg-[var(--bg-highlight)] rounded transition"
-              title="提醒设置"
+              title={t('alerts.alertSettings')}
             >
               <Settings size={14} className="text-[var(--text-muted)]" />
             </button>
@@ -62,7 +64,7 @@ export function CatBubbleAlert() {
             </span>
             {currentAlert.isUrgent && (
               <span className="text-[10px] px-1.5 py-0.5 bg-[var(--brand-yellow)]/20 text-[var(--brand-yellow)] rounded">
-                重要
+                {t('alerts.important')}
               </span>
             )}
           </div>
@@ -87,7 +89,7 @@ export function CatBubbleAlert() {
               className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-[var(--brand-green)]/10 hover:bg-[var(--brand-green)]/20 text-[var(--brand-green)] rounded-lg text-[12px] font-medium transition"
             >
               <ThumbsUp size={14} />
-              有用
+              {t('alerts.useful')}
             </button>
             <button
               onClick={(e) => {
@@ -97,7 +99,7 @@ export function CatBubbleAlert() {
               className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-[var(--bg-surface)] hover:bg-[var(--bg-highlight)] text-[var(--text-muted)] rounded-lg text-[12px] font-medium transition"
             >
               <ThumbsDown size={14} />
-              无用
+              {t('alerts.notUseful')}
             </button>
           </div>
         </div>
@@ -108,7 +110,7 @@ export function CatBubbleAlert() {
             onClick={openPanel}
             className="w-full flex items-center justify-center gap-1 py-2 border-t border-[var(--border-light)] text-[12px] text-[var(--text-muted)] hover:text-[var(--brand-yellow)] hover:bg-[var(--bg-surface)] transition"
           >
-            查看全部 {unreadCount} 条
+            {t('alerts.viewAll')} {unreadCount} {t('alerts.items')}
             <ChevronRight size={14} />
           </button>
         )}
@@ -117,9 +119,10 @@ export function CatBubbleAlert() {
   );
 }
 
-// 全部 Alert 面板
+// Alert Panel
 export function AlertPanel() {
   const { alerts, dismissedIds, showPanel, closePanel, setFeedback, clearAll, openSettings } = useAlertStore();
+  const { t } = useTranslation();
 
   const activeAlerts = alerts.filter(a => !dismissedIds.has(a.id) && !a.feedback);
 
@@ -145,7 +148,7 @@ export function AlertPanel() {
         <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-light)]">
           <div className="flex items-center gap-2">
             <Newspaper size={18} className="text-[var(--brand-yellow)]" />
-            <span className="text-[15px] font-bold text-[var(--text-main)]">持仓相关资讯</span>
+            <span className="text-[15px] font-bold text-[var(--text-main)]">{t('alerts.holdingsNews')}</span>
             <span className="text-[12px] px-1.5 py-0.5 bg-[var(--bg-surface)] text-[var(--text-muted)] rounded">
               {activeAlerts.length}
             </span>
@@ -159,7 +162,7 @@ export function AlertPanel() {
                 }}
                 className="text-[12px] text-[var(--text-muted)] hover:text-[var(--text-main)] transition"
               >
-                全部已读
+                {t('alerts.markAllRead')}
               </button>
             )}
             <button
@@ -168,7 +171,7 @@ export function AlertPanel() {
                 openSettings();
               }}
               className="p-1 hover:bg-[var(--bg-surface)] rounded"
-              title="提醒设置"
+              title={t('alerts.alertSettings')}
             >
               <Settings size={16} className="text-[var(--text-muted)]" />
             </button>
@@ -189,7 +192,7 @@ export function AlertPanel() {
           {activeAlerts.length === 0 ? (
             <div className="py-12 text-center">
               <Newspaper size={40} className="mx-auto mb-3 text-[var(--text-dim)]" />
-              <p className="text-[14px] text-[var(--text-muted)]">暂无新资讯</p>
+              <p className="text-[14px] text-[var(--text-muted)]">{t('alerts.noNewAlerts')}</p>
             </div>
           ) : (
             activeAlerts.map(alert => (
@@ -201,7 +204,7 @@ export function AlertPanel() {
                   </span>
                   {alert.isUrgent && (
                     <span className="text-[10px] px-1.5 py-0.5 bg-[var(--brand-yellow)]/20 text-[var(--brand-yellow)] rounded">
-                      重要
+                      {t('alerts.important')}
                     </span>
                   )}
                 </div>
@@ -228,14 +231,14 @@ export function AlertPanel() {
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--brand-green)]/10 hover:bg-[var(--brand-green)]/20 text-[var(--brand-green)] rounded-lg text-[12px] font-medium transition"
                   >
                     <ThumbsUp size={12} />
-                    有用
+                    {t('alerts.useful')}
                   </button>
                   <button
                     onClick={() => setFeedback(alert.id, 'not_useful')}
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--bg-surface)] hover:bg-[var(--bg-highlight)] text-[var(--text-muted)] rounded-lg text-[12px] font-medium transition"
                   >
                     <ThumbsDown size={12} />
-                    无用
+                    {t('alerts.notUseful')}
                   </button>
                 </div>
               </div>
@@ -247,17 +250,19 @@ export function AlertPanel() {
   );
 }
 
-// 免打扰时长选项
-const doNotDisturbOptions: { duration: DoNotDisturbDuration; label: string }[] = [
-  { duration: 30, label: '30 分钟' },
-  { duration: 60, label: '1 小时' },
-  { duration: 120, label: '2 小时' },
-  { duration: 480, label: '8 小时' },
-  { duration: 1440, label: '1 天' },
+// Do not disturb options - dynamic with translations
+const getDoNotDisturbOptions = (t: (key: string) => string): { duration: DoNotDisturbDuration; label: string }[] => [
+  { duration: 30, label: t('alerts.dnd30min') },
+  { duration: 60, label: t('alerts.dnd1hour') },
+  { duration: 120, label: t('alerts.dnd2hours') },
+  { duration: 480, label: t('alerts.dnd8hours') },
+  { duration: 1440, label: t('alerts.dnd1day') },
 ];
 
-// 设置面板
+// Settings Panel
 export function AlertSettingsPanel() {
+  const { t } = useTranslation();
+  const doNotDisturbOptions = getDoNotDisturbOptions(t);
   const {
     showSettings,
     closeSettings,
@@ -279,9 +284,11 @@ export function AlertSettingsPanel() {
     if (remainingMinutes >= 60) {
       const hours = Math.floor(remainingMinutes / 60);
       const mins = remainingMinutes % 60;
-      return mins > 0 ? `${hours}小时${mins}分钟` : `${hours}小时`;
+      return mins > 0
+        ? t('alerts.hoursMinutes').replace('{hours}', String(hours)).replace('{mins}', String(mins))
+        : t('alerts.hours').replace('{hours}', String(hours));
     }
-    return `${remainingMinutes}分钟`;
+    return t('alerts.minutes').replace('{mins}', String(remainingMinutes));
   };
 
   return (
@@ -303,7 +310,7 @@ export function AlertSettingsPanel() {
         <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-light)]">
           <div className="flex items-center gap-2">
             <Settings size={18} className="text-[var(--brand-yellow)]" />
-            <span className="text-[15px] font-bold text-[var(--text-main)]">提醒设置</span>
+            <span className="text-[15px] font-bold text-[var(--text-main)]">{t('alerts.alertSettings')}</span>
           </div>
           <button
             onClick={(e) => {
@@ -328,10 +335,10 @@ export function AlertSettingsPanel() {
               )}
               <div>
                 <div className="text-[14px] font-medium text-[var(--text-main)]">
-                  持仓资讯提醒
+                  {t('alerts.holdingsAlerts')}
                 </div>
                 <div className="text-[12px] text-[var(--text-muted)]">
-                  {alertsEnabled ? '开启中' : '已关闭'}
+                  {alertsEnabled ? t('alerts.enabled') : t('alerts.disabled')}
                 </div>
               </div>
             </div>
@@ -359,10 +366,10 @@ export function AlertSettingsPanel() {
                 <Clock size={16} className="text-[var(--brand-yellow)]" />
                 <div>
                   <div className="text-[13px] font-medium text-[var(--brand-yellow)]">
-                    免打扰中
+                    {t('alerts.doNotDisturb')}
                   </div>
                   <div className="text-[11px] text-[var(--text-muted)]">
-                    剩余 {formatRemaining()}
+                    {t('alerts.remaining')} {formatRemaining()}
                   </div>
                 </div>
               </div>
@@ -373,7 +380,7 @@ export function AlertSettingsPanel() {
                 }}
                 className="px-3 py-1.5 text-[12px] text-[var(--brand-yellow)] border border-[var(--brand-yellow)]/50 rounded-lg hover:bg-[var(--brand-yellow)]/10 transition"
               >
-                取消
+                {t('alerts.cancelDnd')}
               </button>
             </div>
           )}
@@ -382,7 +389,7 @@ export function AlertSettingsPanel() {
           {alertsEnabled && !isDoNotDisturb && (
             <div>
               <div className="text-[13px] font-medium text-[var(--text-main)] mb-2">
-                暂时免打扰
+                {t('alerts.temporaryDnd')}
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {doNotDisturbOptions.map((option) => (
@@ -401,9 +408,9 @@ export function AlertSettingsPanel() {
             </div>
           )}
 
-          {/* 提示信息 */}
+          {/* Hint */}
           <div className="text-[11px] text-[var(--text-dim)] leading-relaxed">
-            持仓资讯提醒会在您持有的币种有重要新闻时通知您。您可以随时关闭或设置免打扰时间。
+            {t('alerts.alertsHint')}
           </div>
         </div>
       </div>

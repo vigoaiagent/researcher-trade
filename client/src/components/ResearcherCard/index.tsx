@@ -2,19 +2,20 @@ import { useState, useEffect } from 'react';
 import { Star, MessageSquare, ExternalLink, Award, Shield, Flame, TrendingUp, Clock, Target, Zap, Quote, X, ChevronRight } from 'lucide-react';
 import type { ResearcherAnswer, ResearcherBadge } from '../../types';
 import { researcherApi } from '../../services/api';
+import { useTranslation } from '../../i18n';
 
 // SoSoValue 研究员主页 URL 模板
 const PROFILE_URL = 'https://sosovalue.com/profile/index';
 
-// 徽章配置
-const badgeConfig: Record<ResearcherBadge, { icon: typeof Award; color: string; label: string; bgColor: string; description: string }> = {
-  top_rated: { icon: Star, color: 'var(--brand-yellow)', bgColor: 'rgba(255, 193, 7, 0.15)', label: '好评之星', description: '用户好评率超过95%，深受用户信赖' },
-  expert: { icon: Award, color: 'var(--brand-green)', bgColor: 'rgba(16, 185, 129, 0.15)', label: '专家认证', description: '经平台审核的行业专家，具备专业资质' },
-  verified: { icon: Shield, color: '#60a5fa', bgColor: 'rgba(96, 165, 250, 0.15)', label: '实名认证', description: '已完成身份实名认证，信息真实可靠' },
-  hot: { icon: Flame, color: 'var(--brand-red)', bgColor: 'rgba(239, 68, 68, 0.15)', label: '人气研究员', description: '近期咨询量TOP10，热门研究员' },
-  rising_star: { icon: TrendingUp, color: '#a78bfa', bgColor: 'rgba(167, 139, 250, 0.15)', label: '新锐之星', description: '入驻90天内表现优异的新晋研究员' },
-  veteran: { icon: Clock, color: '#f59e0b', bgColor: 'rgba(245, 158, 11, 0.15)', label: '资深老将', description: '入驻超过2年，服务超过1000次' },
-};
+// Badge config - dynamic with translations
+const getBadgeConfig = (t: (key: string) => string): Record<ResearcherBadge, { icon: typeof Award; color: string; label: string; bgColor: string; description: string }> => ({
+  top_rated: { icon: Star, color: 'var(--brand-yellow)', bgColor: 'rgba(255, 193, 7, 0.15)', label: t('researcherCard.badgeTopRated'), description: t('researcherCard.badgeTopRatedDesc') },
+  expert: { icon: Award, color: 'var(--brand-green)', bgColor: 'rgba(16, 185, 129, 0.15)', label: t('researcherCard.badgeExpert'), description: t('researcherCard.badgeExpertDesc') },
+  verified: { icon: Shield, color: '#60a5fa', bgColor: 'rgba(96, 165, 250, 0.15)', label: t('researcherCard.badgeVerified'), description: t('researcherCard.badgeVerifiedDesc') },
+  hot: { icon: Flame, color: 'var(--brand-red)', bgColor: 'rgba(239, 68, 68, 0.15)', label: t('researcherCard.badgeHot'), description: t('researcherCard.badgeHotDesc') },
+  rising_star: { icon: TrendingUp, color: '#a78bfa', bgColor: 'rgba(167, 139, 250, 0.15)', label: t('researcherCard.badgeRisingStar'), description: t('researcherCard.badgeRisingStarDesc') },
+  veteran: { icon: Clock, color: '#f59e0b', bgColor: 'rgba(245, 158, 11, 0.15)', label: t('researcherCard.badgeVeteran'), description: t('researcherCard.badgeVeteranDesc') },
+});
 
 // 默认头像配置
 const defaultAvatars = [
@@ -54,6 +55,8 @@ interface ResearcherCardProps {
 
 export function ResearcherCard({ answer, onSelect, isLoading }: ResearcherCardProps) {
   const { researcher, firstAnswer } = answer;
+  const { t } = useTranslation();
+  const badgeConfig = getBadgeConfig(t);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [loadingReviews, setLoadingReviews] = useState(false);
@@ -159,7 +162,7 @@ export function ResearcherCard({ answer, onSelect, isLoading }: ResearcherCardPr
                   onClick={(e) => e.stopPropagation()}
                 >
                   <ExternalLink size={12} />
-                  <span className="hidden md:inline">主页</span>
+                  <span className="hidden md:inline">{t('researcherCard.homepage')}</span>
                 </a>
               </div>
 
@@ -170,7 +173,7 @@ export function ResearcherCard({ answer, onSelect, isLoading }: ResearcherCardPr
                   <span className="text-[var(--brand-yellow)] font-bold ml-0.5">{researcher.ratingScore.toFixed(1)}</span>
                 </div>
                 <span className="text-[var(--text-dim)]">·</span>
-                <span className="text-[var(--text-muted)]">{researcher.serviceCount} 服务</span>
+                <span className="text-[var(--text-muted)]">{researcher.serviceCount} {t('researcherCard.services')}</span>
                 {researcher.successRate && (
                   <>
                     <span className="text-[var(--text-dim)]">·</span>
@@ -223,7 +226,7 @@ export function ResearcherCard({ answer, onSelect, isLoading }: ResearcherCardPr
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-1.5">
                   <Quote size={12} className="text-[var(--brand-yellow)]" />
-                  <span className="text-[11px] font-medium text-[var(--text-muted)]">用户评价</span>
+                  <span className="text-[11px] font-medium text-[var(--text-muted)]">{t('researcherCard.userReviews')}</span>
                 </div>
                 <div className="flex items-center gap-1 text-[10px] text-[var(--text-dim)]">
                   <span>{currentReviewIndex + 1}/{hotReviews.length}</span>
@@ -269,17 +272,17 @@ export function ResearcherCard({ answer, onSelect, isLoading }: ResearcherCardPr
               className="h-full w-full p-3 rounded-lg bg-[var(--bg-surface)] hover:border-[var(--brand-yellow)]/50 border border-transparent flex flex-col items-center justify-center cursor-pointer transition-colors"
             >
               <MessageSquare size={20} className="text-[var(--text-dim)] mb-2" />
-              <span className="text-[11px] text-[var(--text-muted)]">{stats.total} 条评价</span>
-              <span className="text-[12px] font-bold text-[var(--brand-yellow)]">{stats.average.toFixed(1)} 分</span>
+              <span className="text-[11px] text-[var(--text-muted)]">{stats.total} {t('researcherCard.reviews')}</span>
+              <span className="text-[12px] font-bold text-[var(--brand-yellow)]">{stats.average.toFixed(1)} {t('researcherCard.points')}</span>
               {reviews.length > 0 && (
                 <span className="text-[9px] text-[var(--text-dim)] mt-1 flex items-center gap-0.5">
-                  点击查看 <ChevronRight size={10} />
+                  {t('researcherCard.clickToView')} <ChevronRight size={10} />
                 </span>
               )}
             </button>
           ) : loadingReviews ? (
             <div className="h-full p-3 rounded-lg bg-[var(--bg-surface)] flex items-center justify-center">
-              <span className="text-[11px] text-[var(--text-dim)]">加载中...</span>
+              <span className="text-[11px] text-[var(--text-dim)]">{t('researcherCard.loading')}</span>
             </div>
           ) : null}
         </div>
@@ -290,13 +293,13 @@ export function ResearcherCard({ answer, onSelect, isLoading }: ResearcherCardPr
         <div className="mb-2 p-2 rounded-lg bg-[var(--bg-surface)]">
           <div className="flex items-center gap-1.5 mb-1.5">
             <Zap size={12} className="text-[var(--brand-yellow)]" />
-            <span className="text-[11px] font-medium text-[var(--text-main)]">擅长领域</span>
+            <span className="text-[11px] font-medium text-[var(--text-main)]">{t('researcherCard.expertiseAreas')}</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {researcher.expertiseAreas.map((area, index) => (
               <div key={index} className="flex items-center gap-1.5 px-2 py-1 rounded bg-[var(--bg-panel)]">
                 <span className="text-[11px] text-[var(--text-main)]">{area.domain}</span>
-                <span className="text-[9px] text-[var(--text-muted)]">{area.yearsExp}年</span>
+                <span className="text-[9px] text-[var(--text-muted)]">{area.yearsExp}{t('researcherCard.years')}</span>
                 {area.accuracy && (
                   <span className="text-[9px] px-1 rounded bg-[var(--brand-green)]/10 text-[var(--brand-green)]">
                     {area.accuracy}%
@@ -353,7 +356,7 @@ export function ResearcherCard({ answer, onSelect, isLoading }: ResearcherCardPr
             className={`flex items-center gap-1 text-[10px] text-[var(--text-muted)] ${reviews.length > 0 ? 'hover:text-[var(--brand-yellow)] cursor-pointer transition-colors' : ''}`}
           >
             <MessageSquare size={10} />
-            <span>{stats.total} 条评价 · 平均 {stats.average.toFixed(1)} 分</span>
+            <span>{stats.total} {t('researcherCard.reviews')} · {t('researcherCard.average')} {stats.average.toFixed(1)} {t('researcherCard.points')}</span>
             {reviews.length > 0 && <ChevronRight size={10} />}
           </button>
         )}
@@ -365,7 +368,7 @@ export function ResearcherCard({ answer, onSelect, isLoading }: ResearcherCardPr
         disabled={isLoading}
         className="w-full py-2.5 md:py-3 rounded-lg font-bold text-[14px] md:text-[15px] disabled:opacity-50 transition hover:opacity-90 bg-[var(--brand-green)] text-black"
       >
-        {isLoading ? '选择中...' : '选择该研究员'}
+        {isLoading ? t('researcherCard.selecting') : t('researcherCard.selectResearcher')}
       </button>
 
       {/* All Reviews Modal */}
@@ -387,7 +390,7 @@ export function ResearcherCard({ answer, onSelect, isLoading }: ResearcherCardPr
                   className="w-8 h-8 rounded-full"
                 />
                 <div>
-                  <div className="text-[14px] font-bold text-[var(--text-main)]">{researcher.name} 的评价</div>
+                  <div className="text-[14px] font-bold text-[var(--text-main)]">{researcher.name} {t('researcherCard.reviewsOf')}</div>
                   {stats && (
                     <div className="flex items-center gap-2 text-[12px]">
                       <div className="flex items-center gap-0.5">
@@ -395,7 +398,7 @@ export function ResearcherCard({ answer, onSelect, isLoading }: ResearcherCardPr
                         <span className="text-[var(--brand-yellow)] font-bold ml-1">{stats.average.toFixed(1)}</span>
                       </div>
                       <span className="text-[var(--text-dim)]">·</span>
-                      <span className="text-[var(--text-muted)]">{stats.total} 条评价</span>
+                      <span className="text-[var(--text-muted)]">{stats.total} {t('researcherCard.reviews')}</span>
                     </div>
                   )}
                 </div>
@@ -418,7 +421,7 @@ export function ResearcherCard({ answer, onSelect, isLoading }: ResearcherCardPr
                     return (
                       <div key={score} className="flex-1">
                         <div className="flex items-center gap-1 mb-1">
-                          <span className="text-[10px] text-[var(--text-muted)]">{score}星</span>
+                          <span className="text-[10px] text-[var(--text-muted)]">{score}{t('researcherCard.star')}</span>
                         </div>
                         <div className="h-1.5 bg-[var(--bg-panel)] rounded-full overflow-hidden">
                           <div
@@ -457,7 +460,7 @@ export function ResearcherCard({ answer, onSelect, isLoading }: ResearcherCardPr
                     </div>
                     {review.questionPreview && (
                       <p className="text-[11px] text-[var(--text-dim)] mb-1.5 line-clamp-1">
-                        问题：{review.questionPreview}
+                        {t('researcherCard.question')}{review.questionPreview}
                       </p>
                     )}
                     {review.comment ? (
@@ -465,14 +468,14 @@ export function ResearcherCard({ answer, onSelect, isLoading }: ResearcherCardPr
                         "{review.comment}"
                       </p>
                     ) : (
-                      <p className="text-[12px] text-[var(--text-dim)] italic">未留下评论</p>
+                      <p className="text-[12px] text-[var(--text-dim)] italic">{t('researcherCard.noComment')}</p>
                     )}
                   </div>
                 ))
               ) : (
                 <div className="text-center py-8 text-[var(--text-muted)]">
                   <MessageSquare size={32} className="mx-auto mb-2 opacity-50" />
-                  <p>暂无用户评价</p>
+                  <p>{t('researcherCard.noReviews')}</p>
                 </div>
               )}
             </div>
