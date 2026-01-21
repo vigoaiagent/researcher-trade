@@ -17,7 +17,20 @@ export const CALLBACK_DATA = {
   STATUS: 'menu_status',
   WALLET: 'menu_wallet',
   APPEAL: 'menu_appeal',
+  REGISTER: 'auth_register',
 } as const;
+
+/**
+ * 获取欢迎页注册按钮 (Inline Keyboard)
+ * 用于新用户首次访问时
+ */
+export function getWelcomeKeyboard(): TelegramBot.InlineKeyboardMarkup {
+  return {
+    inline_keyboard: [
+      [{ text: '📝 申请成为研究员', callback_data: CALLBACK_DATA.REGISTER }],
+    ],
+  };
+}
 
 /**
  * 获取主菜单持久化键盘 (Reply Keyboard)

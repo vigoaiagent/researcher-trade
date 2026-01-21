@@ -1,7 +1,7 @@
 import TelegramBot from 'node-telegram-bot-api';
 import express from 'express';
 import dotenv from 'dotenv';
-import { handleStart } from './commands/start.js';
+import { handleStart, handleRegister } from './commands/start.js';
 import { handleOnline, handleOffline, handleBusy } from './commands/status.js';
 import { handleStatus } from './commands/stats.js';
 import { handleBindWallet } from './commands/wallet.js';
@@ -68,6 +68,14 @@ bot.on('callback_query', async (query) => {
   // 处理申诉回调
   if (data.startsWith('appeal_')) {
     handleAppealCallback(bot, query, API_URL);
+    return;
+  }
+
+  // 处理注册回调
+  if (data === CALLBACK_DATA.REGISTER) {
+    await bot.answerCallbackQuery(query.id, { text: '正在处理注册...' });
+    const userName = query.from?.first_name || '研究员';
+    await handleRegister(bot, chatId, userId, userName, API_URL);
     return;
   }
 
