@@ -1,5 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { api } from '../api.js';
+import { getStatusInlineKeyboard } from '../utils/keyboard.js';
 
 export async function handleStatus(
   bot: TelegramBot,
@@ -35,9 +36,13 @@ ${statusEmoji[data.researcher.status]} 当前状态：${data.researcher.status}
 ├ 服务次数：${data.monthly.services}
 ├ 收到评价：${data.monthly.ratings}
 └ 平均评分：${data.monthly.avgRating}
+
+快速切换：
     `.trim();
 
-    bot.sendMessage(chatId, message);
+    await bot.sendMessage(chatId, message, {
+      reply_markup: getStatusInlineKeyboard(),
+    });
   } catch (error: any) {
     if (error.response?.status === 404) {
       bot.sendMessage(chatId, '❌ 请先使用 /start 命令绑定账号');

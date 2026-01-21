@@ -1,5 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { api } from '../api.js';
+import { getMainMenuKeyboard } from '../utils/keyboard.js';
 
 export async function handleOnline(
   bot: TelegramBot,
@@ -17,7 +18,9 @@ export async function handleOnline(
       status: 'ONLINE',
     });
 
-    bot.sendMessage(chatId, '✅ 您已上线！现在可以接收咨询了。');
+    await bot.sendMessage(chatId, '✅ 您已上线！现在可以接收咨询了。', {
+      reply_markup: getMainMenuKeyboard(),
+    });
   } catch (error: any) {
     if (error.response?.status === 404) {
       bot.sendMessage(chatId, '❌ 请先使用 /start 命令绑定账号');
@@ -43,7 +46,9 @@ export async function handleOffline(
       status: 'OFFLINE',
     });
 
-    bot.sendMessage(chatId, '📴 您已离线，不会收到新的咨询。');
+    await bot.sendMessage(chatId, '📴 您已离线，不会收到新的咨询。', {
+      reply_markup: getMainMenuKeyboard(),
+    });
   } catch (error: any) {
     if (error.response?.status === 404) {
       bot.sendMessage(chatId, '❌ 请先使用 /start 命令绑定账号');
@@ -69,7 +74,9 @@ export async function handleBusy(
       status: 'BUSY',
     });
 
-    bot.sendMessage(chatId, '🔴 您已设为忙碌状态，暂时不接新单。');
+    await bot.sendMessage(chatId, '🔴 您已设为忙碌状态，暂时不接新单。', {
+      reply_markup: getMainMenuKeyboard(),
+    });
   } catch (error: any) {
     if (error.response?.status === 404) {
       bot.sendMessage(chatId, '❌ 请先使用 /start 命令绑定账号');

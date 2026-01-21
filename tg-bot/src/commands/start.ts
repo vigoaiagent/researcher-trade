@@ -1,5 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { api } from '../api.js';
+import { getMainMenuKeyboard } from '../utils/keyboard.js';
 
 // 获取用户头像 URL
 async function getUserAvatarUrl(bot: TelegramBot, userId: number): Promise<string | null> {
@@ -55,18 +56,14 @@ export async function handleStart(
 
 您的账号已成功绑定。
 
-📋 可用命令：
-/online - 设置在线，开始接单
-/offline - 设置离线
-/busy - 暂时忙碌，不接新单
-/status - 查看当前状态和数据
-/bindwallet <地址> - 绑定收款钱包
+📊 当前状态：离线
 
-当前状态：离线
-请发送 /online 开始接单
+👇 点击下方按钮快速操作，或使用 /menu 查看更多功能
       `.trim();
 
-      bot.sendMessage(chatId, message);
+      await bot.sendMessage(chatId, message, {
+        reply_markup: getMainMenuKeyboard(),
+      });
     }
   } catch (error: any) {
     console.error('Start error:', error.message);
