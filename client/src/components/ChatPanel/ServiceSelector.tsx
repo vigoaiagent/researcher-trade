@@ -2,6 +2,7 @@ import { Lock, Sparkles, Zap, ChevronRight } from 'lucide-react';
 import { useChatStore } from '../../stores/chatStore';
 import { useUserStore } from '../../stores/userStore';
 import { LEVEL_CONFIG } from '../../types';
+import { useTranslation } from '../../i18n';
 
 // AI 助手头像 - 使用 SVG 机器人猫
 function AIAvatar() {
@@ -39,6 +40,7 @@ function ResearcherAvatar() {
 export function ServiceSelector() {
   const { setServiceMode, setPhase } = useChatStore();
   const { user } = useUserStore();
+  const { t } = useTranslation();
 
   const userLevel = user?.level || 'Bronze';
   const hasResearcherAccess = user ? LEVEL_CONFIG[userLevel]?.hasResearcherAccess : false;
@@ -59,13 +61,13 @@ export function ServiceSelector() {
       <div className="text-center mb-5 pt-2">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--bg-surface)] mb-3">
           <Sparkles size={12} className="text-[var(--brand-yellow)]" />
-          <span className="text-[10px] text-[var(--text-muted)]">在线服务</span>
+          <span className="text-[10px] text-[var(--text-muted)]">{t('chatPanel.onlineService')}</span>
         </div>
         <h3 className="text-[15px] font-bold text-[var(--text-main)] mb-1">
-          有什么可以帮您？
+          {t('chatPanel.howCanIHelp')}
         </h3>
         <p className="text-[11px] text-[var(--text-muted)]">
-          选择服务方式开始咨询
+          {t('chatPanel.selectService')}
         </p>
       </div>
 
@@ -81,14 +83,14 @@ export function ServiceSelector() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-[14px] font-bold text-[var(--text-main)] group-hover:text-[var(--brand-yellow)] transition-colors">
-                  AI 研究员
+                  {t('chatPanel.aiResearcherLabel')}
                 </span>
                 <span className="text-[9px] px-1.5 py-0.5 bg-[var(--brand-green)] bg-opacity-20 text-[var(--brand-green)] rounded-full font-medium">
-                  免费
+                  {t('chatPanel.freeLabel')}
                 </span>
               </div>
               <p className="text-[11px] text-[var(--text-muted)] line-clamp-1">
-                快速解答交易相关问题
+                {t('chatPanel.aiResearcherDesc')}
               </p>
             </div>
             <ChevronRight size={18} className="text-[var(--text-dim)] group-hover:text-[var(--brand-yellow)] transition-colors" />
@@ -113,10 +115,10 @@ export function ServiceSelector() {
                   <Lock size={18} className="text-[var(--brand-yellow)]" />
                 </div>
                 <span className="text-[11px] text-[var(--text-main)] font-medium block">
-                  升级到 Gold 解锁
+                  {t('chatPanel.upgradeToGoldUnlock')}
                 </span>
                 <span className="text-[10px] text-[var(--text-muted)]">
-                  交易量达标自动升级
+                  {t('chatPanel.tradeToUpgrade')}
                 </span>
               </div>
             </div>
@@ -131,14 +133,14 @@ export function ServiceSelector() {
                     ? 'text-[var(--text-main)] group-hover:text-[var(--brand-green)]'
                     : 'text-[var(--text-muted)]'
                 }`}>
-                  专属研究员
+                  {t('chatPanel.exclusiveResearcherLabel')}
                 </span>
                 <span className="text-[9px] px-1.5 py-0.5 bg-[var(--brand-green)] text-white rounded-full font-medium">
-                  1v1
+                  {t('chatPanel.oneOnOne')}
                 </span>
               </div>
               <p className="text-[11px] text-[var(--text-muted)] line-clamp-1">
-                专业分析师深度解答，支持语音
+                {t('chatPanel.exclusiveResearcherDesc')}
               </p>
             </div>
             <div className="flex flex-col items-end gap-1">
@@ -158,13 +160,13 @@ export function ServiceSelector() {
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${hasResearcherAccess ? 'bg-[var(--brand-green)]' : 'bg-[var(--text-dim)]'}`} />
             <span className="text-[10px] text-[var(--text-muted)]">
-              当前等级: <span className={`font-medium ${hasResearcherAccess ? 'text-[var(--brand-green)]' : 'text-[var(--brand-yellow)]'}`}>{userLevel}</span>
+              {t('chatPanel.currentLevelLabel')} <span className={`font-medium ${hasResearcherAccess ? 'text-[var(--brand-green)]' : 'text-[var(--brand-yellow)]'}`}>{userLevel}</span>
             </span>
           </div>
           {user && (
             <div className="flex items-center gap-1 text-[10px] text-[var(--text-muted)]">
               <Zap size={10} className="text-[var(--brand-yellow)]" />
-              <span>{user.energyAvailable} 能量</span>
+              <span>{user.energyAvailable} {t('chatPanel.energyLabel')}</span>
             </div>
           )}
         </div>

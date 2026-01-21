@@ -2,11 +2,13 @@ import { ArrowLeft, RefreshCw, X, ChevronDown } from 'lucide-react';
 import { useChatStore } from '../../stores/chatStore';
 import { ResearcherCard } from '../ResearcherCard';
 import { useState, useEffect } from 'react';
+import { useTranslation } from '../../i18n';
 
 export function SelectingPhase() {
   const { answers, selectResearcher, skipSelection, isLoading, currentConsultation } = useChatStore();
   const [isMobile, setIsMobile] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const { t } = useTranslation();
 
   // 检测是否为移动端
   useEffect(() => {
@@ -25,7 +27,7 @@ export function SelectingPhase() {
         {/* 问题预览 - 缩略显示 */}
         {currentConsultation && (
           <div className="px-4 py-3 bg-[var(--bg-surface)] border-b border-[var(--border-light)]">
-            <p className="text-[11px] text-[var(--text-muted)] mb-1">您的问题</p>
+            <p className="text-[11px] text-[var(--text-muted)] mb-1">{t('chatPanel.yourQuestion')}</p>
             <p className="text-[14px] text-[var(--text-main)] line-clamp-1">
               {currentConsultation.question}
             </p>
@@ -54,10 +56,10 @@ export function SelectingPhase() {
           <div className="flex items-center justify-between px-4 pb-3">
             <div>
               <h3 className="font-bold text-[18px] text-[var(--text-main)]">
-                选择研究员
+                {t('chatPanel.selectResearcher')}
               </h3>
               <p className="text-[13px] text-[var(--text-muted)]">
-                {answers.length} 位研究员已响应
+                {answers.length} {t('chatPanel.researchersResponded')}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -92,8 +94,8 @@ export function SelectingPhase() {
 
             {answers.length === 0 && (
               <div className="text-center py-8 text-[var(--text-muted)]">
-                <p className="text-[16px]">暂无响应</p>
-                <p className="text-[14px] mt-1">请稍候...</p>
+                <p className="text-[16px]">{t('chatPanel.noResponse')}</p>
+                <p className="text-[14px] mt-1">{t('chatPanel.pleaseWait')}</p>
               </div>
             )}
           </div>
@@ -105,7 +107,7 @@ export function SelectingPhase() {
               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-[14px] text-[var(--text-muted)] bg-[var(--bg-app)] hover:bg-[var(--bg-highlight)] transition"
             >
               <RefreshCw size={16} />
-              没有合适的？重新提问
+              {t('chatPanel.notSuitable')}
             </button>
           </div>
         </div>
@@ -121,10 +123,10 @@ export function SelectingPhase() {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-bold text-[18px] md:text-[20px] text-[var(--text-main)]">
-              选择研究员
+              {t('chatPanel.selectResearcher')}
             </h3>
             <p className="text-[13px] md:text-[15px] text-[var(--text-muted)] mt-0.5">
-              {answers.length} 位研究员已响应
+              {answers.length} {t('chatPanel.researchersResponded')}
             </p>
           </div>
           {/* Skip Button */}
@@ -133,7 +135,7 @@ export function SelectingPhase() {
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[13px] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-app)] transition"
           >
             <ArrowLeft size={16} />
-            <span className="hidden md:inline">重新提问</span>
+            <span className="hidden md:inline">{t('chatPanel.reaskQuestion')}</span>
           </button>
         </div>
       </div>
@@ -142,7 +144,7 @@ export function SelectingPhase() {
       {currentConsultation && (
         <div className="px-3 md:px-4 py-2.5 bg-[var(--brand-green-dim)] border-b border-[var(--brand-green)]">
           <p className="text-[12px] text-[var(--brand-green)] mb-0.5">
-            您的问题
+            {t('chatPanel.yourQuestion')}
           </p>
           <p className="text-[14px] md:text-[16px] line-clamp-2 text-[var(--text-main)]">
             {currentConsultation.question}
@@ -163,8 +165,8 @@ export function SelectingPhase() {
 
         {answers.length === 0 && (
           <div className="text-center py-8 text-[var(--text-muted)]">
-            <p className="text-[16px]">暂无响应</p>
-            <p className="text-[14px] mt-1">请稍候...</p>
+            <p className="text-[16px]">{t('chatPanel.noResponse')}</p>
+            <p className="text-[14px] mt-1">{t('chatPanel.pleaseWait')}</p>
           </div>
         )}
       </div>
@@ -173,14 +175,14 @@ export function SelectingPhase() {
       <div className="p-3 md:p-4 bg-[var(--bg-surface)] border-t border-[var(--border-light)]">
         <div className="flex flex-col md:flex-row items-center justify-between gap-2">
           <p className="text-[12px] md:text-[14px] text-[var(--text-muted)]">
-            选择后进入 1v1 对话，10 轮追问
+            {t('chatPanel.afterSelect')}
           </p>
           <button
             onClick={skipSelection}
             className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] text-[var(--text-muted)] hover:text-[var(--brand-yellow)] bg-[var(--bg-app)] hover:bg-[var(--bg-highlight)] transition"
           >
             <RefreshCw size={14} />
-            没有合适的？重新提问
+            {t('chatPanel.notSuitable')}
           </button>
         </div>
       </div>

@@ -5,12 +5,13 @@ import { useUserStore } from '../../stores/userStore';
 import { favoriteApi } from '../../services/api';
 import { hasTrialVoucher } from '../NewUserWelcomeModal';
 import { AppointmentBooking } from '../AppointmentBooking';
+import { useTranslation } from '../../i18n';
 
-// 快捷提问模板
-const quickQuestions = [
-  { icon: TrendingUp, label: '趋势分析', question: '当前市场趋势如何？适合做多还是做空？' },
-  { icon: AlertTriangle, label: '风险提示', question: '目前有哪些需要注意的风险点？' },
-  { icon: BarChart3, label: '入场点位', question: '现在是好的入场时机吗？建议的入场点位是多少？' },
+// 快捷提问模板 - will be generated with translations
+const getQuickQuestions = (t: (key: string) => string) => [
+  { icon: TrendingUp, label: t('chatPanel.trendAnalysis'), question: t('chatPanel.trendQuestion') },
+  { icon: AlertTriangle, label: t('chatPanel.riskWarning'), question: t('chatPanel.riskQuestion') },
+  { icon: BarChart3, label: t('chatPanel.entryPoint'), question: t('chatPanel.entryQuestion') },
 ];
 
 interface SubscribedResearcher {
@@ -55,6 +56,8 @@ export function AskingPhase() {
   const [appointmentResearcher, setAppointmentResearcher] = useState<SubscribedResearcher | null>(null);
   const { createConsultation, isLoading, error } = useChatStore();
   const { user, lockEnergy, syncEnergyBalance } = useUserStore();
+  const { t } = useTranslation();
+  const quickQuestions = getQuickQuestions(t);
 
   // 获取订阅的研究员列表 + 同步能量余额
   useEffect(() => {
@@ -86,15 +89,15 @@ export function AskingPhase() {
 
     // 如果没有体验券且能量不足，阻止提交
     if (!usingTrial && energyAvailable < 10) {
-      alert('能量值不足，需要 10 能量开始咨询');
+      alert(t('chatPanel.insufficientEnergy'));
       return;
     }
 
     // 如果不是使用体验券，需要锁定能量
     if (!usingTrial) {
-      const locked = lockEnergy(10, '咨询服务预扣');
+      const locked = lockEnergy(10, 'Consultation service');
       if (!locked) {
-        alert('能量锁定失败');
+        alert(t('chatPanel.energyLockFailed'));
         return;
       }
     }
@@ -130,14 +133,14 @@ export function AskingPhase() {
     const usingTrial = hasUnusedTrial;
 
     if (!usingTrial && energyAvailable < 10) {
-      alert('能量值不足，需要 10 能量开始咨询');
+      alert(t('chatPanel.insufficientEnergy'));
       return;
     }
 
     if (!usingTrial) {
-      const locked = lockEnergy(10, '咨询服务预扣');
+      const locked = lockEnergy(10, 'Consultation service');
       if (!locked) {
-        alert('能量锁定失败');
+        alert(t('chatPanel.energyLockFailed'));
         return;
       }
     }
@@ -201,7 +204,7 @@ export function AskingPhase() {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5">
               <Heart size={14} className="text-[var(--brand-red)]" />
-              <span className="text-[13px] text-[var(--text-muted)]">我的订阅</span>
+              <span className="text-[13px] text-[var(--text-muted)]">{t('chatPanel.mySubscriptions')}</span>
               <span className="text-[11px] text-[var(--brand-green)]">({activeSubscriptions.length})</span>
             </div>
             <button
@@ -209,7 +212,7 @@ export function AskingPhase() {
               className="flex items-center gap-1 text-[11px] text-[var(--text-muted)] hover:text-[var(--brand-yellow)] transition"
             >
               <Settings size={12} />
-              管理
+              {t('chatPanel.manage')}
             </button>
           </div>
           <div className="flex flex-col gap-2">
@@ -237,7 +240,7 @@ export function AskingPhase() {
                     <span>{sub.researcher.ratingScore.toFixed(1)}</span>
                     <span>·</span>
                     <span className={getDaysRemaining(sub.expiresAt) <= 3 ? 'text-[var(--brand-red)]' : ''}>
-                      {getDaysRemaining(sub.expiresAt)}天
+                      {getDaysRemaining(sub.expiresAt)}{t('chatPanel.daysRemaining')}
                     </span>
                   </div>
                 </div>
@@ -253,7 +256,7 @@ export function AskingPhase() {
                         ? 'bg-[var(--bg-app)] text-[var(--brand-green)] hover:bg-[var(--brand-green)] hover:text-black'
                         : 'bg-[var(--bg-app)] text-[var(--text-dim)] cursor-not-allowed'
                     }`}
-                    title="预约1v1语音/视频"
+                    title={t('chatPanel.bookCall')}
                   >
                     <Phone size={14} />
                   </button>
@@ -266,7 +269,7 @@ export function AskingPhase() {
                         : 'bg-[var(--bg-app)] text-[var(--text-dim)] cursor-not-allowed'
                     }`}
                   >
-                    咨询
+                    {t('chatPanel.consult')}
                   </button>
                 </div>
               </div>
@@ -278,9 +281,9 @@ export function AskingPhase() {
               className="w-full mt-1.5 py-1.5 text-[12px] text-[var(--text-muted)] hover:text-[var(--text-main)] transition flex items-center justify-center gap-1"
             >
               {showAllSubscriptions ? (
-                <>收起 <ChevronUp size={14} /></>
+                <>{t('common.less')} <ChevronUp size={14} /></>
               ) : (
-                <>查看全部 <ChevronDown size={14} /></>
+                <>{t('common.all')} <ChevronDown size={14} /></>
               )}
             </button>
           )}
@@ -291,7 +294,7 @@ export function AskingPhase() {
       <div className="mb-3">
         <div className="flex items-center gap-2 mb-2">
           <Zap size={14} className="text-[var(--brand-yellow)]" />
-          <span className="text-[13px] text-[var(--text-muted)]">快捷提问</span>
+          <span className="text-[13px] text-[var(--text-muted)]">{t('chatPanel.quickQuestions')}</span>
         </div>
         <div className="flex flex-wrap gap-1.5">
           {quickQuestions.map((item, idx) => (
@@ -313,7 +316,7 @@ export function AskingPhase() {
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="输入你的问题..."
+          placeholder={t('chatPanel.inputPlaceholder')}
           className="flex-1 p-3 rounded-lg resize-none text-[15px] leading-relaxed focus:outline-none focus:border-[var(--brand-yellow)] bg-[var(--bg-surface)] border border-[var(--border-light)] text-[var(--text-main)] placeholder:text-[var(--text-dim)] transition-colors min-h-[80px] max-h-[200px]"
           disabled={isLoading}
         />
@@ -330,7 +333,7 @@ export function AskingPhase() {
                   : 'text-[var(--text-dim)] hover:text-[var(--text-muted)]'
               }`}
             >
-              + 指定交易对
+              {t('chatPanel.specifyPair')}
             </button>
             {showContext && (
               <select
@@ -338,12 +341,12 @@ export function AskingPhase() {
                 onChange={(e) => setContext(e.target.value)}
                 className="px-2 py-1 rounded text-[12px] focus:outline-none bg-[var(--bg-surface)] border border-[var(--border-light)] text-[var(--text-main)]"
               >
-                <optgroup label="热门">
+                <optgroup label={t('chatPanel.popular')}>
                   <option value="BTC/USDT">BTC/USDT</option>
                   <option value="ETH/USDT">ETH/USDT</option>
                   <option value="SOL/USDT">SOL/USDT</option>
                 </optgroup>
-                <optgroup label="其他">
+                <optgroup label={t('chatPanel.other')}>
                   <option value="ARB/USDT">ARB/USDT</option>
                   <option value="BNB/USDT">BNB/USDT</option>
                   <option value="DOGE/USDT">DOGE/USDT</option>
@@ -359,24 +362,24 @@ export function AskingPhase() {
 
           {/* Submit Button */}
           <div className="flex items-center justify-between pt-2 border-t border-[var(--border-light)]">
-            <span className="text-[12px] text-[var(--text-dim)]">10轮追问</span>
+            <span className="text-[12px] text-[var(--text-dim)]">{t('chatPanel.tenRounds')}</span>
             <button
               type="submit"
               disabled={!question.trim() || isLoading || (!hasUnusedTrial && (user?.energyAvailable ?? 0) < 10)}
               className="px-4 py-2 rounded-lg font-bold text-[14px] disabled:opacity-50 disabled:cursor-not-allowed transition hover:opacity-90 bg-[var(--brand-green)] text-black flex items-center gap-1.5"
             >
               {isLoading ? (
-                '发送中...'
+                t('chatPanel.sending')
               ) : hasUnusedTrial && (user?.energyAvailable ?? 0) < 10 ? (
                 <>
                   <Send size={14} />
-                  使用体验券
+                  {t('chatPanel.useTrialVoucher')}
                 </>
               ) : (
                 <>
                   <Send size={14} />
-                  开始咨询
-                  <span className="text-[12px] opacity-80">· 10能量</span>
+                  {t('chatPanel.startConsult')}
+                  <span className="text-[12px] opacity-80">{t('chatPanel.tenEnergy')}</span>
                 </>
               )}
             </button>
@@ -392,7 +395,7 @@ export function AskingPhase() {
             <div className="flex items-center justify-between p-5 border-b border-[var(--border-light)]">
               <div className="flex items-center gap-2">
                 <Heart size={20} className="text-[var(--brand-red)]" />
-                <h3 className="text-[18px] font-bold text-[var(--text-main)]">我的订阅</h3>
+                <h3 className="text-[18px] font-bold text-[var(--text-main)]">{t('chatPanel.mySubscriptions')}</h3>
                 <span className="text-[14px] text-[var(--text-muted)]">({activeSubscriptions.length})</span>
               </div>
               <button
@@ -408,8 +411,8 @@ export function AskingPhase() {
               {activeSubscriptions.length === 0 ? (
                 <div className="text-center py-10">
                   <Heart size={48} className="mx-auto mb-4 text-[var(--text-dim)]" />
-                  <p className="text-[16px] text-[var(--text-muted)]">还没有订阅任何研究员</p>
-                  <p className="text-[14px] text-[var(--text-dim)] mt-1">完成咨询后可订阅喜欢的研究员</p>
+                  <p className="text-[16px] text-[var(--text-muted)]">{t('chatPanel.noSubscriptions')}</p>
+                  <p className="text-[14px] text-[var(--text-dim)] mt-1">{t('chatPanel.noSubscriptionsHint')}</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -436,7 +439,7 @@ export function AskingPhase() {
                                 ? 'bg-[var(--brand-green)]/20 text-[var(--brand-green)]'
                                 : 'bg-[var(--text-dim)]/20 text-[var(--text-dim)]'
                             }`}>
-                              {sub.researcher.status === 'ONLINE' ? '在线' : '离线'}
+                              {sub.researcher.status === 'ONLINE' ? t('chatPanel.statusOnline') : t('chatPanel.statusOffline')}
                             </span>
                           </div>
                           <div className="flex items-center gap-3 text-[14px] text-[var(--text-muted)]">
@@ -446,7 +449,7 @@ export function AskingPhase() {
                             </span>
                             <span className="flex items-center gap-1">
                               <Calendar size={14} />
-                              {formatDate(sub.expiresAt)} 到期
+                              {formatDate(sub.expiresAt)} {t('chatPanel.expiresOn')}
                             </span>
                           </div>
 
@@ -455,16 +458,16 @@ export function AskingPhase() {
                             {sub.autoRenew ? (
                               <span className="flex items-center gap-1 px-2 py-1 rounded bg-[var(--brand-green)]/10 text-[var(--brand-green)] text-[12px]">
                                 <RefreshCw size={12} />
-                                自动续费
+                                {t('chatPanel.autoRenew')}
                               </span>
                             ) : (
                               <span className="flex items-center gap-1 px-2 py-1 rounded bg-[var(--brand-red)]/10 text-[var(--brand-red)] text-[12px]">
-                                已取消续费
+                                {t('chatPanel.cancelledRenew')}
                               </span>
                             )}
                             {getDaysRemaining(sub.expiresAt) <= 3 && (
                               <span className="px-2 py-1 rounded bg-[var(--brand-yellow)]/10 text-[var(--brand-yellow)] text-[12px]">
-                                即将到期
+                                {t('chatPanel.expiringSoon')}
                               </span>
                             )}
                           </div>
@@ -486,7 +489,7 @@ export function AskingPhase() {
                           }`}
                         >
                           <MessageCircle size={14} />
-                          直接咨询
+                          {t('chatPanel.directConsult')}
                         </button>
                         <button
                           onClick={() => {
@@ -501,7 +504,7 @@ export function AskingPhase() {
                           }`}
                         >
                           <Phone size={14} />
-                          预约1v1
+                          {t('chatPanel.book1v1')}
                         </button>
                       </div>
 
@@ -514,14 +517,14 @@ export function AskingPhase() {
                           className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[13px] bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--brand-yellow)] transition"
                         >
                           <ExternalLink size={14} />
-                          主页
+                          {t('chatPanel.homepage')}
                         </a>
                         <button
                           onClick={() => handleToggleAutoRenew(sub)}
                           className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[13px] bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition"
                         >
                           {sub.autoRenew ? <BellOff size={14} /> : <Bell size={14} />}
-                          {sub.autoRenew ? '取消续费' : '恢复续费'}
+                          {sub.autoRenew ? t('chatPanel.cancelRenew') : t('chatPanel.resumeRenew')}
                         </button>
                       </div>
                     </div>
@@ -533,7 +536,7 @@ export function AskingPhase() {
             {/* Modal Footer */}
             <div className="p-4 border-t border-[var(--border-light)]">
               <p className="text-[13px] text-[var(--text-dim)] text-center">
-                订阅费用 50 能量/月 · 到期前 3 天自动续费
+                {t('chatPanel.subscriptionFee')}
               </p>
             </div>
           </div>
@@ -552,9 +555,9 @@ export function AskingPhase() {
             id: appointmentResearcher.researcherId,
             name: appointmentResearcher.researcher.name,
             avatar: appointmentResearcher.researcher.avatar,
-            title: '研究员',
+            title: t('researcher.selectResearcher'),
             rating: appointmentResearcher.researcher.ratingScore,
-            specialties: ['BTC', '技术分析'],
+            specialties: ['BTC', 'Technical Analysis'],
             voicePrice: 30,
             videoPrice: 50,
           }}
@@ -587,10 +590,10 @@ export function AskingPhase() {
                 )}
                 <div>
                   <div className="text-[15px] font-bold text-[var(--text-main)]">
-                    咨询 {selectedQuickResearcher.researcher.name}
+                    {t('chatPanel.consultWith')} {selectedQuickResearcher.researcher.name}
                   </div>
                   <div className="text-[12px] text-[var(--text-muted)]">
-                    选择问题或自定义输入
+                    {t('chatPanel.selectOrCustom')}
                   </div>
                 </div>
               </div>
@@ -635,7 +638,7 @@ export function AskingPhase() {
                       handleQuickConsultSubmit(question);
                     }
                   }}
-                  placeholder="或输入自定义问题..."
+                  placeholder={t('chatPanel.orCustomQuestion')}
                   className="flex-1 px-3 py-2.5 bg-[var(--bg-surface)] text-[var(--text-main)] text-[14px] rounded-lg border border-[var(--border-light)] focus:border-[var(--brand-yellow)] focus:outline-none"
                 />
                 <button
@@ -643,7 +646,7 @@ export function AskingPhase() {
                   disabled={!question.trim() || isLoading}
                   className="px-4 py-2.5 bg-[var(--brand-yellow)] text-black rounded-lg font-medium text-[14px] hover:opacity-90 disabled:opacity-50 transition"
                 >
-                  {isLoading ? '...' : '发送'}
+                  {isLoading ? '...' : t('chat.send')}
                 </button>
               </div>
             </div>
@@ -652,7 +655,7 @@ export function AskingPhase() {
             <div className="px-4 pb-4">
               <div className="flex items-center justify-center gap-2 text-[12px] text-[var(--text-muted)]">
                 <Zap size={12} className="text-[var(--brand-yellow)]" />
-                <span>消耗 10 能量 · 当前 {user?.energyAvailable ?? 0} 能量</span>
+                <span>{t('chatPanel.energyCost')} {user?.energyAvailable ?? 0} {t('chatPanel.energy')}</span>
               </div>
             </div>
           </div>

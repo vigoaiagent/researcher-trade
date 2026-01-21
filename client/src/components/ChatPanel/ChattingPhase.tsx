@@ -5,6 +5,7 @@ import { useUserStore } from '../../stores/userStore';
 import { useCallStore } from '../../stores/callStore';
 import { MessageBubble } from '../Messages/MessageBubble';
 import { VoiceCallService } from '../../services/voiceCall';
+import { useTranslation } from '../../i18n';
 
 export function ChattingPhase() {
   const [input, setInput] = useState('');
@@ -45,6 +46,7 @@ export function ChattingPhase() {
     setRemoteAudioRef,
     reset: resetCall,
   } = useCallStore();
+  const { t } = useTranslation();
 
   // 设置音频引用
   useEffect(() => {
@@ -204,7 +206,7 @@ export function ChattingPhase() {
                   {selectedResearcher.researcher.ratingScore.toFixed(1)}
                 </span>
                 <span>·</span>
-                <span>响应 {selectedResearcher.researcher.responseTimeAvg || '<1'}min</span>
+                <span>{t('chatPanel.response')} {selectedResearcher.researcher.responseTimeAvg || '<1'}min</span>
               </div>
             </div>
 
@@ -216,20 +218,20 @@ export function ChattingPhase() {
                   ? 'bg-[var(--brand-red)] text-white animate-pulse'
                   : 'bg-[var(--brand-green)]/10 text-[var(--brand-green)] hover:bg-[var(--brand-green)]/20'
               }`}
-              title={isInCall ? '挂断通话' : '语音通话'}
+              title={isInCall ? t('chatPanel.hangUp') : t('chatPanel.voiceCall')}
             >
               {isInCall ? <PhoneOff size={18} /> : <Phone size={18} />}
-              <span className="text-[14px] font-medium">{isInCall ? '挂断' : '语音'}</span>
+              <span className="text-[14px] font-medium">{isInCall ? t('chatPanel.hangUp') : t('chatPanel.voiceCall')}</span>
             </button>
 
             {/* Report Button - 显眼的举报按钮 */}
             <button
               onClick={() => setShowReportModal(true)}
               className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--brand-red)] hover:bg-[var(--brand-red)]/10 transition"
-              title="投诉举报"
+              title={t('chatPanel.reportResearcherTitle')}
             >
               <Flag size={16} />
-              <span className="text-[13px]">举报</span>
+              <span className="text-[13px]">{t('chatPanel.report')}</span>
             </button>
 
             {/* More Options Menu */}
@@ -252,7 +254,7 @@ export function ChattingPhase() {
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-[14px] text-[var(--text-main)] hover:bg-[var(--bg-surface)] transition"
                     >
                       <Headphones size={16} className="text-[var(--brand-yellow)]" />
-                      联系AI客服
+                      {t('chatPanel.contactAISupport')}
                     </button>
                     <button
                       onClick={() => {
@@ -262,7 +264,7 @@ export function ChattingPhase() {
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-[14px] text-[var(--text-main)] hover:bg-[var(--bg-surface)] transition"
                     >
                       <Flag size={16} className="text-[var(--brand-red)]" />
-                      投诉举报
+                      {t('chatPanel.reportResearcher')}
                     </button>
                   </div>
                 </>
@@ -273,16 +275,16 @@ export function ChattingPhase() {
           {/* Rounds Progress Bar */}
           <div className="px-3 pb-3">
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[13px] text-[var(--text-muted)]">对话进度</span>
+              <span className="text-[13px] text-[var(--text-muted)]">{t('chatPanel.chatProgress')}</span>
               <div className="flex items-center gap-2">
                 <span className="text-[13px] text-[var(--text-main)]">
-                  {currentConsultation?.roundsUsed || 0} / {currentConsultation?.maxRounds || 10} 轮
+                  {currentConsultation?.roundsUsed || 0} / {currentConsultation?.maxRounds || 10} {t('chatPanel.rounds')}
                 </span>
                 <button
                   onClick={completeConsultation}
                   className="text-[13px] text-[var(--text-dim)] hover:text-[var(--brand-red)] transition"
                 >
-                  结束对话
+                  {t('chatPanel.endChat')}
                 </button>
               </div>
             </div>
@@ -305,42 +307,42 @@ export function ChattingPhase() {
                 <Phone size={32} className="text-[var(--brand-green)]" />
               </div>
               <h3 className="text-[20px] font-bold text-[var(--text-main)] mb-2">
-                发起语音通话
+                {t('chatPanel.initiateVoiceCall')}
               </h3>
               <p className="text-[16px] text-[var(--text-muted)]">
-                与 {selectedResearcher?.researcher.name} 进行语音通话
+                {t('chatPanel.voiceCallWith').replace('{name}', selectedResearcher?.researcher.name || '')}
               </p>
               {/* 语音咨询统计 */}
               <p className="text-[14px] text-[var(--brand-green)] mt-2">
-                已有 {Math.floor(Math.random() * 50 + 10)} 人进行过语音咨询
+                {t('chatPanel.voiceCallStats').replace('{count}', String(Math.floor(Math.random() * 50 + 10)))}
               </p>
             </div>
             <div className="bg-[var(--bg-surface)] rounded-lg p-4 mb-5">
               <div className="flex justify-between text-[16px] mb-2">
-                <span className="text-[var(--text-muted)]">通话费用</span>
-                <span className="text-[var(--brand-yellow)] font-medium">5 能量/分钟</span>
+                <span className="text-[var(--text-muted)]">{t('chatPanel.callCost')}</span>
+                <span className="text-[var(--brand-yellow)] font-medium">5 {t('chatPanel.energyPerMin')}</span>
               </div>
               <div className="flex justify-between text-[16px]">
-                <span className="text-[var(--text-muted)]">当前余额</span>
-                <span className="text-[var(--text-main)]">{user?.energyAvailable || 0} 能量</span>
+                <span className="text-[var(--text-muted)]">{t('chatPanel.currentBalance')}</span>
+                <span className="text-[var(--text-main)]">{user?.energyAvailable || 0} {t('chatPanel.energy')}</span>
               </div>
             </div>
             <p className="text-[13px] text-[var(--text-dim)] text-center mb-5">
-              通话将被录音用于服务质量监控
+              {t('chatPanel.callRecordNotice')}
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowCallConfirm(false)}
                 className="flex-1 py-3 rounded-lg text-[16px] font-medium bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition"
               >
-                取消
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleConfirmCall}
                 disabled={(user?.energyAvailable || 0) < 5}
                 className="flex-1 py-3 rounded-lg text-[16px] font-medium bg-[var(--brand-green)] text-black hover:opacity-90 transition disabled:opacity-50"
               >
-                确认通话
+                {t('chatPanel.confirmCall')}
               </button>
             </div>
           </div>
@@ -353,7 +355,7 @@ export function ChattingPhase() {
           <div className="bg-[var(--bg-panel)] rounded-xl p-6 mx-4 max-w-[400px] w-full shadow-2xl">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-[20px] font-bold text-[var(--text-main)]">
-                投诉举报
+                {t('chatPanel.reportResearcherTitle')}
               </h3>
               <button
                 onClick={() => setShowReportModal(false)}
@@ -363,14 +365,20 @@ export function ChattingPhase() {
               </button>
             </div>
             <p className="text-[14px] text-[var(--text-muted)] mb-4">
-              举报研究员 <span className="text-[var(--text-main)] font-medium">{selectedResearcher?.researcher.name}</span> 的不当行为
+              {t('chatPanel.reportingResearcher')} <span className="text-[var(--text-main)] font-medium">{selectedResearcher?.researcher.name}</span>
             </p>
             <div className="space-y-2 mb-5">
-              {['服务态度差', '回复不专业', '诱导投资', '恶意欺诈', '其他原因'].map((reason) => (
+              {[
+                { key: 'badService', text: t('chatPanel.badService') },
+                { key: 'unprofessional', text: t('chatPanel.unprofessional') },
+                { key: 'inducingInvestment', text: t('chatPanel.inducingInvestment') },
+                { key: 'fraud', text: t('chatPanel.fraud') },
+                { key: 'otherReason', text: t('chatPanel.otherReason') },
+              ].map((reason) => (
                 <label
-                  key={reason}
+                  key={reason.key}
                   className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition ${
-                    reportReason === reason
+                    reportReason === reason.key
                       ? 'bg-[var(--brand-red)]/10 border border-[var(--brand-red)]'
                       : 'bg-[var(--bg-surface)] border border-transparent hover:border-[var(--border-light)]'
                   }`}
@@ -378,19 +386,19 @@ export function ChattingPhase() {
                   <input
                     type="radio"
                     name="reportReason"
-                    value={reason}
-                    checked={reportReason === reason}
+                    value={reason.key}
+                    checked={reportReason === reason.key}
                     onChange={(e) => setReportReason(e.target.value)}
                     className="hidden"
                   />
                   <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                    reportReason === reason ? 'border-[var(--brand-red)]' : 'border-[var(--text-dim)]'
+                    reportReason === reason.key ? 'border-[var(--brand-red)]' : 'border-[var(--text-dim)]'
                   }`}>
-                    {reportReason === reason && (
+                    {reportReason === reason.key && (
                       <span className="w-2 h-2 rounded-full bg-[var(--brand-red)]" />
                     )}
                   </span>
-                  <span className="text-[15px] text-[var(--text-main)]">{reason}</span>
+                  <span className="text-[15px] text-[var(--text-main)]">{reason.text}</span>
                 </label>
               ))}
             </div>
@@ -399,29 +407,29 @@ export function ChattingPhase() {
                 onClick={() => setShowReportModal(false)}
                 className="flex-1 py-3 rounded-lg text-[16px] font-medium bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition"
               >
-                取消
+                {t('common.cancel')}
               </button>
               <button
                 onClick={() => {
                   if (!reportReason) {
-                    alert('请选择举报原因');
+                    alert(t('chatPanel.pleaseSelectReason'));
                     return;
                   }
-                  alert('举报已提交，我们会尽快处理');
+                  alert(t('chatPanel.reportSubmitted'));
                   setShowReportModal(false);
                   setReportReason('');
                 }}
                 disabled={!reportReason}
                 className="flex-1 py-3 rounded-lg text-[16px] font-medium bg-[var(--brand-red)] text-white hover:opacity-90 transition disabled:opacity-50"
               >
-                提交举报
+                {t('chatPanel.submitReport')}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* 通话状态条 */}
+      {/* Call Status Bar */}
       {isInCall && (
         <div className="bg-[var(--brand-green)] bg-opacity-10 border-b border-[var(--brand-green)] px-4 py-2">
           <div className="flex items-center justify-between">
@@ -430,25 +438,25 @@ export function ChattingPhase() {
                 <>
                   <Loader2 size={14} className="text-[var(--brand-green)] animate-spin" />
                   <span className="text-[11px] text-[var(--brand-green)]">
-                    {callStatus === 'requesting' ? '请求中...' : '等待接听...'}
+                    {callStatus === 'requesting' ? t('chatPanel.requesting') : t('chatPanel.waitingAnswer')}
                   </span>
                 </>
               ) : callStatus === 'connecting' ? (
                 <>
                   <Loader2 size={14} className="text-[var(--brand-green)] animate-spin" />
-                  <span className="text-[11px] text-[var(--brand-green)]">连接中...</span>
+                  <span className="text-[11px] text-[var(--brand-green)]">{t('chatPanel.connecting')}</span>
                 </>
               ) : callStatus === 'connected' ? (
                 <>
                   <span className="w-2 h-2 bg-[var(--brand-red)] rounded-full animate-pulse" />
-                  <span className="text-[11px] text-[var(--brand-green)]">通话中</span>
+                  <span className="text-[11px] text-[var(--brand-green)]">{t('chatPanel.inCall')}</span>
                   <span className="text-[11px] text-[var(--brand-green)] font-mono">
                     {VoiceCallService.formatDuration(duration)}
                   </span>
                 </>
               ) : callStatus === 'failed' ? (
                 <span className="text-[11px] text-[var(--brand-red)]">
-                  通话失败: {callError || '未知错误'}
+                  {t('chatPanel.callFailed')} {callError || t('chatPanel.unknownError')}
                 </span>
               ) : null}
             </div>
@@ -476,7 +484,7 @@ export function ChattingPhase() {
 
       {/* Messages List */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[var(--bg-app)]">
-        {/* Crypto 风险提示 Banner */}
+        {/* Security Tips Banner */}
         {showRiskWarning && (
           <div className="bg-[var(--brand-red)]/10 border border-[var(--brand-red)]/30 rounded-xl p-4 animate-in fade-in duration-300">
             <div className="flex items-start gap-3">
@@ -486,7 +494,7 @@ export function ChattingPhase() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="text-[15px] font-bold text-[var(--brand-red)]">
-                    安全提示
+                    {t('chatPanel.securityTips')}
                   </h4>
                   <button
                     onClick={() => setShowRiskWarning(false)}
@@ -498,23 +506,23 @@ export function ChattingPhase() {
                 <ul className="text-[14px] text-[var(--text-main)] space-y-1.5">
                   <li className="flex items-start gap-2">
                     <span className="text-[var(--brand-red)]">•</span>
-                    <span>请勿私下添加好友或转移到其他平台交流</span>
+                    <span>{t('chatPanel.securityTip1')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-[var(--brand-red)]">•</span>
-                    <span>不要下载任何不明链接或安装未知软件</span>
+                    <span>{t('chatPanel.securityTip2')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-[var(--brand-red)]">•</span>
-                    <span>研究员不会索要您的私钥、助记词或密码</span>
+                    <span>{t('chatPanel.securityTip3')}</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-[var(--brand-red)]">•</span>
-                    <span>投资有风险，研究员观点仅供参考，不构成投资建议</span>
+                    <span>{t('chatPanel.securityTip4')}</span>
                   </li>
                 </ul>
                 <p className="text-[13px] text-[var(--text-muted)] mt-2">
-                  如遇可疑行为，请点击「举报」按钮
+                  {t('chatPanel.reportSuspicious')}
                 </p>
               </div>
             </div>
@@ -551,7 +559,7 @@ export function ChattingPhase() {
               {typingPhase === 'reading' ? (
                 <div className="flex items-center gap-2">
                   <span className="text-[14px] text-[var(--text-muted)]">
-                    {selectedResearcher?.researcher.name} 正在查看消息
+                    {selectedResearcher?.researcher.name} {t('chatPanel.isViewing')}
                   </span>
                   <span className="flex gap-0.5">
                     <span className="w-1.5 h-1.5 bg-[var(--text-dim)] rounded-full animate-pulse" style={{ animationDelay: '0ms' }} />
@@ -567,7 +575,7 @@ export function ChattingPhase() {
                     <span className="w-2.5 h-2.5 bg-[var(--brand-green)] rounded-full animate-bounce" style={{ animationDelay: '300ms', animationDuration: '0.6s' }} />
                   </div>
                   <span className="text-[14px] text-[var(--brand-green)] font-medium ml-1">
-                    {selectedResearcher?.researcher.name} 正在输入...
+                    {selectedResearcher?.researcher.name} {t('chatPanel.isTyping')}
                   </span>
                 </div>
               )}
@@ -575,7 +583,7 @@ export function ChattingPhase() {
           </div>
         )}
 
-        {/* Timeout Warning - 超时提示 */}
+        {/* Timeout Warning */}
         {showTimeoutWarning && (
           <div className="mx-4 mb-3 p-4 bg-[var(--brand-yellow)]/10 border border-[var(--brand-yellow)]/30 rounded-xl animate-in fade-in slide-in-from-bottom-2">
             <div className="flex items-start gap-3">
@@ -584,10 +592,10 @@ export function ChattingPhase() {
               </div>
               <div className="flex-1">
                 <p className="text-[14px] text-[var(--text-main)] font-medium mb-1">
-                  研究员暂时繁忙
+                  {t('chatPanel.researcherBusy')}
                 </p>
                 <p className="text-[13px] text-[var(--text-muted)] mb-3">
-                  已等待 {Math.floor(waitingSeconds / 60)}分{waitingSeconds % 60}秒，研究员可能正在处理其他咨询
+                  {t('chatPanel.waitedTime').replace('{minutes}', String(Math.floor(waitingSeconds / 60))).replace('{seconds}', String(waitingSeconds % 60))}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <button
@@ -596,23 +604,23 @@ export function ChattingPhase() {
                     }}
                     className="px-3 py-1.5 rounded-lg text-[13px] font-medium bg-[var(--brand-yellow)] text-black hover:opacity-90 transition"
                   >
-                    先问AI客服
+                    {t('chatPanel.askAIFirst')}
                   </button>
                   <button
                     onClick={() => setShowTimeoutWarning(false)}
                     className="px-3 py-1.5 rounded-lg text-[13px] font-medium bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition"
                   >
-                    继续等待
+                    {t('chatPanel.continueWait')}
                   </button>
                   <button
                     onClick={() => {
-                      if (confirm('确定要结束本次咨询吗？能量将按使用轮次退还')) {
+                      if (confirm(t('chatPanel.confirmEndConsult'))) {
                         completeConsultation();
                       }
                     }}
                     className="px-3 py-1.5 rounded-lg text-[13px] font-medium text-[var(--brand-red)] hover:bg-[var(--brand-red)]/10 transition"
                   >
-                    结束咨询
+                    {t('chatPanel.endConsult')}
                   </button>
                 </div>
               </div>
@@ -627,7 +635,7 @@ export function ChattingPhase() {
       {roundsLeft <= 1 && !roundsExhausted && (
         <div className="px-4 py-3 bg-[rgba(240,185,11,0.1)] border-t border-[var(--brand-yellow)]">
           <p className="text-[15px] text-center text-[var(--brand-yellow)] font-medium">
-            还剩 {roundsLeft} 轮对话
+            {roundsLeft} {t('chatPanel.roundsLeft')}
           </p>
         </div>
       )}
@@ -637,22 +645,22 @@ export function ChattingPhase() {
         <div className="px-5 py-4 bg-[rgba(240,185,11,0.15)] border-t border-[var(--brand-yellow)]">
           <div className="text-center">
             <p className="text-[18px] text-[var(--brand-yellow)] font-bold mb-2">
-              对话轮次已用完
+              {t('chatPanel.roundsExhausted')}
             </p>
             <p className="text-[15px] text-[var(--text-muted)] mb-4">
-              如需继续追问，可消耗 {extendCost} 能量值增加 10 轮对话
+              {t('chatPanel.extendRoundsHint').replace('{cost}', String(extendCost))}
             </p>
             <div className="flex gap-3 justify-center">
               <button
                 onClick={async () => {
                   if (!user) return;
                   if (user.energyAvailable < extendCost) {
-                    alert('能量值不足，请充值');
+                    alert(t('chatPanel.insufficientEnergyRecharge'));
                     return;
                   }
                   try {
                     await extendConsultation(user.id);
-                    spendEnergy(extendCost, '续费追问');
+                    spendEnergy(extendCost, 'Extend consultation');
                   } catch {
                     // Error handled in store
                   }
@@ -661,13 +669,13 @@ export function ChattingPhase() {
                 className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-[16px] font-bold transition hover:opacity-90 disabled:opacity-50 bg-[var(--brand-yellow)] text-black"
               >
                 <Zap size={18} />
-                续费追问 ({extendCost} 能量)
+                {t('chatPanel.extendRounds').replace('{cost}', String(extendCost))}
               </button>
               <button
                 onClick={() => setPhase('rating')}
                 className="px-5 py-2.5 rounded-lg text-[16px] font-bold transition hover:opacity-80 text-[var(--text-muted)] bg-[var(--bg-surface)]"
               >
-                结束对话
+                {t('chatPanel.endConversation')}
               </button>
             </div>
           </div>
@@ -681,7 +689,7 @@ export function ChattingPhase() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={roundsExhausted ? '请续费后继续追问...' : 'Type your follow-up question...'}
+            placeholder={roundsExhausted ? t('chatPanel.inputPlaceholderExtend') : t('chatPanel.inputPlaceholderAsk')}
             rows={2}
             className="flex-1 p-3 rounded-[4px] resize-none text-[20px] leading-relaxed focus:outline-none focus:border-[var(--brand-yellow)] bg-[var(--bg-app)] text-[var(--text-main)] border border-[var(--border-light)] placeholder:text-[var(--text-dim)] transition-colors"
             disabled={roundsLeft <= 0 || roundsExhausted}

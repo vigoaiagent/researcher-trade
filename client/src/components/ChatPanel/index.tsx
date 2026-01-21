@@ -284,7 +284,7 @@ export function ChatPanel() {
     };
 
     const handleRefunded = () => {
-      alert('咨询超时，能量已退还');
+      alert(t('chatPanel.consultationTimeout'));
       useChatStore.getState().reset();
     };
 
@@ -320,7 +320,7 @@ export function ChatPanel() {
 
   const handleClose = () => {
     if (phase === 'chatting' || (serviceMode === 'ai' && useChatStore.getState().aiMessages.length > 0)) {
-      if (!confirm('确定要关闭对话吗？')) return;
+      if (!confirm(t('chatPanel.closeConfirm'))) return;
     }
     closeChat();
     clearAIMessages();
@@ -463,7 +463,7 @@ export function ChatPanel() {
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="p-1.5 rounded-lg transition hover:bg-[var(--bg-surface)]"
-                title={isExpanded ? '缩小' : '放大'}
+                title={isExpanded ? t('chatPanel.shrinkBtn') : t('chatPanel.expandBtn')}
               >
                 {isExpanded ? (
                   <Minimize2 size={16} className="text-[var(--text-muted)] hover:text-[var(--text-main)]" />

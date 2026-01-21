@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { Users } from 'lucide-react';
 import { useChatStore } from '../../stores/chatStore';
 import { RoboCatIcon } from '../trading/RoboCatIcon';
+import { useTranslation } from '../../i18n';
 
 export function WaitingPhase() {
   const { currentConsultation } = useChatStore();
   const [onlineCount, setOnlineCount] = useState(0);
+  const { t } = useTranslation();
 
   // 模拟获取在线研究员数量
   useEffect(() => {
@@ -34,7 +36,7 @@ export function WaitingPhase() {
         </span>
         <Users size={16} className="text-[var(--brand-green)]" />
         <span className="text-[14px] font-medium text-[var(--brand-green)]">
-          {onlineCount} 位研究员在线
+          {onlineCount} {t('chatPanel.researchersOnline')}
         </span>
       </div>
 
@@ -52,17 +54,17 @@ export function WaitingPhase() {
       </div>
 
       <h3 className="text-[18px] md:text-[22px] font-bold mb-2 md:mb-3 text-[var(--text-main)]">
-        正在匹配研究员...
+        {t('chatPanel.matchingResearcher')}
       </h3>
 
       <p className="text-[14px] md:text-[16px] mb-4 md:mb-5 text-[var(--text-muted)]">
-        您的问题已发送给专业研究员
+        {t('chatPanel.questionSent')}
       </p>
 
       {currentConsultation && (
         <div className="rounded-lg p-3 md:p-5 w-full max-w-md bg-[var(--bg-surface)] border border-[var(--border-light)]">
           <p className="text-[12px] md:text-[14px] mb-1.5 md:mb-2 text-[var(--text-muted)]">
-            您的问题
+            {t('chatPanel.yourQuestion')}
           </p>
           <p className="text-[14px] md:text-[18px] text-[var(--text-main)] leading-relaxed line-clamp-3">
             {currentConsultation.question}
@@ -87,11 +89,11 @@ export function WaitingPhase() {
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
           />
         </svg>
-        <span>等待研究员响应...</span>
+        <span>{t('chatPanel.waitingResponse')}</span>
       </div>
 
       <p className="mt-4 md:mt-5 text-[12px] md:text-[14px] text-[var(--brand-yellow)]">
-        研究员有 2 分钟时间响应，超时将自动退款
+        {t('chatPanel.responseTimeout')}
       </p>
     </div>
   );

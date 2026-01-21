@@ -6,13 +6,14 @@ import { useChatStore } from '../../stores/chatStore';
 import { useUserStore } from '../../stores/userStore';
 import { RoboCatIcon } from '../trading/RoboCatIcon';
 import type { UserLevel } from '../../types';
+import { useTranslation } from '../../i18n';
 
-// FAQ 常见问题
-const faqQuestions = [
-  { label: '如何交易？', question: '请介绍一下如何在平台上进行交易？' },
-  { label: '费用说明', question: '平台的交易费用是怎么计算的？' },
-  { label: '能量值用途', question: '能量值有什么用？如何获取更多能量值？' },
-  { label: '提升等级', question: '如何提升用户等级？不同等级有什么权益？' },
+// FAQ 常见问题 - will be generated with translations
+const getFaqQuestions = (t: (key: string) => string) => [
+  { label: t('chatPanel.faqHowToTrade'), question: t('chatPanel.faqHowToTradeQ') },
+  { label: t('chatPanel.faqFees'), question: t('chatPanel.faqFeesQ') },
+  { label: t('chatPanel.faqEnergy'), question: t('chatPanel.faqEnergyQ') },
+  { label: t('chatPanel.faqLevel'), question: t('chatPanel.faqLevelQ') },
 ];
 
 // 支持链接
@@ -26,6 +27,8 @@ export function AIChat() {
   const [showSupportPrompt, setShowSupportPrompt] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { t } = useTranslation();
+  const faqQuestions = getFaqQuestions(t);
 
   const userLevel = (user?.level || 'Bronze') as UserLevel;
 
@@ -75,23 +78,23 @@ export function AIChat() {
             </div>
             <div className="flex-1">
               <div className="bg-[var(--bg-surface)] rounded-lg rounded-tl-none p-4 text-[20px] leading-relaxed text-[var(--text-main)]">
-                您好！我是 SoDEX AI 研究员，有什么可以帮您？
+                {t('chatPanel.aiGreeting')}
                 <br /><br />
-                我可以为您解答：
+                {t('chatPanel.aiCanHelp')}
                 <ul className="list-disc ml-4 mt-2 text-[var(--text-muted)]">
-                  <li>平台使用指南</li>
-                  <li>交易规则与费用</li>
-                  <li>能量值与等级系统</li>
-                  <li>账户相关问题</li>
+                  <li>{t('chatPanel.aiHelp1')}</li>
+                  <li>{t('chatPanel.aiHelp2')}</li>
+                  <li>{t('chatPanel.aiHelp3')}</li>
+                  <li>{t('chatPanel.aiHelp4')}</li>
                 </ul>
               </div>
-              <div className="text-[9px] text-[var(--text-muted)] mt-1">AI 研究员</div>
+              <div className="text-[9px] text-[var(--text-muted)] mt-1">{t('chatPanel.aiAssistant')}</div>
 
               {/* FAQ Quick Questions */}
               <div className="mt-3">
                 <div className="flex items-center gap-1 mb-2">
                   <HelpCircle size={12} className="text-[var(--text-muted)]" />
-                  <span className="text-[10px] text-[var(--text-muted)]">常见问题</span>
+                  <span className="text-[10px] text-[var(--text-muted)]">{t('chatPanel.faqTitle')}</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {faqQuestions.map((faq, idx) => (
@@ -197,10 +200,10 @@ export function AIChat() {
           <div className="bg-[var(--bg-surface)] rounded-lg p-3 mx-2 border border-[var(--border-light)]">
             <div className="flex items-center gap-2 mb-2">
               <MessageCircle size={14} className="text-[var(--brand-yellow)]" />
-              <span className="text-[11px] font-medium text-[var(--text-main)]">需要更多帮助？</span>
+              <span className="text-[11px] font-medium text-[var(--text-main)]">{t('chatPanel.needMoreHelp')}</span>
             </div>
             <p className="text-[10px] text-[var(--text-muted)] mb-3">
-              如果AI研究员无法解决您的问题，您可以提交工单或加入我们的Discord社区获得人工支持。
+              {t('chatPanel.needMoreHelpDesc')}
             </p>
             <div className="flex gap-2">
               <a
@@ -210,7 +213,7 @@ export function AIChat() {
                 className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-[var(--brand-yellow)] text-black rounded-lg text-[10px] font-medium hover:opacity-90 transition"
               >
                 <ExternalLink size={12} />
-                提交工单
+                {t('chatPanel.submitTicket')}
               </a>
               <a
                 href={DISCORD_LINK}
@@ -221,7 +224,7 @@ export function AIChat() {
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
                 </svg>
-                加入 Discord
+                {t('chatPanel.joinDiscord')}
               </a>
             </div>
           </div>
@@ -252,7 +255,7 @@ export function AIChat() {
           </button>
         </div>
         <div className="text-[9px] text-[var(--text-muted)] mt-2 text-center">
-          由 Dify AI 提供支持 • 升级到 Gold 解锁专属研究员
+          {t('chatPanel.poweredByDify')}
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { useChatStore } from '../../stores/chatStore';
 import { useUserStore } from '../../stores/userStore';
 import { favoriteApi } from '../../services/api';
 import { LEVEL_CONFIG } from '../../types';
+import { useTranslation } from '../../i18n';
 
 // SoSoValue 研究员主页 URL 模板
 const PROFILE_URL = 'https://sosovalue.com/profile/index';
@@ -11,6 +12,7 @@ const PROFILE_URL = 'https://sosovalue.com/profile/index';
 export function CompletedPhase() {
   const { reset, closeChat, selectedResearcher } = useChatStore();
   const { user } = useUserStore();
+  const { t } = useTranslation();
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [checkingSubscription, setCheckingSubscription] = useState(true);
@@ -51,7 +53,7 @@ export function CompletedPhase() {
       await favoriteApi.add(user.id, selectedResearcher.researcherId);
       setIsSubscribed(true);
     } catch (error: any) {
-      alert(error.message || '订阅失败');
+      alert(error.message || t('common.error'));
     } finally {
       setIsLoading(false);
     }
@@ -71,10 +73,10 @@ export function CompletedPhase() {
         </div>
       </div>
 
-      <h3 className="text-[22px] font-bold text-[var(--text-main)] mb-3">感谢您的评价！</h3>
+      <h3 className="text-[22px] font-bold text-[var(--text-main)] mb-3">{t('chatPanel.thankYouRating')}</h3>
 
       <p className="text-[15px] text-[var(--text-muted)] text-center mb-5">
-        我们会持续提升服务质量
+        {t('chatPanel.weWillImprove')}
       </p>
 
       {/* Researcher Profile Card */}
@@ -90,7 +92,7 @@ export function CompletedPhase() {
               </div>
               <div className="flex items-center gap-2 text-[14px] text-[var(--text-muted)] mt-1">
                 <Star size={14} className="text-[var(--brand-yellow)] fill-[var(--brand-yellow)]" />
-                {selectedResearcher.researcher.ratingScore.toFixed(1)} · {selectedResearcher.researcher.serviceCount} 次服务
+                {selectedResearcher.researcher.ratingScore.toFixed(1)} · {selectedResearcher.researcher.serviceCount} {t('chatPanel.services')}
               </div>
             </div>
           </div>
@@ -102,7 +104,7 @@ export function CompletedPhase() {
               <div className="w-full py-3 mb-3 rounded-lg bg-[var(--bg-app)] border border-[var(--border-light)]">
                 <div className="flex items-center justify-center gap-2 text-[var(--text-muted)]">
                   <Lock size={16} />
-                  <span className="text-[14px]">订阅需要 <span className="text-[var(--brand-yellow)] font-medium">Gold</span> 等级</span>
+                  <span className="text-[14px]">{t('chatPanel.subscriptionRequiresGoldLevel')}</span>
                 </div>
               </div>
             ) : (
@@ -120,12 +122,12 @@ export function CompletedPhase() {
                 ) : isSubscribed ? (
                   <>
                     <Check size={18} />
-                    已订阅
+                    {t('chatPanel.subscribed')}
                   </>
                 ) : (
                   <>
                     <Heart size={18} />
-                    订阅研究员
+                    {t('chatPanel.subscribeResearcher')}
                   </>
                 )}
               </button>
@@ -140,7 +142,7 @@ export function CompletedPhase() {
               className="flex items-center justify-center gap-2 w-full py-3 bg-[var(--bg-app)] rounded-lg text-[14px] text-[var(--text-muted)] hover:text-[var(--brand-yellow)] hover:bg-[var(--bg-highlight)] transition"
             >
               <ExternalLink size={16} />
-              查看研究员主页 & 历史作品
+              {t('chatPanel.viewResearcherProfile')}
             </a>
           )}
         </div>
@@ -149,7 +151,7 @@ export function CompletedPhase() {
       {/* Subscription Hint */}
       {selectedResearcher && !isSubscribed && !checkingSubscription && user && LEVEL_CONFIG[user.level].hasResearcherAccess && (
         <p className="text-[14px] text-[var(--text-muted)] text-center mb-4 max-w-sm">
-          订阅后可直接向该研究员发起咨询，无需等待匹配
+          {t('chatPanel.subscribeHint')}
         </p>
       )}
 
@@ -159,19 +161,19 @@ export function CompletedPhase() {
           onClick={handleNewConsultation}
           className="w-full py-3 bg-[var(--brand-green)] text-black rounded-lg font-bold hover:opacity-90 transition text-[16px]"
         >
-          发起新咨询
+          {t('chatPanel.newConsultation')}
         </button>
         <button
           onClick={handleClose}
           className="w-full py-3 border border-[var(--border-light)] text-[var(--text-muted)] rounded-lg hover:bg-[var(--bg-surface)] hover:text-[var(--text-main)] transition text-[16px]"
         >
-          关闭窗口
+          {t('chatPanel.closeWindow')}
         </button>
       </div>
 
       {/* Hint */}
       <p className="mt-5 text-[13px] text-[var(--text-dim)] text-center">
-        随时欢迎咨询我们的专属研究员
+        {t('chatPanel.welcomeBack')}
       </p>
     </div>
   );

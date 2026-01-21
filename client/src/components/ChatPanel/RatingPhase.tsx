@@ -4,17 +4,18 @@ import { useChatStore } from '../../stores/chatStore';
 import { useUserStore } from '../../stores/userStore';
 import { favoriteApi, researcherApi } from '../../services/api';
 import { LEVEL_CONFIG } from '../../types';
+import { useTranslation } from '../../i18n';
 
 const SUBSCRIPTION_COST = 50;
 
-// 订阅权益列表
-const subscriptionBenefits = [
-  { icon: MessageCircle, text: '直接发起咨询，无需等待匹配' },
-  { icon: Phone, text: '预约 1v1 语音/视频咨询' },
-  { icon: Calendar, text: '查看研究员路演日历' },
-  { icon: Bell, text: '研究员新研报第一时间推送' },
-  { icon: Clock, text: '优先响应，平均响应时间 <3分钟' },
-  { icon: Gift, text: '专属折扣：咨询费用 9 折优惠' },
+// Get subscription benefits with translations
+const getSubscriptionBenefits = (t: (key: string) => string) => [
+  { icon: MessageCircle, text: t('chatPanel.subscriptionBenefit1') },
+  { icon: Phone, text: t('chatPanel.subscriptionBenefit2') },
+  { icon: Calendar, text: t('chatPanel.subscriptionBenefit3') },
+  { icon: Bell, text: t('chatPanel.subscriptionBenefit4') },
+  { icon: Clock, text: t('chatPanel.subscriptionBenefit5') },
+  { icon: Gift, text: t('chatPanel.subscriptionBenefit6') },
 ];
 
 interface RecommendedResearcher {
@@ -91,6 +92,8 @@ export function RatingPhase() {
   const [reviewStats, setReviewStats] = useState<{ total: number; average: number } | null>(null);
   const { selectedResearcher, submitRating, isLoading } = useChatStore();
   const { user, spendEnergy, syncEnergyBalance } = useUserStore();
+  const { t } = useTranslation();
+  const subscriptionBenefits = getSubscriptionBenefits(t);
 
   // 检查是否已收藏
   useEffect(() => {
@@ -174,7 +177,7 @@ export function RatingPhase() {
     if (!user || !selectedResearcher) return;
 
     if (user.energyAvailable < SUBSCRIPTION_COST) {
-      alert('能量值不足，无法订阅');
+      alert(t('chatPanel.insufficientEnergySubscribe'));
       return;
     }
 
@@ -207,11 +210,11 @@ export function RatingPhase() {
 
   const getRatingText = (s: number) => {
     switch (s) {
-      case 5: return '非常满意';
-      case 4: return '满意';
-      case 3: return '一般';
-      case 2: return '不满意';
-      case 1: return '非常不满意';
+      case 5: return t('chatPanel.verySatisfied');
+      case 4: return t('chatPanel.satisfied');
+      case 3: return t('chatPanel.average');
+      case 2: return t('chatPanel.dissatisfied');
+      case 1: return t('chatPanel.veryDissatisfied');
       default: return '';
     }
   };
@@ -226,10 +229,10 @@ export function RatingPhase() {
         <div className="w-20 h-20 bg-[var(--brand-green-dim)] rounded-full flex items-center justify-center mb-4">
           <CheckCircle size={40} className="text-[var(--brand-green)]" />
         </div>
-        <h3 className="text-[20px] font-bold text-[var(--text-main)] mb-2">对话完成</h3>
+        <h3 className="text-[20px] font-bold text-[var(--text-main)] mb-2">{t('chatPanel.chatCompleted')}</h3>
         {selectedResearcher && (
           <p className="text-[15px] text-[var(--text-muted)]">
-            感谢与 {selectedResearcher.researcher.name} 的对话
+            {t('chatPanel.thankYouChat')} {selectedResearcher.researcher.name}
           </p>
         )}
       </div>
@@ -255,7 +258,7 @@ export function RatingPhase() {
               </div>
               <div className="flex items-center gap-2 text-[14px] text-[var(--text-muted)] mt-1">
                 <Star size={14} className="text-[var(--brand-yellow)] fill-[var(--brand-yellow)]" />
-                {selectedResearcher.researcher.ratingScore.toFixed(1)} · {selectedResearcher.researcher.serviceCount} 次服务
+                {selectedResearcher.researcher.ratingScore.toFixed(1)} · {selectedResearcher.researcher.serviceCount} {t('chatPanel.services')}
               </div>
             </div>
           </div>
@@ -270,7 +273,7 @@ export function RatingPhase() {
                 className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[var(--bg-app)] rounded-lg text-[14px] text-[var(--text-muted)] hover:text-[var(--brand-yellow)] hover:bg-[var(--bg-highlight)] transition"
               >
                 <ExternalLink size={16} />
-                TokenBar 主页
+                {t('chatPanel.tokenBarHomepage')}
               </a>
             )}
             <a
@@ -280,23 +283,23 @@ export function RatingPhase() {
               className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[var(--bg-app)] rounded-lg text-[14px] text-[var(--text-muted)] hover:text-[var(--brand-green)] hover:bg-[var(--bg-highlight)] transition"
             >
               <FileText size={16} />
-              历史研报
+              {t('chatPanel.historicalReports')}
             </a>
           </div>
 
-          {/* Hot Reviews - 热门评价直接显示 */}
+          {/* Hot Reviews */}
           {hotReviews.length > 0 && (
             <div className="pt-3 border-t border-[var(--border-light)]">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <MessageCircle size={14} className="text-[var(--brand-yellow)]" />
-                  <span className="text-[13px] font-medium text-[var(--text-main)]">用户好评</span>
+                  <span className="text-[13px] font-medium text-[var(--text-main)]">{t('chatPanel.userReviews')}</span>
                 </div>
                 {reviewStats && (
                   <div className="flex items-center gap-1.5 text-[12px]">
                     <Star size={12} className="fill-[var(--brand-yellow)] text-[var(--brand-yellow)]" />
                     <span className="font-bold text-[var(--brand-yellow)]">{reviewStats.average.toFixed(1)}</span>
-                    <span className="text-[var(--text-muted)]">({reviewStats.total}条)</span>
+                    <span className="text-[var(--text-muted)]">({reviewStats.total} {t('chatPanel.reviews')})</span>
                   </div>
                 )}
               </div>
@@ -340,14 +343,14 @@ export function RatingPhase() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Heart size={20} className="text-[var(--brand-red)]" />
-              <span className="text-[16px] font-bold text-[var(--text-main)]">订阅研究员</span>
+              <span className="text-[16px] font-bold text-[var(--text-main)]">{t('chatPanel.subscribeResearcher')}</span>
             </div>
             <button
               onClick={handleOpenSubscribeModal}
               className="flex items-center gap-1.5 px-4 py-2 bg-[var(--brand-yellow)] text-black rounded-lg text-[15px] font-bold hover:opacity-90 transition"
             >
               <Zap size={16} />
-              {SUBSCRIPTION_COST} 能量
+              {SUBSCRIPTION_COST} {t('chatPanel.energy')}
             </button>
           </div>
 
@@ -370,7 +373,7 @@ export function RatingPhase() {
           <div className="flex items-center gap-2">
             <Heart size={18} className="text-[var(--brand-green)] fill-[var(--brand-green)]" />
             <span className="text-[15px] text-[var(--brand-green)] font-medium">
-              已订阅 {selectedResearcher.researcher.name}
+              {t('chatPanel.subscribed')} {selectedResearcher.researcher.name}
             </span>
           </div>
         </div>
@@ -378,7 +381,7 @@ export function RatingPhase() {
 
       {/* Star Rating */}
       <div className="mb-5 text-center">
-        <p className="text-[15px] text-[var(--text-muted)] mb-3">为本次咨询评分</p>
+        <p className="text-[15px] text-[var(--text-muted)] mb-3">{t('chatPanel.rateConsultation')}</p>
         <div className="flex gap-2 justify-center mb-2">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
@@ -409,10 +412,10 @@ export function RatingPhase() {
         <div className="mb-5 p-4 bg-[var(--bg-surface)] rounded-xl border border-[var(--border-light)]">
           <div className="flex items-center gap-2 mb-3">
             <Users size={18} className="text-[var(--brand-yellow)]" />
-            <span className="text-[15px] font-medium text-[var(--text-main)]">为您推荐其他研究员</span>
+            <span className="text-[15px] font-medium text-[var(--text-main)]">{t('chatPanel.recommendOthers')}</span>
           </div>
           {loadingRecommended ? (
-            <div className="text-center py-4 text-[14px] text-[var(--text-muted)]">加载中...</div>
+            <div className="text-center py-4 text-[14px] text-[var(--text-muted)]">{t('chatPanel.loadingText')}</div>
           ) : recommendedResearchers.length > 0 ? (
             <div className="space-y-3">
               {recommendedResearchers.map((researcher) => (
@@ -440,7 +443,7 @@ export function RatingPhase() {
                         {researcher.ratingScore.toFixed(1)}
                       </div>
                       <span className="text-[12px] text-[var(--text-dim)]">
-                        {researcher.serviceCount} 服务
+                        {researcher.serviceCount} {t('chatPanel.services')}
                       </span>
                     </div>
                     {researcher.specialties && researcher.specialties.length > 0 && (
@@ -461,7 +464,7 @@ export function RatingPhase() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-4 text-[14px] text-[var(--text-muted)]">暂无推荐</div>
+            <div className="text-center py-4 text-[14px] text-[var(--text-muted)]">{t('chatPanel.noRecommendation')}</div>
           )}
         </div>
       )}
@@ -471,7 +474,7 @@ export function RatingPhase() {
         <textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          placeholder="留下评价（可选）"
+          placeholder={t('chatPanel.leaveComment')}
           rows={3}
           className="w-full p-4 rounded-xl resize-none text-[15px] focus:outline-none focus:border-[var(--brand-yellow)] bg-[var(--bg-surface)] border border-[var(--border-light)] text-[var(--text-main)] placeholder:text-[var(--text-dim)] transition-colors"
         />
@@ -484,14 +487,14 @@ export function RatingPhase() {
           disabled={isLoading}
           className="flex-1 py-3 border border-[var(--border-light)] text-[var(--text-muted)] rounded-xl hover:bg-[var(--bg-surface)] hover:text-[var(--text-main)] transition text-[15px]"
         >
-          跳过
+          {t('chatPanel.skip')}
         </button>
         <button
           onClick={handleSubmit}
           disabled={isLoading}
           className="flex-1 py-3 bg-[var(--brand-green)] text-black rounded-xl disabled:opacity-50 hover:opacity-90 transition font-bold text-[15px]"
         >
-          {isLoading ? '提交中...' : '提交评价'}
+          {isLoading ? t('chatPanel.submitting') : t('chatPanel.submitRating')}
         </button>
       </div>
 
@@ -508,29 +511,29 @@ export function RatingPhase() {
                     <Lock size={32} className="text-[var(--brand-yellow)]" />
                   </div>
                   <h3 className="text-[20px] font-bold text-[var(--text-main)] mb-2">
-                    等级不足
+                    {t('chatPanel.levelInsufficient')}
                   </h3>
                   <p className="text-[15px] text-[var(--text-muted)]">
-                    订阅研究员需要 <span className="text-[var(--brand-yellow)] font-medium">Gold</span> 或更高等级
+                    {t('chatPanel.subscriptionRequiresGold')}
                   </p>
                 </div>
 
                 <div className="bg-[var(--bg-surface)] rounded-lg p-4 mb-4">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[14px] text-[var(--text-muted)]">当前等级</span>
+                    <span className="text-[14px] text-[var(--text-muted)]">{t('chat.currentLevel')}</span>
                     <span className="text-[14px] font-medium" style={{ color: LEVEL_CONFIG[user.level].color }}>
                       {user.level}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[14px] text-[var(--text-muted)]">需要等级</span>
+                    <span className="text-[14px] text-[var(--text-muted)]">{t('chatPanel.needLevel')}</span>
                     <span className="text-[14px] font-medium text-[#ffd700]">Gold+</span>
                   </div>
                 </div>
 
                 <div className="bg-[var(--bg-surface)] rounded-lg p-4 mb-5">
                   <div className="text-[13px] text-[var(--text-muted)] leading-relaxed">
-                    提升等级：通过交易产生手续费来提升您的等级。30天内累计手续费达到 $1,000 即可升级到 Gold。
+                    {t('chatPanel.upgradeHint')}
                   </div>
                 </div>
 
@@ -538,7 +541,7 @@ export function RatingPhase() {
                   onClick={() => setShowSubscribeConfirm(false)}
                   className="w-full py-3 rounded-lg text-[16px] font-medium bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition"
                 >
-                  我知道了
+                  {t('chatPanel.gotIt')}
                 </button>
               </>
             ) : (
@@ -549,16 +552,16 @@ export function RatingPhase() {
                     <Heart size={32} className="text-[var(--brand-yellow)]" />
                   </div>
                   <h3 className="text-[20px] font-bold text-[var(--text-main)] mb-2">
-                    订阅研究员
+                    {t('chatPanel.subscribeResearcherTitle')}
                   </h3>
                   <p className="text-[15px] text-[var(--text-muted)]">
-                    订阅 {selectedResearcher?.researcher.name}
+                    {t('chatPanel.subscribe')} {selectedResearcher?.researcher.name}
                   </p>
                 </div>
 
                 {/* Benefits in Modal */}
                 <div className="bg-[var(--bg-surface)] rounded-lg p-4 mb-4">
-                  <div className="text-[14px] font-medium text-[var(--text-main)] mb-3">订阅权益</div>
+                  <div className="text-[14px] font-medium text-[var(--text-main)] mb-3">{t('chatPanel.subscriptionBenefits')}</div>
                   <div className="space-y-2">
                     {subscriptionBenefits.map((benefit, index) => (
                       <div key={index} className="flex items-center gap-2 text-[13px] text-[var(--text-muted)]">
@@ -571,12 +574,12 @@ export function RatingPhase() {
 
                 <div className="bg-[var(--bg-surface)] rounded-lg p-4 mb-5">
                   <div className="flex justify-between text-[15px] mb-2">
-                    <span className="text-[var(--text-muted)]">订阅费用</span>
-                    <span className="text-[var(--brand-yellow)] font-medium">{SUBSCRIPTION_COST} 能量/月</span>
+                    <span className="text-[var(--text-muted)]">{t('chatPanel.subscriptionCost')}</span>
+                    <span className="text-[var(--brand-yellow)] font-medium">{SUBSCRIPTION_COST} {t('chatPanel.energy')}{t('chatPanel.perMonth')}</span>
                   </div>
                   <div className="flex justify-between text-[15px]">
-                    <span className="text-[var(--text-muted)]">当前余额</span>
-                    <span className="text-[var(--text-main)]">{user?.energyAvailable || 0} 能量</span>
+                    <span className="text-[var(--text-muted)]">{t('chatPanel.currentBalance')}</span>
+                    <span className="text-[var(--text-main)]">{user?.energyAvailable || 0} {t('chatPanel.energy')}</span>
                   </div>
                 </div>
 
@@ -585,14 +588,14 @@ export function RatingPhase() {
                     onClick={() => setShowSubscribeConfirm(false)}
                     className="flex-1 py-3 rounded-lg text-[16px] font-medium bg-[var(--bg-surface)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition"
                   >
-                    取消
+                    {t('common.cancel')}
                   </button>
                   <button
                     onClick={handleSubscribe}
                     disabled={isSubscribing || (user?.energyAvailable || 0) < SUBSCRIPTION_COST}
                     className="flex-1 py-3 rounded-lg text-[16px] font-medium bg-[var(--brand-yellow)] text-black hover:opacity-90 transition disabled:opacity-50"
                   >
-                    {isSubscribing ? '订阅中...' : '确认订阅'}
+                    {isSubscribing ? t('chatPanel.confirming') : t('chatPanel.confirmSubscribe')}
                   </button>
                 </div>
               </>
