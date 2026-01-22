@@ -186,13 +186,13 @@ export function RatingPhase() {
       const result = await favoriteApi.add(user.id, selectedResearcher.researcherId);
       if (result.success) {
         setIsFavorite(true);
-        spendEnergy(result.monthlyCost || SUBSCRIPTION_COST, '订阅研究员');
+        spendEnergy(result.monthlyCost || SUBSCRIPTION_COST, t('chatPanel.subscribeEnergyDesc'));
         setShowSubscribeConfirm(false);
         // 订阅成功后再次同步余额
         await syncEnergyBalance();
       }
     } catch (error: any) {
-      alert(error.message || '订阅失败');
+      alert(error.message || t('chatPanel.subscribeFailed'));
     } finally {
       setIsSubscribing(false);
     }

@@ -1,5 +1,6 @@
 // WebRTC Voice Call Service with Recording
 // 语音通话服务，带录音功能用于风控
+import { useLanguage } from '../i18n';
 
 // STUN/TURN服务器配置 (Metered.ca)
 const ICE_SERVERS: RTCIceServer[] = [
@@ -69,6 +70,7 @@ class VoiceCallService {
   // 获取本地音频流
   async getLocalStream(): Promise<MediaStream> {
     try {
+      const t = useLanguage.getState().t;
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
@@ -81,8 +83,8 @@ class VoiceCallService {
       return stream;
     } catch (error: any) {
       const errorMsg = error.name === 'NotAllowedError'
-        ? '请允许麦克风访问权限'
-        : '无法获取麦克风，请检查设备';
+        ? t('voiceCall.permissionDenied')
+        : t('voiceCall.micUnavailable');
       this.onError?.(errorMsg);
       throw new Error(errorMsg);
     }

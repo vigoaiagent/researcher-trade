@@ -4,6 +4,7 @@ import {
   Volume2, VolumeX, Play, Pause, Crown
 } from 'lucide-react';
 import { useUserStore } from '../../stores/userStore';
+import { useTranslation } from '../../i18n';
 
 // 路演活动类型
 export interface RoadshowEvent {
@@ -25,51 +26,14 @@ export interface RoadshowEvent {
 
 // Mock 礼物配置
 const GIFTS = [
-  { id: 'like', name: '点赞', icon: '👍', cost: 0, isBig: false },
-  { id: 'rocket', name: '火箭', icon: '🚀', cost: 10, isBig: false },
-  { id: 'diamond', name: '钻石', icon: '💎', cost: 50, isBig: true },
-  { id: 'crown', name: '皇冠', icon: '👑', cost: 100, isBig: true },
-  { id: 'lambo', name: '兰博基尼', icon: '🏎️', cost: 500, isBig: true },
-  { id: 'spaceship', name: '飞船', icon: '🛸', cost: 1000, isBig: true },
+  { id: 'like', icon: '👍', cost: 0, isBig: false },
+  { id: 'rocket', icon: '🚀', cost: 10, isBig: false },
+  { id: 'diamond', icon: '💎', cost: 50, isBig: true },
+  { id: 'crown', icon: '👑', cost: 100, isBig: true },
+  { id: 'lambo', icon: '🏎️', cost: 500, isBig: true },
+  { id: 'spaceship', icon: '🛸', cost: 1000, isBig: true },
 ];
 
-// Mock 评论数据
-const mockComments = [
-  { id: 1, user: 'Trader_王', content: '这个分析太到位了！', isVip: true },
-  { id: 2, user: 'Crypto_李', content: 'BTC 目标价多少？', isVip: false },
-  { id: 3, user: 'DeFi_张', content: '支持！', isVip: true },
-  { id: 4, user: '新手小白', content: '学到了', isVip: false },
-];
-
-// 模拟实时评论内容
-const simulatedComments = [
-  '666',
-  '太强了！',
-  '感谢分享',
-  '老师说得对',
-  '学到了',
-  '冲冲冲',
-  '有道理',
-  '干货满满',
-  '这波分析绝了',
-  '支持！',
-  '第一次看就被圈粉',
-  '啥时候抄底？',
-  '目标价多少？',
-  '这轮牛市还能持续吗',
-  '怎么看ETH？',
-  '老师威武',
-  '关注了',
-  '讲得真好',
-  'WAGMI',
-  'To the moon!',
-];
-
-const simulatedUsernames = [
-  'Crypto_大师', 'BTC_holder', '韭菜小白', 'DeFi_农民', '合约战神',
-  '现货党', '梭哈王', '稳健投资', '新手一枚', '老韭菜',
-  '逢低买入', '止损专家', '满仓干', 'ETH_信仰', 'Sol_冲浪者',
-];
 
 interface RoadshowLiveModalProps {
   event: RoadshowEvent | null;
@@ -91,11 +55,82 @@ interface GlobalGiftBroadcast {
 }
 
 export function RoadshowLiveModal({ event, onClose }: RoadshowLiveModalProps) {
+  const { t, language } = useTranslation();
   const { user } = useUserStore();
+  const giftName = (gift: typeof GIFTS[0]) => t(`roadshowLive.gifts.${gift.id}`);
+  const initialComments = language === 'zh'
+    ? [
+      { id: 1, user: 'Trader_王', content: '这个分析太到位了！', isVip: true },
+      { id: 2, user: 'Crypto_李', content: 'BTC 目标价多少？', isVip: false },
+      { id: 3, user: 'DeFi_张', content: '支持！', isVip: true },
+      { id: 4, user: '新手小白', content: '学到了', isVip: false },
+    ]
+    : [
+      { id: 1, user: 'Trader_A', content: 'Great analysis!', isVip: true },
+      { id: 2, user: 'Crypto_B', content: 'What is BTC target price?', isVip: false },
+      { id: 3, user: 'DeFi_C', content: 'Support!', isVip: true },
+      { id: 4, user: 'Newbie', content: 'Learned a lot', isVip: false },
+    ];
+  const simulatedComments = language === 'zh'
+    ? [
+      '666',
+      '太强了！',
+      '感谢分享',
+      '老师说得对',
+      '学到了',
+      '冲冲冲',
+      '有道理',
+      '干货满满',
+      '这波分析绝了',
+      '支持！',
+      '第一次看就被圈粉',
+      '啥时候抄底？',
+      '目标价多少？',
+      '这轮牛市还能持续吗',
+      '怎么看ETH？',
+      '老师威武',
+      '关注了',
+      '讲得真好',
+      'WAGMI',
+      'To the moon!',
+    ]
+    : [
+      'Nice!',
+      'Great insights!',
+      'Thanks for sharing',
+      'Spot on',
+      'Learned a lot',
+      'Let’s go',
+      'Makes sense',
+      'Solid alpha',
+      'Brilliant analysis',
+      'Support!',
+      'Big fan already',
+      'When to buy the dip?',
+      'Target price?',
+      'Will this bull run continue?',
+      'Thoughts on ETH?',
+      'Awesome',
+      'Following',
+      'Excellent talk',
+      'WAGMI',
+      'To the moon!',
+    ];
+  const simulatedUsernames = language === 'zh'
+    ? [
+      'Crypto_大师', 'BTC_holder', '韭菜小白', 'DeFi_农民', '合约战神',
+      '现货党', '梭哈王', '稳健投资', '新手一枚', '老韭菜',
+      '逢低买入', '止损专家', '满仓干', 'ETH_信仰', 'Sol_冲浪者',
+    ]
+    : [
+      'Crypto_Pro', 'BTC_holder', 'Alt_Fan', 'DeFi_Farmer', 'Futures_Star',
+      'Spot_Only', 'YOLO_King', 'Steady_Investor', 'Newbie_01', 'Old_Timer',
+      'Buy_The_Dip', 'StopLoss_Guru', 'AllIn_Mode', 'ETH_Believer', 'Sol_Surfer',
+    ];
   const [isMinimized, setIsMinimized] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [comments, setComments] = useState(mockComments);
+  const [comments, setComments] = useState(initialComments);
   const [newComment, setNewComment] = useState('');
   const [viewerCount, setViewerCount] = useState(event?.viewerCount || 1234);
   const [likeCount, setLikeCount] = useState(event?.likeCount || 567);
@@ -114,6 +149,10 @@ export function RoadshowLiveModal({ event, onClose }: RoadshowLiveModalProps) {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    setComments(initialComments);
+  }, [language]);
 
   // 模拟实时评论
   useEffect(() => {
@@ -148,7 +187,9 @@ export function RoadshowLiveModal({ event, onClose }: RoadshowLiveModalProps) {
     setComments(prev => [...prev.slice(-50), {
       id: Date.now(),
       user: userName,
-      content: `送出了 ${gift.icon} ${gift.name}`,
+      content: t('roadshowLive.sentGiftComment')
+        .replace('{icon}', gift.icon)
+        .replace('{gift}', giftName(gift)),
       isVip: true,
     }]);
 
@@ -187,7 +228,7 @@ export function RoadshowLiveModal({ event, onClose }: RoadshowLiveModalProps) {
     if (!newComment.trim()) return;
     const comment = {
       id: Date.now(),
-      user: user?.walletAddress?.slice(0, 8) || '匿名',
+      user: user?.walletAddress?.slice(0, 8) || t('roadshowLive.anonymousUser'),
       content: newComment,
       isVip: (user?.level === 'Gold' || user?.level === 'Diamond'),
     };
@@ -226,13 +267,15 @@ export function RoadshowLiveModal({ event, onClose }: RoadshowLiveModalProps) {
       return; // 能量不足
     }
 
-    const userName = user?.walletAddress?.slice(0, 8) || '我';
+    const userName = user?.walletAddress?.slice(0, 8) || t('roadshowLive.meUser');
 
     // 添加评论
     setComments(prev => [...prev.slice(-50), {
       id: Date.now(),
       user: userName,
-      content: `送出了 ${gift.icon} ${gift.name}`,
+      content: t('roadshowLive.sentGiftComment')
+        .replace('{icon}', gift.icon)
+        .replace('{gift}', giftName(gift)),
       isVip: true,
     }]);
 
@@ -273,7 +316,7 @@ export function RoadshowLiveModal({ event, onClose }: RoadshowLiveModalProps) {
           {/* Live 标签 */}
           <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 bg-[var(--brand-red)] rounded text-[10px] font-bold text-white">
             <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-            LIVE
+            {t('roadshowLive.liveBadge')}
           </div>
 
           {/* 观看人数 */}
@@ -326,7 +369,7 @@ export function RoadshowLiveModal({ event, onClose }: RoadshowLiveModalProps) {
           <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
             <div className="flex items-center gap-1 md:gap-1.5 px-1.5 md:px-2 py-0.5 md:py-1 bg-[var(--brand-red)] rounded text-[10px] md:text-[11px] font-bold text-white shrink-0">
               <span className="w-1.5 md:w-2 h-1.5 md:h-2 bg-white rounded-full animate-pulse" />
-              LIVE
+              {t('roadshowLive.liveBadge')}
             </div>
             <div className="min-w-0">
               <h2 className="text-[13px] md:text-[14px] font-bold text-[var(--text-main)] truncate">
@@ -347,7 +390,7 @@ export function RoadshowLiveModal({ event, onClose }: RoadshowLiveModalProps) {
             <button
               onClick={() => setIsMinimized(true)}
               className="hidden md:block p-1.5 hover:bg-[var(--bg-surface)] rounded transition-colors"
-              title="缩小到右下角"
+              title={t('roadshowLive.minimizeHint')}
             >
               <Minimize2 size={16} className="text-[var(--text-muted)]" />
             </button>
@@ -371,7 +414,7 @@ export function RoadshowLiveModal({ event, onClose }: RoadshowLiveModalProps) {
                 <div className="text-center">
                   <div className="text-[80px] mb-4">📺</div>
                   <div className="text-[14px] text-[var(--text-muted)]">
-                    直播画面
+                    {t('roadshowLive.liveScene')}
                   </div>
                 </div>
               </div>
@@ -466,7 +509,7 @@ export function RoadshowLiveModal({ event, onClose }: RoadshowLiveModalProps) {
                   className="flex items-center gap-1.5 px-3 py-2 bg-[var(--brand-red)]/10 hover:bg-[var(--brand-red)]/20 text-[var(--brand-red)] rounded-lg transition-colors"
                 >
                   <Heart size={16} />
-                  <span className="text-[12px] font-medium">点赞</span>
+                  <span className="text-[12px] font-medium">{t('roadshowLive.like')}</span>
                 </button>
 
                 {/* 礼物 */}
@@ -476,7 +519,7 @@ export function RoadshowLiveModal({ event, onClose }: RoadshowLiveModalProps) {
                     className="flex items-center gap-1.5 px-3 py-2 bg-[var(--brand-yellow)]/10 hover:bg-[var(--brand-yellow)]/20 text-[var(--brand-yellow)] rounded-lg transition-colors"
                   >
                     <Gift size={16} />
-                    <span className="text-[12px] font-medium">礼物</span>
+                    <span className="text-[12px] font-medium">{t('roadshowLive.gift')}</span>
                   </button>
 
                   {/* 礼物面板 */}
@@ -490,7 +533,7 @@ export function RoadshowLiveModal({ event, onClose }: RoadshowLiveModalProps) {
                             className="flex flex-col items-center gap-1 p-2 hover:bg-[var(--bg-surface)] rounded transition-colors"
                           >
                             <span className="text-[24px]">{gift.icon}</span>
-                            <span className="text-[9px] text-[var(--text-muted)]">{gift.name}</span>
+                            <span className="text-[9px] text-[var(--text-muted)]">{giftName(gift)}</span>
                             {gift.cost > 0 && (
                               <span className="text-[8px] text-[var(--brand-yellow)]">
                                 ⚡{gift.cost}
@@ -525,9 +568,9 @@ export function RoadshowLiveModal({ event, onClose }: RoadshowLiveModalProps) {
             <div className="shrink-0 px-3 py-2 border-b border-[var(--border-light)]">
               <div className="flex items-center gap-2">
                 <MessageCircle size={14} className="text-[var(--text-muted)]" />
-                <span className="text-[12px] font-medium text-[var(--text-main)]">实时评论</span>
+                <span className="text-[12px] font-medium text-[var(--text-main)]">{t('roadshowLive.liveComments')}</span>
                 <span className="text-[10px] text-[var(--text-muted)]">
-                  {comments.length} 条
+                  {t('roadshowLive.commentCount').replace('{count}', String(comments.length))}
                 </span>
               </div>
             </div>
@@ -564,7 +607,7 @@ export function RoadshowLiveModal({ event, onClose }: RoadshowLiveModalProps) {
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendComment()}
-                  placeholder="发送评论..."
+                  placeholder={t('roadshowLive.commentPlaceholder')}
                   className="flex-1 bg-[var(--bg-app)] text-[var(--text-main)] text-[12px] px-3 py-2 rounded-lg border border-transparent focus:border-[var(--brand-yellow)] focus:outline-none"
                 />
                 <button
@@ -594,10 +637,10 @@ export function RoadshowLiveModal({ event, onClose }: RoadshowLiveModalProps) {
                   {globalBroadcast.user}
                 </div>
                 <div className="text-white/90 text-[14px]">
-                  送出了 <span className="font-bold text-[16px]">{globalBroadcast.gift.name}</span>
+                  {t('roadshowLive.sentGiftBroadcast').replace('{gift}', giftName(globalBroadcast.gift))}
                 </div>
                 <div className="text-[#ffd700] text-[12px] mt-1">
-                  ⚡ {globalBroadcast.gift.cost} 能量
+                  ⚡ {globalBroadcast.gift.cost} {t('roadshowLive.energyUnit')}
                 </div>
               </div>
               <div className="text-[60px] animate-bounce" style={{ animationDelay: '0.1s' }}>

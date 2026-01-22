@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, Calendar, Globe2, Radio, Clock, Users, Play, Bell, BellOff, Crown, ChevronLeft, ChevronRight, Check, Download } from 'lucide-react';
 import { useUserStore } from '../stores/userStore';
 import type { UserLevel } from '../types';
+import { useTranslation } from '../i18n';
 
 // Google Calendar icon component
 const GoogleCalendarIcon = () => (
@@ -48,6 +49,7 @@ const generateICSContent = (
   description: string,
   startDate: Date,
   endDate: Date,
+  reminderDescription: string,
 ): string => {
   const formatDate = (d: Date) => d.toISOString().replace(/-|:|\.\d{3}/g, '').slice(0, 15) + 'Z';
 
@@ -64,7 +66,7 @@ DESCRIPTION:${description}
 BEGIN:VALARM
 TRIGGER:-PT30M
 ACTION:DISPLAY
-DESCRIPTION:路演提醒：${title}
+DESCRIPTION:${reminderDescription}
 END:VALARM
 END:VEVENT
 END:VCALENDAR`;
@@ -99,12 +101,14 @@ export interface MacroEvent {
   hasLiveStream?: boolean;
   liveStreamId?: string;
   description?: string;
+  descriptionEn?: string;
 }
 
 // 路演事件类型
 export interface RoadshowEvent {
   id: string;
   title: string;
+  titleEn: string;
   speaker: string;
   speakerTitle: string;
   startTime: Date;
@@ -114,6 +118,7 @@ export interface RoadshowEvent {
   requiredLevel: 'Gold' | 'Diamond';
   registeredCount: number;
   description?: string;
+  descriptionEn?: string;
 }
 
 // 资产特定事件类型
@@ -127,6 +132,7 @@ export interface AssetEvent {
   asset: string; // BTC, ETH, SOL 等
   category: 'unlock' | 'upgrade' | 'halving' | 'fork' | 'listing' | 'airdrop' | 'governance';
   description?: string;
+  descriptionEn?: string;
   hasLiveStream?: boolean;
 }
 
@@ -142,6 +148,7 @@ const btcEvents: AssetEvent[] = [
     asset: 'BTC',
     category: 'halving',
     description: '比特币区块奖励将从6.25 BTC减半至3.125 BTC，历史上减半后价格通常上涨。',
+    descriptionEn: 'Bitcoin block rewards will halve from 6.25 BTC to 3.125 BTC; historically prices often rise after halvings.',
     hasLiveStream: true,
   },
   {
@@ -154,6 +161,7 @@ const btcEvents: AssetEvent[] = [
     asset: 'BTC',
     category: 'unlock',
     description: '约 $500M GBTC 份额解锁，可能带来卖压。',
+    descriptionEn: 'About $500M in GBTC shares unlock, potentially adding selling pressure.',
   },
 ];
 
@@ -169,6 +177,7 @@ const ethEvents: AssetEvent[] = [
     asset: 'ETH',
     category: 'upgrade',
     description: '以太坊Dencun升级，引入Proto-Danksharding，大幅降低L2 Gas费用。',
+    descriptionEn: 'Ethereum Dencun upgrade introduces Proto-Danksharding, significantly reducing L2 gas fees.',
     hasLiveStream: true,
   },
   {
@@ -181,6 +190,7 @@ const ethEvents: AssetEvent[] = [
     asset: 'ETH',
     category: 'unlock',
     description: '大量ETH质押解锁，预计约 120,000 ETH 进入流通。',
+    descriptionEn: 'Large ETH staking unlocks, with ~120,000 ETH expected to enter circulation.',
   },
 ];
 
@@ -196,6 +206,7 @@ const solEvents: AssetEvent[] = [
     asset: 'SOL',
     category: 'governance',
     description: 'Solana 年度开发者大会，预计发布重要技术更新和生态合作。',
+    descriptionEn: 'Solana annual developer conference; major tech updates and ecosystem partnerships expected.',
     hasLiveStream: true,
   },
   {
@@ -208,6 +219,7 @@ const solEvents: AssetEvent[] = [
     asset: 'SOL',
     category: 'airdrop',
     description: 'Jupiter DEX 第二轮空投快照，持有SOL和使用Jupiter的用户可能获得JUP代币。',
+    descriptionEn: 'Second Jupiter DEX airdrop snapshot; SOL holders and Jupiter users may receive JUP tokens.',
   },
 ];
 
@@ -228,6 +240,16 @@ export function getAssetEvents(asset: string): AssetEvent[] {
   }
 }
 
+const getLocalizedTitle = (
+  event: { title: string; titleEn?: string },
+  language: 'zh' | 'en',
+) => (language === 'zh' ? event.title : (event.titleEn || event.title));
+
+const getLocalizedDescription = (
+  event: { description?: string; descriptionEn?: string },
+  language: 'zh' | 'en',
+) => (language === 'zh' ? event.description : (event.descriptionEn || event.description));
+
 // 模拟宏观日历数据 - 增强版
 const mockMacroEvents: MacroEvent[] = [
   // 央行决议
@@ -245,6 +267,7 @@ const mockMacroEvents: MacroEvent[] = [
     hasLiveStream: true,
     liveStreamId: 'live-fomc-1',
     description: '美联储公开市场委员会将公布最新利率决议，市场预计维持利率不变。',
+    descriptionEn: 'The FOMC will announce its latest rate decision; markets expect rates to remain unchanged.',
   },
   {
     id: 'macro-5',
@@ -258,6 +281,7 @@ const mockMacroEvents: MacroEvent[] = [
     previous: '5.25%',
     forecast: '5.25%',
     description: '英国央行公布最新利率决议。',
+    descriptionEn: 'The Bank of England announces its latest rate decision.',
   },
   {
     id: 'macro-ecb',
@@ -272,6 +296,7 @@ const mockMacroEvents: MacroEvent[] = [
     forecast: '4.50%',
     hasLiveStream: true,
     description: '欧洲央行货币政策会议，关注通胀前景和降息预期。',
+    descriptionEn: 'ECB policy meeting focusing on inflation outlook and rate-cut expectations.',
   },
   {
     id: 'macro-boj',
@@ -286,6 +311,7 @@ const mockMacroEvents: MacroEvent[] = [
     forecast: '0.00%',
     hasLiveStream: true,
     description: '日本央行可能结束负利率政策，对全球资金流动产生重大影响。',
+    descriptionEn: 'The BoJ may end negative rates, impacting global capital flows.',
   },
   // 经济数据
   {
@@ -302,6 +328,7 @@ const mockMacroEvents: MacroEvent[] = [
     hasLiveStream: true,
     liveStreamId: 'live-cpi-1',
     description: '美国消费者物价指数年率，对通胀预期有重要影响。',
+    descriptionEn: 'US CPI YoY, key for inflation expectations.',
   },
   {
     id: 'macro-3',
@@ -315,6 +342,7 @@ const mockMacroEvents: MacroEvent[] = [
     previous: '4.9%',
     forecast: '5.2%',
     description: '中国第四季度GDP增速数据。',
+    descriptionEn: 'China Q4 GDP growth data.',
   },
   {
     id: 'macro-6',
@@ -330,6 +358,7 @@ const mockMacroEvents: MacroEvent[] = [
     hasLiveStream: true,
     liveStreamId: 'live-nfp',
     description: '美国非农就业人数，对美元和风险资产影响重大。',
+    descriptionEn: 'US non-farm payrolls, a major driver for USD and risk assets.',
   },
   {
     id: 'macro-7',
@@ -341,6 +370,7 @@ const mockMacroEvents: MacroEvent[] = [
     category: 'earnings',
     country: 'US',
     description: 'NVIDIA Q4财报，AI概念股风向标。',
+    descriptionEn: 'NVIDIA Q4 earnings, a bellwether for AI stocks.',
   },
 ];
 
@@ -349,6 +379,7 @@ const mockRoadshowEvents: RoadshowEvent[] = [
   {
     id: 'rs-live-001',
     title: 'BTC 实时行情解读',
+    titleEn: 'BTC Live Market Briefing',
     speaker: 'Alex Chen',
     speakerTitle: 'Senior Analyst',
     startTime: new Date(Date.now() - 30 * 60 * 1000),
@@ -358,10 +389,12 @@ const mockRoadshowEvents: RoadshowEvent[] = [
     requiredLevel: 'Gold',
     registeredCount: 89,
     description: '实时分析BTC市场动态，解读关键技术指标和市场情绪。',
+    descriptionEn: 'Real-time analysis of BTC market dynamics, key technical levels, and sentiment.',
   },
   {
     id: 'rs-001',
     title: 'BTC 2025年行情展望与策略分析',
+    titleEn: 'BTC 2025 Outlook & Strategy',
     speaker: 'Alex Chen',
     speakerTitle: 'Senior Analyst',
     startTime: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
@@ -371,10 +404,12 @@ const mockRoadshowEvents: RoadshowEvent[] = [
     requiredLevel: 'Gold',
     registeredCount: 156,
     description: '深度分析2025年BTC价格走势，提供中长期投资策略建议。',
+    descriptionEn: 'Deep dive into the 2025 BTC outlook with mid-to-long term strategy guidance.',
   },
   {
     id: 'rs-002',
     title: 'DeFi 新趋势：RWA与链上金融',
+    titleEn: 'DeFi Trends: RWA & On-chain Finance',
     speaker: '李明阳',
     speakerTitle: 'DeFi Researcher',
     startTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
@@ -384,10 +419,12 @@ const mockRoadshowEvents: RoadshowEvent[] = [
     requiredLevel: 'Gold',
     registeredCount: 89,
     description: '探讨RWA（真实世界资产）代币化趋势及投资机会。',
+    descriptionEn: 'Explore RWA tokenization trends and on-chain finance opportunities.',
   },
   {
     id: 'rs-003',
     title: 'VIP 专属: Q1 投资组合配置',
+    titleEn: 'VIP Exclusive: Q1 Portfolio Allocation',
     speaker: 'Michael Liu',
     speakerTitle: 'Chief Strategist',
     startTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
@@ -397,10 +434,12 @@ const mockRoadshowEvents: RoadshowEvent[] = [
     requiredLevel: 'Diamond',
     registeredCount: 23,
     description: 'Diamond专属：2025年Q1最优投资组合策略，包含具体配置比例。',
+    descriptionEn: 'Diamond exclusive: optimal Q1 2025 portfolio allocation with specific weights.',
   },
   {
     id: 'rs-004',
     title: 'AMA: Layer2 生态发展与机会',
+    titleEn: 'AMA: Layer2 Ecosystem Opportunities',
     speaker: 'Sarah Wang',
     speakerTitle: 'L2 Specialist',
     startTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
@@ -410,6 +449,7 @@ const mockRoadshowEvents: RoadshowEvent[] = [
     requiredLevel: 'Gold',
     registeredCount: 112,
     description: 'AMA互动问答：Layer2生态分析与投资机会探讨。',
+    descriptionEn: 'AMA on Layer2 ecosystem analysis and investment opportunities.',
   },
 ];
 
@@ -418,18 +458,18 @@ type CalendarTab = 'macro' | 'roadshow';
 
 // 重要性颜色配置
 const importanceColors = {
-  high: { bg: 'rgba(234, 57, 67, 0.2)', text: '#ea3943', label: '高' },
-  medium: { bg: 'rgba(247, 147, 26, 0.2)', text: '#f7931a', label: '中' },
-  low: { bg: 'rgba(22, 199, 132, 0.2)', text: '#16c784', label: '低' },
+  high: { bg: 'rgba(234, 57, 67, 0.2)', text: '#ea3943' },
+  medium: { bg: 'rgba(247, 147, 26, 0.2)', text: '#f7931a' },
+  low: { bg: 'rgba(22, 199, 132, 0.2)', text: '#16c784' },
 };
 
 // 类别配置
 const categoryConfig = {
-  fed: { icon: '🏛️', label: '央行' },
-  economic: { icon: '📊', label: '经济数据' },
-  earnings: { icon: '📈', label: '财报' },
-  crypto: { icon: '₿', label: '加密' },
-  geopolitical: { icon: '🌍', label: '地缘政治' },
+  fed: { icon: '🏛️' },
+  economic: { icon: '📊' },
+  earnings: { icon: '📈' },
+  crypto: { icon: '₿' },
+  geopolitical: { icon: '🌍' },
 };
 
 // 国家旗帜
@@ -447,12 +487,14 @@ interface RoadshowCalendarProps {
 }
 
 export function RoadshowCalendar({ isOpen, onClose }: RoadshowCalendarProps) {
+  const { t, language } = useTranslation();
   const { user } = useUserStore();
   const [activeTab, setActiveTab] = useState<CalendarTab>('macro');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showLiveStreams, setShowLiveStreams] = useState(true);
   const [notifications, setNotifications] = useState<Set<string>>(new Set());
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const locale = language === 'zh' ? 'zh-CN' : 'en-US';
 
   const userLevel = (user?.level || 'Bronze') as UserLevel;
 
@@ -501,7 +543,7 @@ export function RoadshowCalendar({ isOpen, onClose }: RoadshowCalendarProps) {
 
   // 格式化日期
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'short' });
+    return date.toLocaleDateString(locale, { month: 'long', day: 'numeric', weekday: 'short' });
   };
 
   // 获取某天的事件
@@ -549,7 +591,9 @@ export function RoadshowCalendar({ isOpen, onClose }: RoadshowCalendarProps) {
   if (!isOpen) return null;
 
   const days = getDaysInMonth(currentMonth);
-  const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+  const weekDays = language === 'zh'
+    ? ['日', '一', '二', '三', '四', '五', '六']
+    : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
     <div className="fixed inset-0 z-[300] flex items-center justify-center p-0 md:p-4">
@@ -563,7 +607,7 @@ export function RoadshowCalendar({ isOpen, onClose }: RoadshowCalendarProps) {
           <div className="flex items-center justify-between w-full md:w-auto">
             <div className="flex items-center gap-2 md:gap-4">
               <Calendar size={20} className="text-[var(--brand-yellow)] md:w-6 md:h-6" />
-              <h2 className="text-lg md:text-xl font-bold text-[var(--text-main)]">事件日历</h2>
+              <h2 className="text-lg md:text-xl font-bold text-[var(--text-main)]">{t('roadshowCalendar.title')}</h2>
             </div>
             {/* 移动端关闭按钮 */}
             <button
@@ -585,7 +629,7 @@ export function RoadshowCalendar({ isOpen, onClose }: RoadshowCalendarProps) {
               }`}
             >
               <Globe2 size={14} className="md:w-4 md:h-4" />
-              宏观日历
+              {t('roadshowCalendar.tabMacro')}
             </button>
             <button
               onClick={() => setActiveTab('roadshow')}
@@ -596,7 +640,7 @@ export function RoadshowCalendar({ isOpen, onClose }: RoadshowCalendarProps) {
               }`}
             >
               <Radio size={16} />
-              路演日历
+              {t('roadshowCalendar.tabRoadshow')}
             </button>
           </div>
 
@@ -611,7 +655,7 @@ export function RoadshowCalendar({ isOpen, onClose }: RoadshowCalendarProps) {
               }`}
             >
               <Radio size={14} />
-              {showLiveStreams ? '显示直播' : '隐藏直播'}
+              {showLiveStreams ? t('roadshowCalendar.showLive') : t('roadshowCalendar.hideLive')}
             </button>
 
             <button
@@ -636,7 +680,7 @@ export function RoadshowCalendar({ isOpen, onClose }: RoadshowCalendarProps) {
                 <ChevronLeft size={20} className="text-[var(--text-muted)]" />
               </button>
               <span className="text-lg font-medium text-[var(--text-main)]">
-                {currentMonth.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' })}
+                {currentMonth.toLocaleDateString(locale, { year: 'numeric', month: 'long' })}
               </span>
               <button
                 onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
@@ -694,17 +738,17 @@ export function RoadshowCalendar({ isOpen, onClose }: RoadshowCalendarProps) {
 
             {/* Legend */}
             <div className="mt-4 pt-4 border-t border-[var(--border-light)]">
-              <div className="text-xs text-[var(--text-muted)] mb-2">图例</div>
+              <div className="text-xs text-[var(--text-muted)] mb-2">{t('roadshowCalendar.legend')}</div>
               <div className="flex flex-wrap gap-2">
                 <div className="flex items-center gap-1 text-xs">
                   <div className="w-2 h-2 rounded-full bg-[var(--brand-red)]" />
                   <span className="text-[var(--text-muted)]">
-                    {activeTab === 'macro' ? '高重要性' : '直播中'}
+                    {activeTab === 'macro' ? t('roadshowCalendar.legendHighImportance') : t('roadshowCalendar.legendLive')}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-xs">
                   <div className="w-2 h-2 rounded-full bg-[var(--brand-green)]" />
-                  <span className="text-[var(--text-muted)]">有事件</span>
+                  <span className="text-[var(--text-muted)]">{t('roadshowCalendar.legendHasEvents')}</span>
                 </div>
               </div>
             </div>
@@ -723,7 +767,7 @@ export function RoadshowCalendar({ isOpen, onClose }: RoadshowCalendarProps) {
                     onClick={() => setSelectedDate(null)}
                     className="text-sm text-[var(--brand-yellow)] hover:underline"
                   >
-                    查看全部
+                    {t('roadshowCalendar.viewAll')}
                   </button>
                 </div>
                 <div className="space-y-3">
@@ -750,7 +794,7 @@ export function RoadshowCalendar({ isOpen, onClose }: RoadshowCalendarProps) {
                   ) : (
                     <div className="text-center py-8 text-[var(--text-muted)]">
                       <Calendar size={32} className="mx-auto mb-2 opacity-50" />
-                      <div>该日期暂无事件</div>
+                      <div>{t('roadshowCalendar.noEvents')}</div>
                     </div>
                   )}
                 </div>
@@ -759,7 +803,7 @@ export function RoadshowCalendar({ isOpen, onClose }: RoadshowCalendarProps) {
               /* All Upcoming Events */
               <div>
                 <h3 className="text-lg font-medium text-[var(--text-main)] mb-4">
-                  {activeTab === 'macro' ? '即将发布的宏观事件' : '即将开始的路演'}
+                  {activeTab === 'macro' ? t('roadshowCalendar.upcomingMacro') : t('roadshowCalendar.upcomingRoadshow')}
                 </h3>
                 <div className="space-y-3">
                   {getAllEvents().map(event => (
@@ -803,8 +847,19 @@ function MacroEventCard({
   isNotified: boolean;
   onToggleNotification: () => void;
 }) {
+  const { t, language } = useTranslation();
+  const locale = language === 'zh' ? 'zh-CN' : 'en-US';
   const importance = importanceColors[event.importance];
   const category = categoryConfig[event.category];
+  const title = getLocalizedTitle(event, language);
+  const altTitle = language === 'zh' ? event.titleEn : event.title;
+  const description = getLocalizedDescription(event, language);
+  const importanceLabelMap = {
+    high: t('roadshowCalendar.importance.high'),
+    medium: t('roadshowCalendar.importance.medium'),
+    low: t('roadshowCalendar.importance.low'),
+  };
+  const importanceLabel = importanceLabelMap[event.importance];
 
   return (
     <div className="bg-[var(--bg-surface)] rounded-lg p-4 hover:bg-[var(--bg-highlight)] transition-colors">
@@ -813,22 +868,24 @@ function MacroEventCard({
           <span className="text-lg">{countryFlags[event.country] || '🌍'}</span>
           <span className="text-lg">{category.icon}</span>
           <div>
-            <div className="font-medium text-[var(--text-main)]">{event.title}</div>
-            <div className="text-xs text-[var(--text-muted)]">{event.titleEn}</div>
+            <div className="font-medium text-[var(--text-main)]">{title}</div>
+            {altTitle && altTitle !== title && (
+              <div className="text-xs text-[var(--text-muted)]">{altTitle}</div>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">
           {event.hasLiveStream && showLiveStreams && (
             <span className="flex items-center gap-1 px-2 py-1 bg-[var(--brand-red)]/20 text-[var(--brand-red)] rounded text-xs">
               <Radio size={10} />
-              有直播
+              {t('roadshowCalendar.liveTag')}
             </span>
           )}
           <span
             className="px-2 py-1 rounded text-xs font-medium"
             style={{ backgroundColor: importance.bg, color: importance.text }}
           >
-            {importance.label}
+            {importanceLabel}
           </span>
         </div>
       </div>
@@ -836,9 +893,9 @@ function MacroEventCard({
       <div className="flex items-center gap-4 text-sm text-[var(--text-muted)] mb-3">
         <div className="flex items-center gap-1">
           <Clock size={12} />
-          <span>{event.date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })} {event.time}</span>
+          <span>{event.date.toLocaleDateString(locale, { month: 'short', day: 'numeric' })} {event.time}</span>
         </div>
-        <span className="text-[var(--brand-yellow)]">{getCountdown(event.date)}</span>
+        <span className="text-[var(--brand-yellow)]">{getCountdown(event.date, t)}</span>
       </div>
 
       {/* Data Preview */}
@@ -846,27 +903,27 @@ function MacroEventCard({
         <div className="flex items-center gap-4 text-sm mb-3">
           {event.previous && (
             <div>
-              <span className="text-[var(--text-muted)]">前值: </span>
+              <span className="text-[var(--text-muted)]">{t('roadshowCalendar.previous')}: </span>
               <span className="text-[var(--text-main)] font-medium">{event.previous}</span>
             </div>
           )}
           {event.forecast && (
             <div>
-              <span className="text-[var(--text-muted)]">预测: </span>
+              <span className="text-[var(--text-muted)]">{t('roadshowCalendar.forecast')}: </span>
               <span className="text-[var(--brand-yellow)] font-medium">{event.forecast}</span>
             </div>
           )}
           {event.actual && (
             <div>
-              <span className="text-[var(--text-muted)]">实际: </span>
+              <span className="text-[var(--text-muted)]">{t('roadshowCalendar.actual')}: </span>
               <span className="text-[var(--brand-green)] font-medium">{event.actual}</span>
             </div>
           )}
         </div>
       )}
 
-      {event.description && (
-        <p className="text-sm text-[var(--text-muted)] mb-3">{event.description}</p>
+      {description && (
+        <p className="text-sm text-[var(--text-muted)] mb-3">{description}</p>
       )}
 
       <div className="flex items-center justify-between">
@@ -879,13 +936,13 @@ function MacroEventCard({
           }`}
         >
           {isNotified ? <Bell size={14} /> : <BellOff size={14} />}
-          {isNotified ? '已设提醒' : '设置提醒'}
+          {isNotified ? t('roadshowCalendar.reminderSet') : t('roadshowCalendar.setReminder')}
         </button>
 
         {event.hasLiveStream && showLiveStreams && (
           <button className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--brand-red)] text-white rounded text-sm hover:opacity-90 transition-opacity">
             <Play size={14} />
-            观看直播
+            {t('roadshowCalendar.watchLive')}
           </button>
         )}
       </div>
@@ -907,8 +964,12 @@ function RoadshowEventCard({
   onToggleNotification: () => void;
   onJoinLive?: (event: RoadshowEvent) => void;
 }) {
+  const { t, language } = useTranslation();
+  const locale = language === 'zh' ? 'zh-CN' : 'en-US';
   const [registered, setRegistered] = useState(false);
   const [showCalendarOptions, setShowCalendarOptions] = useState(false);
+  const title = getLocalizedTitle(event, language);
+  const description = getLocalizedDescription(event, language) || '';
 
   const handleRegister = () => {
     if (event.isLive && onJoinLive) {
@@ -923,8 +984,12 @@ function RoadshowEventCard({
     }
   };
 
-  const eventTitle = `SoDEX 路演: ${event.title}`;
-  const eventDescription = `主讲人: ${event.speaker} (${event.speakerTitle})\n${event.description || ''}`;
+  const eventTitle = t('roadshowCalendar.calendarEventTitle').replace('{title}', title);
+  const eventDescription = t('roadshowCalendar.calendarEventDescription')
+    .replace('{speaker}', event.speaker)
+    .replace('{speakerTitle}', event.speakerTitle)
+    .replace('{description}', description);
+  const reminderDescription = t('roadshowCalendar.icsReminder').replace('{title}', title);
 
   const handleGoogleCalendar = () => {
     const url = generateGoogleCalendarUrl(eventTitle, eventDescription, event.startTime, event.endTime);
@@ -932,7 +997,7 @@ function RoadshowEventCard({
   };
 
   const handleAppleCalendar = () => {
-    const icsContent = generateICSContent(eventTitle, eventDescription, event.startTime, event.endTime);
+    const icsContent = generateICSContent(eventTitle, eventDescription, event.startTime, event.endTime, reminderDescription);
     downloadICSFile(icsContent, `sodex-roadshow-${event.id}.ics`);
   };
 
@@ -946,28 +1011,28 @@ function RoadshowEventCard({
             {event.isLive && (
               <span className="flex items-center gap-1 px-2 py-0.5 bg-[var(--brand-red)] text-white rounded text-xs animate-pulse">
                 <Radio size={10} />
-                LIVE
+                {t('roadshowCalendar.liveBadge')}
               </span>
             )}
             {event.requiredLevel === 'Diamond' && (
               <span className="flex items-center gap-0.5 px-2 py-0.5 bg-[#b9f2ff]/20 text-[#b9f2ff] rounded text-xs">
                 <Crown size={10} />
-                VIP
+                {t('roadshowCalendar.vipBadge')}
               </span>
             )}
           </div>
-          <div className="font-medium text-[var(--text-main)]">{event.title}</div>
+          <div className="font-medium text-[var(--text-main)]">{title}</div>
           <div className="text-sm text-[var(--text-muted)]">
             {event.speaker} · {event.speakerTitle}
           </div>
         </div>
         <div className="text-right">
           <div className="text-sm text-[var(--brand-yellow)]">
-            {event.isLive ? '进行中' : getCountdown(event.startTime)}
+            {event.isLive ? t('roadshowCalendar.inProgress') : getCountdown(event.startTime, t)}
           </div>
           <div className="flex items-center gap-1 text-xs text-[var(--text-muted)]">
             <Users size={10} />
-            <span>{event.registeredCount} 人报名</span>
+            <span>{t('roadshowCalendar.registeredCount').replace('{count}', String(event.registeredCount))}</span>
           </div>
         </div>
       </div>
@@ -976,16 +1041,20 @@ function RoadshowEventCard({
         <div className="flex items-center gap-1">
           <Clock size={12} />
           <span>
-            {event.startTime.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })} {formatTime(event.startTime)}
+            {event.startTime.toLocaleDateString(locale, { month: 'short', day: 'numeric' })} {formatTime(event.startTime, locale)}
           </span>
         </div>
         <span className="text-xs px-2 py-0.5 bg-[var(--bg-app)] rounded">
-          {event.type === 'video' ? '视频' : event.type === 'audio' ? '音频' : 'AMA'}
+          {event.type === 'video'
+            ? t('roadshowCalendar.eventType.video')
+            : event.type === 'audio'
+              ? t('roadshowCalendar.eventType.audio')
+              : t('roadshowCalendar.eventType.ama')}
         </span>
       </div>
 
-      {event.description && (
-        <p className="text-sm text-[var(--text-muted)] mb-3">{event.description}</p>
+      {description && (
+        <p className="text-sm text-[var(--text-muted)] mb-3">{description}</p>
       )}
 
       {/* 日历导出选项 - 报名后显示 */}
@@ -993,7 +1062,7 @@ function RoadshowEventCard({
         <div className="mb-3 p-3 bg-[var(--bg-app)] rounded-lg border border-[var(--brand-green)]/30">
           <div className="flex items-center gap-2 mb-2">
             <Check size={14} className="text-[var(--brand-green)]" />
-            <span className="text-[13px] text-[var(--brand-green)] font-medium">报名成功！添加到日历</span>
+            <span className="text-[13px] text-[var(--brand-green)] font-medium">{t('roadshowCalendar.registerSuccess')}</span>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -1021,7 +1090,7 @@ function RoadshowEventCard({
               onClick={() => setShowCalendarOptions(false)}
               className="ml-auto text-xs text-[var(--text-dim)] hover:text-[var(--text-muted)]"
             >
-              收起
+              {t('roadshowCalendar.collapse')}
             </button>
           </div>
         </div>
@@ -1039,7 +1108,7 @@ function RoadshowEventCard({
               }`}
             >
               {isNotified ? <Bell size={14} /> : <BellOff size={14} />}
-              {isNotified ? '已设提醒' : '设置提醒'}
+              {isNotified ? t('roadshowCalendar.reminderSet') : t('roadshowCalendar.setReminder')}
             </button>
 
             {event.isLive ? (
@@ -1048,7 +1117,7 @@ function RoadshowEventCard({
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded text-sm bg-[var(--brand-red)] text-white hover:opacity-90 transition-opacity"
               >
                 <Play size={14} />
-                立即观看
+                {t('roadshowCalendar.watchNow')}
               </button>
             ) : registered ? (
               <div className="flex items-center gap-2">
@@ -1058,12 +1127,12 @@ function RoadshowEventCard({
                     className="flex items-center gap-1.5 px-2 py-1 rounded text-xs bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors"
                   >
                     <Calendar size={12} />
-                    日历
+                    {t('roadshowCalendar.calendar')}
                   </button>
                 )}
                 <span className="flex items-center gap-1.5 px-3 py-1.5 rounded text-sm bg-[var(--brand-green)]/50 text-white">
                   <Check size={14} />
-                  已报名
+                  {t('roadshowCalendar.registered')}
                 </span>
               </div>
             ) : (
@@ -1072,14 +1141,14 @@ function RoadshowEventCard({
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded text-sm bg-[var(--brand-green)] text-white hover:opacity-90 transition-opacity"
               >
                 <Bell size={14} />
-                报名预约
+                {t('roadshowCalendar.register')}
               </button>
             )}
           </>
         ) : (
           <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
             <Crown size={14} className="text-[#b9f2ff]" />
-            <span>升级到 {event.requiredLevel} 解锁</span>
+            <span>{t('roadshowCalendar.upgradeToUnlock').replace('{level}', event.requiredLevel)}</span>
           </div>
         )}
       </div>
@@ -1088,20 +1157,27 @@ function RoadshowEventCard({
 }
 
 // Helper function for countdown
-function getCountdown(date: Date) {
+function getCountdown(date: Date, t: (key: string) => string) {
   const now = new Date();
   const diff = date.getTime() - now.getTime();
-  if (diff < 0) return '已结束';
+  if (diff < 0) return t('roadshowCalendar.countdown.ended');
 
   const days = Math.floor(diff / (24 * 60 * 60 * 1000));
   const hours = Math.floor((diff % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
 
-  if (days > 0) return `${days}天${hours}小时后`;
-  if (hours > 0) return `${hours}小时后`;
-  return '即将开始';
+  if (days > 0) {
+    return t('roadshowCalendar.countdown.daysHours')
+      .replace('{days}', String(days))
+      .replace('{hours}', String(hours));
+  }
+  if (hours > 0) {
+    return t('roadshowCalendar.countdown.hours')
+      .replace('{hours}', String(hours));
+  }
+  return t('roadshowCalendar.countdown.soon');
 }
 
 // Helper function for formatting time
-function formatTime(date: Date) {
-  return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+function formatTime(date: Date, locale: string) {
+  return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
 }

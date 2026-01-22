@@ -6,6 +6,7 @@ import { useTranslation } from '../../i18n';
 export interface RoadshowEvent {
   id: string;
   title: string;
+  titleEn: string;
   speaker: string;
   startTime: Date;
   endTime: Date;
@@ -20,6 +21,7 @@ const mockRoadshowEvents: RoadshowEvent[] = [
   {
     id: 'rs-live-001',
     title: 'BTC 实时行情解读',
+    titleEn: 'BTC Live Market Briefing',
     speaker: 'Alex Chen',
     startTime: new Date(Date.now() - 30 * 60 * 1000), // 30分钟前开始
     endTime: new Date(Date.now() + 30 * 60 * 1000), // 30分钟后结束
@@ -31,6 +33,7 @@ const mockRoadshowEvents: RoadshowEvent[] = [
   {
     id: 'rs-001',
     title: 'BTC 2025年行情展望与策略分析',
+    titleEn: 'BTC 2025 Outlook & Strategy',
     speaker: 'Alex Chen',
     startTime: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
     endTime: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000 + 90 * 60 * 1000),
@@ -42,6 +45,7 @@ const mockRoadshowEvents: RoadshowEvent[] = [
   {
     id: 'rs-002',
     title: 'DeFi 新趋势：RWA与链上金融',
+    titleEn: 'DeFi Trends: RWA & On-chain Finance',
     speaker: '李明阳',
     startTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
     endTime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000 + 60 * 60 * 1000),
@@ -53,6 +57,7 @@ const mockRoadshowEvents: RoadshowEvent[] = [
   {
     id: 'rs-003',
     title: 'VIP 专属: Q1 投资组合配置',
+    titleEn: 'VIP Exclusive: Q1 Portfolio Allocation',
     speaker: 'Michael Liu',
     startTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     endTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000 + 120 * 60 * 1000),
@@ -64,6 +69,7 @@ const mockRoadshowEvents: RoadshowEvent[] = [
   {
     id: 'rs-004',
     title: 'AMA: Layer2 生态发展与机会',
+    titleEn: 'AMA: Layer2 Ecosystem Opportunities',
     speaker: 'Sarah Wang',
     startTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
     endTime: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 60 * 60 * 1000),
@@ -83,6 +89,9 @@ export function RoadshowTicker({ onOpenCalendar, onOpenLive }: RoadshowTickerPro
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const { t, language } = useTranslation();
+  const getEventTitle = (event: RoadshowEvent) => (
+    language === 'zh' ? event.title : (event.titleEn || event.title)
+  );
 
   // 获取正在进行的路演
   const liveEvent = mockRoadshowEvents.find(e => e.isLive);
@@ -152,13 +161,13 @@ export function RoadshowTicker({ onOpenCalendar, onOpenLive }: RoadshowTickerPro
               <div className="flex items-center gap-1">
                 <Radio size={10} className="md:hidden text-[var(--brand-red)]" />
                 <Radio size={12} className="hidden md:block text-[var(--brand-red)]" />
-                <span className="text-[9px] md:text-[11px] font-bold text-[var(--brand-red)]">LIVE</span>
+                <span className="text-[9px] md:text-[11px] font-bold text-[var(--brand-red)]">{t('roadshowTicker.liveBadge')}</span>
               </div>
               <span className="text-[10px] md:text-[12px] text-[var(--text-main)] font-medium truncate max-w-[80px] md:max-w-none">
-                {liveEvent.title}
+                {getEventTitle(liveEvent)}
               </span>
               <span className="hidden md:inline text-[11px] text-[var(--text-muted)]">
-                by {liveEvent.speaker}
+                {t('roadshowTicker.by')} {liveEvent.speaker}
               </span>
               <div className="hidden md:flex items-center gap-1 text-[11px] text-[var(--brand-red)]">
                 <Users size={10} />
@@ -188,15 +197,15 @@ export function RoadshowTicker({ onOpenCalendar, onOpenLive }: RoadshowTickerPro
                 </span>
               </div>
               <span className="text-[10px] md:text-[12px] text-[var(--text-main)] truncate max-w-[100px] md:max-w-none">
-                {currentEvent.title}
+                {getEventTitle(currentEvent)}
               </span>
               <span className="hidden md:inline text-[11px] text-[var(--text-muted)]">
-                by {currentEvent.speaker}
+                {t('roadshowTicker.by')} {currentEvent.speaker}
               </span>
               {currentEvent.requiredLevel === 'Diamond' && (
                 <span className="hidden md:flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] bg-[#b9f2ff]/20 text-[#b9f2ff]">
                   <Crown size={10} />
-                  VIP
+                  {t('roadshowTicker.vipBadge')}
                 </span>
               )}
               <span className="hidden md:inline text-[11px] text-[var(--text-dim)]">

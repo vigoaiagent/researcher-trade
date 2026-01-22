@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { X, GraduationCap, Check, Briefcase, LineChart, Users } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 
 interface ResearcherApplyModalProps {
   isOpen: boolean;
@@ -7,6 +8,7 @@ interface ResearcherApplyModalProps {
 }
 
 export function ResearcherApplyModal({ isOpen, onClose }: ResearcherApplyModalProps) {
+  const { t } = useTranslation();
   const [step, setStep] = useState<'intro' | 'form' | 'success'>('intro');
   const [formData, setFormData] = useState({
     name: '',
@@ -28,7 +30,7 @@ export function ResearcherApplyModal({ isOpen, onClose }: ResearcherApplyModalPr
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen, onClose]);
 
-  // ESC 关闭
+  // ESC {t('researcherApply.close')}
   useEffect(() => {
     if (!isOpen) return;
     const handleEsc = (e: KeyboardEvent) => {
@@ -54,10 +56,11 @@ export function ResearcherApplyModal({ isOpen, onClose }: ResearcherApplyModalPr
   };
 
   const benefits = [
-    { icon: LineChart, title: '发布研报', desc: '分享您的市场分析和投资观点' },
-    { icon: Users, title: '1v1 咨询', desc: '为用户提供专属付费咨询服务' },
-    { icon: Briefcase, title: '路演直播', desc: '主持在线路演，扩大影响力' },
+    { icon: LineChart, title: t('researcherApply.benefits.publishReportTitle'), desc: t('researcherApply.benefits.publishReportDesc') },
+    { icon: Users, title: t('researcherApply.benefits.consultTitle'), desc: t('researcherApply.benefits.consultDesc') },
+    { icon: Briefcase, title: t('researcherApply.benefits.roadshowTitle'), desc: t('researcherApply.benefits.roadshowDesc') },
   ];
+  const successHintParts = t('researcherApply.successHint').split('{handle}');
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -81,10 +84,10 @@ export function ResearcherApplyModal({ isOpen, onClose }: ResearcherApplyModalPr
               </div>
 
               <h2 className="text-xl font-bold text-[var(--text-main)] mb-2">
-                成为 SoDEX 研究员
+                {t('researcherApply.title')}
               </h2>
               <p className="text-[14px] text-[var(--text-muted)]">
-                分享您的专业知识，获得丰厚回报
+                {t('researcherApply.subtitle')}
               </p>
             </div>
 
@@ -106,19 +109,19 @@ export function ResearcherApplyModal({ isOpen, onClose }: ResearcherApplyModalPr
 
               {/* Requirements */}
               <div className="mb-6 p-4 bg-[var(--bg-surface)] rounded-lg">
-                <div className="text-[13px] font-medium text-[var(--text-main)] mb-2">申请条件</div>
+                <div className="text-[13px] font-medium text-[var(--text-main)] mb-2">{t('researcherApply.requirementsTitle')}</div>
                 <ul className="text-[12px] text-[var(--text-muted)] space-y-1">
                   <li className="flex items-center gap-2">
                     <Check size={12} className="text-[var(--brand-green)]" />
-                    <span>2年以上加密货币研究/交易经验</span>
+                    <span>{t('researcherApply.requirement1')}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <Check size={12} className="text-[var(--brand-green)]" />
-                    <span>有公开的分析作品或社交媒体账号</span>
+                    <span>{t('researcherApply.requirement2')}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <Check size={12} className="text-[var(--brand-green)]" />
-                    <span>能够定期产出高质量内容</span>
+                    <span>{t('researcherApply.requirement3')}</span>
                   </li>
                 </ul>
               </div>
@@ -128,7 +131,7 @@ export function ResearcherApplyModal({ isOpen, onClose }: ResearcherApplyModalPr
                 onClick={() => setStep('form')}
                 className="w-full py-3 bg-gradient-to-r from-[var(--brand-yellow)] to-[#FF9500] text-black rounded-xl font-bold text-[15px] hover:opacity-90 transition"
               >
-                开始申请
+                {t('researcherApply.startApply')}
               </button>
             </div>
           </>
@@ -138,7 +141,7 @@ export function ResearcherApplyModal({ isOpen, onClose }: ResearcherApplyModalPr
           <>
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-[var(--border-light)]">
-              <h2 className="text-[16px] font-bold text-[var(--text-main)]">填写申请信息</h2>
+              <h2 className="text-[16px] font-bold text-[var(--text-main)]">{t('researcherApply.formTitle')}</h2>
               <button onClick={onClose} className="p-1.5 hover:bg-[var(--bg-surface)] rounded-lg transition">
                 <X size={18} className="text-[var(--text-muted)]" />
               </button>
@@ -147,51 +150,51 @@ export function ResearcherApplyModal({ isOpen, onClose }: ResearcherApplyModalPr
             {/* Form */}
             <div className="p-5 space-y-4">
               <div>
-                <label className="block text-[13px] text-[var(--text-muted)] mb-1.5">姓名/昵称 *</label>
+                <label className="block text-[13px] text-[var(--text-muted)] mb-1.5">{t('researcherApply.nameLabel')}</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="您的称呼"
+                  placeholder={t('researcherApply.namePlaceholder')}
                   className="w-full px-3 py-2.5 bg-[var(--bg-surface)] border border-[var(--border-light)] rounded-lg text-[14px] text-[var(--text-main)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-yellow)]"
                 />
               </div>
 
               <div>
-                <label className="block text-[13px] text-[var(--text-muted)] mb-1.5">专业领域 *</label>
+                <label className="block text-[13px] text-[var(--text-muted)] mb-1.5">{t('researcherApply.expertiseLabel')}</label>
                 <select
                   value={formData.expertise}
                   onChange={(e) => setFormData({ ...formData, expertise: e.target.value })}
                   className="w-full px-3 py-2.5 bg-[var(--bg-surface)] border border-[var(--border-light)] rounded-lg text-[14px] text-[var(--text-main)] focus:outline-none focus:border-[var(--brand-yellow)]"
                 >
-                  <option value="">请选择</option>
-                  <option value="technical">技术分析</option>
-                  <option value="fundamental">基本面分析</option>
-                  <option value="defi">DeFi 研究</option>
-                  <option value="macro">宏观经济</option>
-                  <option value="onchain">链上数据分析</option>
-                  <option value="other">其他</option>
+                  <option value="">{t('researcherApply.expertisePlaceholder')}</option>
+                  <option value="technical">{t('researcherApply.expertiseTechnical')}</option>
+                  <option value="fundamental">{t('researcherApply.expertiseFundamental')}</option>
+                  <option value="defi">{t('researcherApply.expertiseDefi')}</option>
+                  <option value="macro">{t('researcherApply.expertiseMacro')}</option>
+                  <option value="onchain">{t('researcherApply.expertiseOnchain')}</option>
+                  <option value="other">{t('researcherApply.expertiseOther')}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-[13px] text-[var(--text-muted)] mb-1.5">从业经验 *</label>
+                <label className="block text-[13px] text-[var(--text-muted)] mb-1.5">{t('researcherApply.experienceLabel')}</label>
                 <textarea
                   value={formData.experience}
                   onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
-                  placeholder="简要介绍您的加密货币研究/交易经验..."
+                  placeholder={t('researcherApply.experiencePlaceholder')}
                   rows={3}
                   className="w-full px-3 py-2.5 bg-[var(--bg-surface)] border border-[var(--border-light)] rounded-lg text-[14px] text-[var(--text-main)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-yellow)] resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-[13px] text-[var(--text-muted)] mb-1.5">社交媒体/作品链接</label>
+                <label className="block text-[13px] text-[var(--text-muted)] mb-1.5">{t('researcherApply.socialLabel')}</label>
                 <input
                   type="text"
                   value={formData.socialLink}
                   onChange={(e) => setFormData({ ...formData, socialLink: e.target.value })}
-                  placeholder="Twitter/Medium/公众号等"
+                  placeholder={t('researcherApply.socialPlaceholder')}
                   className="w-full px-3 py-2.5 bg-[var(--bg-surface)] border border-[var(--border-light)] rounded-lg text-[14px] text-[var(--text-main)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-yellow)]"
                 />
               </div>
@@ -202,7 +205,7 @@ export function ResearcherApplyModal({ isOpen, onClose }: ResearcherApplyModalPr
                 disabled={!formData.name || !formData.expertise || !formData.experience}
                 className="w-full py-3 bg-[var(--brand-green)] text-white rounded-xl font-bold text-[15px] hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                提交申请
+                {t('researcherApply.submit')}
               </button>
             </div>
           </>
@@ -217,15 +220,17 @@ export function ResearcherApplyModal({ isOpen, onClose }: ResearcherApplyModalPr
               </div>
 
               <h2 className="text-xl font-bold text-[var(--text-main)] mb-2">
-                申请已提交！
+                {t('researcherApply.successTitle')}
               </h2>
               <p className="text-[14px] text-[var(--text-muted)] mb-6">
-                我们会在 3 个工作日内通过 Telegram 联系您
+                {t('researcherApply.successDesc')}
               </p>
 
               <div className="p-4 bg-[var(--bg-surface)] rounded-lg mb-6">
                 <div className="text-[13px] text-[var(--text-muted)]">
-                  请确保您的 Telegram 账号 <span className="text-[var(--brand-yellow)]">@SoDEX</span> 可以正常接收消息
+                  {successHintParts[0]}
+                  <span className="text-[var(--brand-yellow)]">@SoDEX</span>
+                  {successHintParts[1] || ''}
                 </div>
               </div>
 
@@ -233,7 +238,7 @@ export function ResearcherApplyModal({ isOpen, onClose }: ResearcherApplyModalPr
                 onClick={onClose}
                 className="w-full py-3 bg-[var(--bg-surface)] text-[var(--text-main)] rounded-xl font-medium text-[15px] hover:bg-[var(--bg-highlight)] transition"
               >
-                关闭
+                {t('researcherApply.close')}
               </button>
             </div>
           </>

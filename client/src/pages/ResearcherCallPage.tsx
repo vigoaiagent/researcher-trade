@@ -4,16 +4,18 @@ import { Phone, PhoneOff, Mic, MicOff, AlertCircle } from 'lucide-react';
 import { voiceCallService, VoiceCallService } from '../services/voiceCall';
 import type { CallStatus } from '../services/voiceCall';
 import { connectSocket, getSocket } from '../services/socket';
+import { useTranslation } from '../i18n';
 
 // 研究员通话页面
 // URL: /call/:roomId?researcherId=xxx&userId=xxx&question=xxx
 export function ResearcherCallPage() {
+  const { t } = useTranslation();
   const { roomId } = useParams<{ roomId: string }>();
   const [searchParams] = useSearchParams();
   const researcherId = searchParams.get('researcherId') || '';
   const userId = searchParams.get('userId') || '';
   const question = searchParams.get('question') || '';
-  const userName = searchParams.get('userName') || '用户';
+  const userName = searchParams.get('userName') || t('researcherCall.defaultUserName');
 
   const [status, setStatus] = useState<CallStatus>('idle');
   const [isMuted, setIsMuted] = useState(false);
@@ -62,7 +64,7 @@ export function ResearcherCallPage() {
 
     // 监听用户挂断
     socket.on('call:ended', () => {
-      handleCallEnded('用户已挂断');
+      handleCallEnded(t('researcherCall.userHangup'));
     });
 
     // 监听ICE候选
@@ -189,7 +191,7 @@ export function ResearcherCallPage() {
             alt="SoDEX"
             className="h-6 mx-auto mb-2"
           />
-          <h1 className="text-white text-lg font-bold">语音通话</h1>
+          <h1 className="text-white text-lg font-bold">{t('researcherCall.title')}</h1>
         </div>
 
         {/* Content */}
@@ -202,13 +204,13 @@ export function ResearcherCallPage() {
               </span>
             </div>
             <h2 className="text-white text-lg font-medium">{userName}</h2>
-            <p className="text-[#848e9c] text-sm">用户ID: {userId.slice(0, 8)}...</p>
+            <p className="text-[#848e9c] text-sm">{t('researcherCall.userId').replace('{id}', userId.slice(0, 8))}</p>
           </div>
 
           {/* Question Preview */}
           {question && (
             <div className="bg-[#2b3139] rounded-lg p-3 mb-6">
-              <div className="text-[#848e9c] text-xs mb-1">咨询问题</div>
+              <div className="text-[#848e9c] text-xs mb-1">{t('researcherCall.questionLabel')}</div>
               <p className="text-white text-sm">{decodeURIComponent(question)}</p>
             </div>
           )}
@@ -218,7 +220,7 @@ export function ResearcherCallPage() {
             <div className="text-center mb-6">
               <div className="flex items-center justify-center gap-2 text-[#0ecb81] mb-4">
                 <Phone size={24} className="animate-pulse" />
-                <span>用户正在呼叫...</span>
+                <span>{t('researcherCall.userCalling')}</span>
               </div>
 
               <div className="flex gap-3">
@@ -227,14 +229,14 @@ export function ResearcherCallPage() {
                   className="flex-1 py-3 bg-[#f6465d] text-white rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
                 >
                   <PhoneOff size={20} />
-                  拒绝
+                  {t('researcherCall.reject')}
                 </button>
                 <button
                   onClick={handleAccept}
                   className="flex-1 py-3 bg-[#0ecb81] text-white rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
                 >
                   <Phone size={20} />
-                  接听
+                  {t('researcherCall.accept')}
                 </button>
               </div>
             </div>
@@ -243,15 +245,15 @@ export function ResearcherCallPage() {
           {status === 'idle' && !offer && (
             <div className="text-center text-[#848e9c] py-8">
               <Phone size={32} className="mx-auto mb-3 opacity-50" />
-              <p>等待用户发起通话...</p>
-              <p className="text-xs mt-2">房间: {roomId?.slice(0, 20)}...</p>
+              <p>{t('researcherCall.waitingForUser')}</p>
+              <p className="text-xs mt-2">{t('researcherCall.roomLabel').replace('{id}', (roomId?.slice(0, 20) || ''))}</p>
             </div>
           )}
 
           {status === 'connecting' && (
             <div className="text-center py-8">
               <div className="w-12 h-12 border-4 border-[#0ecb81] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-white">正在建立连接...</p>
+              <p className="text-white">{t('researcherCall.connecting')}</p>
             </div>
           )}
 
@@ -265,7 +267,7 @@ export function ResearcherCallPage() {
               {/* Recording Indicator */}
               <div className="flex items-center justify-center gap-2 text-[#f6465d] text-sm mb-6">
                 <span className="w-2 h-2 bg-[#f6465d] rounded-full animate-pulse"></span>
-                录音中
+                {t('researcherCall.recording')}
               </div>
 
               {/* Controls */}
@@ -294,23 +296,23 @@ export function ResearcherCallPage() {
           {status === 'ended' && (
             <div className="text-center py-8">
               <PhoneOff size={32} className="mx-auto mb-3 text-[#848e9c]" />
-              <p className="text-white mb-2">通话已结束</p>
+              <p className="text-white mb-2">{t('researcherCall.ended')}</p>
               {duration > 0 && (
                 <p className="text-[#848e9c] text-sm">
-                  通话时长: {VoiceCallService.formatDuration(duration)}
+                  {t('researcherCall.duration').replace('{duration}', VoiceCallService.formatDuration(duration))}
                 </p>
               )}
               {error && (
                 <p className="text-[#848e9c] text-sm mt-2">{error}</p>
               )}
-              <p className="text-[#848e9c] text-xs mt-4">可以关闭此页面</p>
+              <p className="text-[#848e9c] text-xs mt-4">{t('researcherCall.closePageHint')}</p>
             </div>
           )}
 
           {status === 'failed' && (
             <div className="text-center py-8">
               <AlertCircle size={32} className="mx-auto mb-3 text-[#f6465d]" />
-              <p className="text-[#f6465d] mb-2">连接失败</p>
+              <p className="text-[#f6465d] mb-2">{t('researcherCall.connectionFailed')}</p>
               {error && (
                 <p className="text-[#848e9c] text-sm">{error}</p>
               )}
@@ -318,7 +320,7 @@ export function ResearcherCallPage() {
                 onClick={() => window.location.reload()}
                 className="mt-4 px-6 py-2 bg-[#2b3139] text-white rounded-lg hover:bg-[#474d57] transition-colors"
               >
-                重试
+                {t('researcherCall.retry')}
               </button>
             </div>
           )}
@@ -327,7 +329,7 @@ export function ResearcherCallPage() {
         {/* Footer */}
         <div className="bg-[#2b3139] px-4 py-3 text-center">
           <p className="text-[#848e9c] text-xs">
-            通话将被录音用于服务质量监控
+            {t('researcherCall.recordingNotice')}
           </p>
         </div>
 

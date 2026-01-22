@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Newspaper, Calendar, FileText, Radio, ChevronUp, TrendingUp, TrendingDown, Crown, X, Zap } from 'lucide-react';
 import { useUserStore } from '../../stores/userStore';
 import { FEE_RATES, getSoSoMultiplier } from '../../types';
+import { useTranslation } from '../../i18n';
 
 // 简化的新闻数据
 const mobileTickerItems: Array<{
@@ -36,6 +37,7 @@ export function MobileBottomBar({
   onOpenLive,
   currentPrice = 67240.50,
 }: MobileBottomBarProps) {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showTradePanel, setShowTradePanel] = useState(false);
@@ -81,7 +83,7 @@ export function MobileBottomBar({
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[600] animate-in fade-in slide-in-from-top duration-300">
           <div className="bg-[var(--brand-green)] text-black px-6 py-3 rounded-xl font-bold text-[14px] shadow-lg flex items-center gap-2">
             <Zap size={18} />
-            交易成功！能量已铸造
+            {t('mobileTrade.successToast')}
           </div>
         </div>
       )}
@@ -92,7 +94,7 @@ export function MobileBottomBar({
           <div className="w-full bg-[var(--bg-panel)] rounded-t-2xl animate-in slide-in-from-bottom duration-300 max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border-light)]">
-              <span className="text-[16px] font-bold text-[var(--text-main)]">模拟交易</span>
+              <span className="text-[16px] font-bold text-[var(--text-main)]">{t('tradePanel.demoTrading')}</span>
               <button onClick={() => setShowTradePanel(false)} className="p-1">
                 <X size={20} className="text-[var(--text-muted)]" />
               </button>
@@ -102,7 +104,7 @@ export function MobileBottomBar({
             <div className="p-4 space-y-4">
               {/* 当前价格 */}
               <div className="flex items-center justify-between p-3 bg-[var(--bg-surface)] rounded-lg">
-                <span className="text-[13px] text-[var(--text-muted)]">当前价格</span>
+                <span className="text-[13px] text-[var(--text-muted)]">{t('mobileTrade.currentPrice')}</span>
                 <span className="text-[18px] font-bold text-[var(--brand-green)]">${currentPrice.toFixed(2)}</span>
               </div>
 
@@ -114,7 +116,7 @@ export function MobileBottomBar({
                     isBuy ? 'bg-[var(--brand-green)] text-black' : 'bg-[var(--bg-surface)] text-[var(--text-muted)]'
                   }`}
                 >
-                  买入 Long
+                  {t('mobileTrade.buyLong')}
                 </button>
                 <button
                   onClick={() => setIsBuy(false)}
@@ -122,19 +124,19 @@ export function MobileBottomBar({
                     !isBuy ? 'bg-[var(--brand-red)] text-white' : 'bg-[var(--bg-surface)] text-[var(--text-muted)]'
                   }`}
                 >
-                  卖出 Short
+                  {t('mobileTrade.sellShort')}
                 </button>
               </div>
 
               {/* Amount Input */}
               <div>
-                <label className="text-[12px] text-[var(--text-muted)] mb-2 block">交易金额 (USDT)</label>
+                <label className="text-[12px] text-[var(--text-muted)] mb-2 block">{t('mobileTrade.amountLabel')}</label>
                 <input
                   type="number"
                   value={tradeAmount}
                   onChange={(e) => setTradeAmount(e.target.value)}
                   className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border-light)] rounded-lg text-[16px] text-[var(--text-main)] focus:outline-none focus:border-[var(--brand-yellow)]"
-                  placeholder="输入金额"
+                  placeholder={t('mobileTrade.amountPlaceholder')}
                 />
                 {/* Quick Amount Buttons */}
                 <div className="flex gap-2 mt-2">
@@ -153,19 +155,19 @@ export function MobileBottomBar({
               {/* Fee Info */}
               <div className="p-3 bg-[var(--bg-surface)] rounded-lg space-y-2">
                 <div className="flex items-center justify-between text-[12px]">
-                  <span className="text-[var(--text-muted)]">费率 (永续合约)</span>
+                  <span className="text-[var(--text-muted)]">{t('mobileTrade.feeRate')}</span>
                   <span className="text-[var(--text-main)]">{(feeRate * 100).toFixed(3)}%</span>
                 </div>
                 <div className="flex items-center justify-between text-[12px]">
-                  <span className="text-[var(--text-muted)]">预估手续费</span>
+                  <span className="text-[var(--text-muted)]">{t('mobileTrade.estimatedFee')}</span>
                   <span className="text-[var(--brand-yellow)]">${estimatedFee.toFixed(2)}</span>
                 </div>
                 <div className="flex items-center justify-between text-[12px]">
-                  <span className="text-[var(--text-muted)]">SoSo 加成</span>
+                  <span className="text-[var(--text-muted)]">{t('mobileTrade.sosoBoost')}</span>
                   <span className="text-[var(--text-main)]">x{sosoMultiplier.toFixed(2)}</span>
                 </div>
                 <div className="flex items-center justify-between text-[12px]">
-                  <span className="text-[var(--text-muted)]">铸造能量</span>
+                  <span className="text-[var(--text-muted)]">{t('mobileTrade.energyMinted')}</span>
                   <span className="text-[var(--brand-green)] flex items-center gap-1">
                     <Zap size={12} />+{energyMinted.toFixed(2)}
                   </span>
@@ -180,7 +182,7 @@ export function MobileBottomBar({
                   isBuy ? 'bg-[var(--brand-green)] text-black' : 'bg-[var(--brand-red)] text-white'
                 }`}
               >
-                {isBuy ? '买入 Long' : '卖出 Short'}
+                {isBuy ? t('mobileTrade.buyLong') : t('mobileTrade.sellShort')}
               </button>
             </div>
           </div>
@@ -194,7 +196,7 @@ export function MobileBottomBar({
         {currentItem.isVip ? (
           <span className="flex items-center gap-1 px-1.5 py-0.5 bg-gradient-to-r from-[#FFD700] to-[#FFA500] rounded text-[8px] font-bold text-black shrink-0">
             <Crown size={8} />
-            VIP
+            {t('mobileTrade.vipTag')}
           </span>
         ) : (
           <Newspaper size={12} className="text-[var(--text-muted)] shrink-0" />
@@ -226,8 +228,8 @@ export function MobileBottomBar({
                 <Newspaper size={20} className="text-[var(--brand-yellow)]" />
               </div>
               <div className="text-left">
-                <div className="text-[14px] font-medium text-[var(--text-main)]">新闻快讯</div>
-                <div className="text-[11px] text-[var(--text-muted)]">实时市场动态</div>
+                <div className="text-[14px] font-medium text-[var(--text-main)]">{t('mobileTrade.newsBrief')}</div>
+                <div className="text-[11px] text-[var(--text-muted)]">{t('mobileTrade.marketUpdates')}</div>
               </div>
             </button>
 
@@ -243,8 +245,8 @@ export function MobileBottomBar({
                 <FileText size={20} className="text-[var(--brand-green)]" />
               </div>
               <div className="text-left">
-                <div className="text-[14px] font-medium text-[var(--text-main)]">VIP研报</div>
-                <div className="text-[11px] text-[var(--text-muted)]">独家深度分析</div>
+                <div className="text-[14px] font-medium text-[var(--text-main)]">{t('mobileTrade.vipReports')}</div>
+                <div className="text-[11px] text-[var(--text-muted)]">{t('mobileTrade.exclusiveAnalysis')}</div>
               </div>
             </button>
 
@@ -260,8 +262,8 @@ export function MobileBottomBar({
                 <Calendar size={20} className="text-[var(--brand-yellow)]" />
               </div>
               <div className="text-left">
-                <div className="text-[14px] font-medium text-[var(--text-main)]">路演日历</div>
-                <div className="text-[11px] text-[var(--text-muted)]">直播活动预告</div>
+                <div className="text-[14px] font-medium text-[var(--text-main)]">{t('mobileTrade.roadshowCalendar')}</div>
+                <div className="text-[11px] text-[var(--text-muted)]">{t('mobileTrade.livePreview')}</div>
               </div>
             </button>
 
@@ -278,8 +280,8 @@ export function MobileBottomBar({
                   <Radio size={20} className="text-[var(--brand-red)]" />
                 </div>
                 <div className="text-left">
-                  <div className="text-[14px] font-medium text-[var(--brand-red)]">正在直播</div>
-                  <div className="text-[11px] text-[var(--text-muted)]">点击进入</div>
+                  <div className="text-[14px] font-medium text-[var(--brand-red)]">{t('mobileTrade.liveNow')}</div>
+                  <div className="text-[11px] text-[var(--text-muted)]">{t('mobileTrade.clickToEnter')}</div>
                 </div>
               </button>
             )}
@@ -296,14 +298,14 @@ export function MobileBottomBar({
             className="flex items-center gap-1 px-2.5 py-1.5 bg-[var(--bg-surface)] rounded-lg text-[11px] text-[var(--text-muted)] hover:text-[var(--text-main)] transition"
           >
             <Newspaper size={12} />
-            <span>快讯</span>
+            <span>{t('mobileTrade.shortNews')}</span>
           </button>
           <button
             onClick={onOpenReportList}
             className="flex items-center gap-1 px-2.5 py-1.5 bg-[var(--bg-surface)] rounded-lg text-[11px] text-[var(--text-muted)] hover:text-[var(--text-main)] transition"
           >
             <FileText size={12} />
-            <span>研报</span>
+            <span>{t('mobileTrade.shortReports')}</span>
           </button>
           {hasLiveEvent && (
             <button
@@ -311,7 +313,7 @@ export function MobileBottomBar({
               className="flex items-center gap-1 px-2.5 py-1.5 bg-[var(--brand-red)]/10 rounded-lg text-[11px] text-[var(--brand-red)] animate-pulse"
             >
               <Radio size={12} />
-              <span>直播</span>
+              <span>{t('mobileTrade.shortLive')}</span>
             </button>
           )}
         </div>
@@ -322,13 +324,13 @@ export function MobileBottomBar({
             onClick={() => { setIsBuy(true); setShowTradePanel(true); }}
             className="px-4 py-2 bg-[var(--brand-green)] text-black rounded-lg text-[12px] font-bold"
           >
-            买入
+            {t('mobileTrade.buy')}
           </button>
           <button
             onClick={() => { setIsBuy(false); setShowTradePanel(true); }}
             className="px-4 py-2 bg-[var(--brand-red)] text-white rounded-lg text-[12px] font-bold"
           >
-            卖出
+            {t('mobileTrade.sell')}
           </button>
         </div>
 
