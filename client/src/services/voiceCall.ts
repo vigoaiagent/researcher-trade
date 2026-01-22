@@ -69,8 +69,8 @@ class VoiceCallService {
 
   // 获取本地音频流
   async getLocalStream(): Promise<MediaStream> {
+    const t = useLanguage.getState().t;
     try {
-      const t = useLanguage.getState().t;
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,

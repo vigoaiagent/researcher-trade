@@ -15,7 +15,7 @@ const translations: Record<Language, TranslationKeys> = {
 interface LanguageState {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
 }
 
 export const useLanguage = create<LanguageState>()(
@@ -23,7 +23,7 @@ export const useLanguage = create<LanguageState>()(
     (set, get) => ({
       language: 'zh',
       setLanguage: (lang: Language) => set({ language: lang }),
-      t: (key: string) => {
+      t: (key: string, params?: Record<string, string | number>) => {
         const lang = get().language;
         const keys = key.split('.');
         let value: any = translations[lang];
@@ -45,7 +45,16 @@ export const useLanguage = create<LanguageState>()(
           }
         }
 
-        return typeof value === 'string' ? value : key;
+        let result = typeof value === 'string' ? value : key;
+
+        // Handle interpolation: replace {{variable}} with params
+        if (params) {
+          Object.entries(params).forEach(([paramKey, paramValue]) => {
+            result = result.replace(new RegExp(`{{${paramKey}}}`, 'g'), String(paramValue));
+          });
+        }
+
+        return result;
       },
     }),
     {
