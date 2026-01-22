@@ -21,7 +21,7 @@ interface LanguageState {
 export const useLanguage = create<LanguageState>()(
   persist(
     (set, get) => ({
-      language: 'zh',
+      language: 'en',
       setLanguage: (lang: Language) => set({ language: lang }),
       t: (key: string, params?: Record<string, string | number>) => {
         const lang = get().language;

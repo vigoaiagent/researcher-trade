@@ -34,9 +34,9 @@ export const zh = {
 
   // Language
   language: {
-    zhShort: '中文',
+    zhShort: '中',
     enShort: 'EN',
-    zhFull: '简体中文',
+    zhFull: '中文',
     enFull: 'English',
   },
 

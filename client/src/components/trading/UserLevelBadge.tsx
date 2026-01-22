@@ -39,12 +39,12 @@ function Tooltip({ children, content }: { children: React.ReactNode; content: Re
     >
       {children}
       {show && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50">
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-[400]">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-[-1px]">
+            <div className="w-2 h-2 bg-[var(--bg-panel)] border-l border-t border-[var(--border-light)] transform rotate-45" />
+          </div>
           <div className="bg-[var(--bg-panel)] border border-[var(--border-light)] rounded-lg p-3 shadow-xl min-w-[200px] max-w-[280px]">
             {content}
-          </div>
-          <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1">
-            <div className="w-2 h-2 bg-[var(--bg-panel)] border-r border-b border-[var(--border-light)] transform rotate-45" />
           </div>
         </div>
       )}

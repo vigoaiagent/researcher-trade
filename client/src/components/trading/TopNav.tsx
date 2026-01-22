@@ -283,7 +283,7 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                               </span>
                               {/* Boost Hover Tooltip - 桌面端显示 */}
                               {showBoostTooltip && (
-                                <div className="hidden md:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-[280px] p-4 bg-[var(--bg-panel)] border border-[var(--border-light)] rounded-xl shadow-xl z-[300] text-left">
+                                <div className="hidden md:block absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[280px] p-4 bg-[var(--bg-panel)] border border-[var(--border-light)] rounded-xl shadow-xl z-[300] text-left">
                                   <div className="flex items-center gap-2 mb-2">
                                     <Rocket size={18} className="text-[var(--brand-yellow)]" />
                                     <span className="text-[14px] font-bold text-[var(--text-main)]">{t('boost.title')}</span>
@@ -313,7 +313,7 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                               </span>
                               {/* Shield Hover Tooltip - 桌面端显示 */}
                               {showShieldTooltip && (
-                                <div className="hidden md:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-[280px] p-4 bg-[var(--bg-panel)] border border-[var(--border-light)] rounded-xl shadow-xl z-[300] text-left">
+                                <div className="hidden md:block absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[280px] p-4 bg-[var(--bg-panel)] border border-[var(--border-light)] rounded-xl shadow-xl z-[300] text-left">
                                   <div className="flex items-center gap-2 mb-2">
                                     <Shield size={18} className="text-[var(--brand-green)]" />
                                     <span className="text-[14px] font-bold text-[var(--text-main)]">{t('shield.title')}</span>
