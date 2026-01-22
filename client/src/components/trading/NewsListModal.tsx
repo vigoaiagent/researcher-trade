@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { X, TrendingUp, TrendingDown, ExternalLink, Bell, BellOff, Search } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 
 // 新闻源
 const newsSources = [
@@ -22,6 +23,7 @@ const allNews = [
     sourceName: 'CoinDesk',
     publishedAt: '10 min ago',
     summary: 'BlackRock iShares Bitcoin Trust 创下单日最大流入记录。',
+    summaryEn: 'BlackRock iShares Bitcoin Trust logged its largest single-day inflow on record.',
   },
   {
     id: 'n2',
@@ -32,6 +34,7 @@ const allNews = [
     sourceName: 'The Block',
     publishedAt: '25 min ago',
     summary: '以太坊网络 Gas 费降至六个月低点，利好 DeFi 用户。',
+    summaryEn: 'Ethereum gas fees fell to a six-month low, benefiting DeFi users.',
   },
   {
     id: 'n3',
@@ -42,6 +45,7 @@ const allNews = [
     sourceName: 'Bloomberg',
     publishedAt: '35 min ago',
     summary: 'SEC 批准首个 Solana 现货 ETF 申请，山寨币市场迎来利好。',
+    summaryEn: 'The SEC approved the first spot Solana ETF application, boosting altcoin sentiment.',
   },
   {
     id: 'n4',
@@ -52,6 +56,7 @@ const allNews = [
     sourceName: 'CryptoSlate',
     publishedAt: '40 min ago',
     summary: '大型交易所报告 1 亿美元资金流出，市场不确定性增加。',
+    summaryEn: 'A major exchange reported a $100M outflow, adding to market uncertainty.',
   },
   {
     id: 'n5',
@@ -62,6 +67,7 @@ const allNews = [
     sourceName: 'Whale Alert',
     publishedAt: '45 min ago',
     summary: '巨鲸警报：5 亿美元 BTC 从未知钱包转出。',
+    summaryEn: 'Whale alert: $500M BTC moved from an unknown wallet.',
   },
   {
     id: 'n6',
@@ -72,6 +78,7 @@ const allNews = [
     sourceName: 'Cointelegraph',
     publishedAt: '1 hour ago',
     summary: '比特币挖矿难度创历史新高，算力持续增长。',
+    summaryEn: 'Bitcoin mining difficulty hit an all-time high as hashrate keeps rising.',
   },
   {
     id: 'n7',
@@ -82,6 +89,7 @@ const allNews = [
     sourceName: 'CoinDesk',
     publishedAt: '2 hours ago',
     summary: '以太坊基金会宣布重大协议升级计划。',
+    summaryEn: 'The Ethereum Foundation announced a major protocol upgrade plan.',
   },
   {
     id: 'n8',
@@ -92,14 +100,16 @@ const allNews = [
     sourceName: 'The Block',
     publishedAt: '3 hours ago',
     summary: 'Solana DEX 交易量首次超越以太坊。',
+    summaryEn: 'Solana DEX volume surpassed Ethereum for the first time.',
   },
 ];
 
 const SentimentBadge = ({ sentiment }: { sentiment: 'bullish' | 'bearish' | 'neutral' }) => {
+  const { t } = useTranslation();
   const config = {
-    bullish: { icon: TrendingUp, color: 'var(--brand-green)', label: '利好' },
-    bearish: { icon: TrendingDown, color: 'var(--brand-red)', label: '利空' },
-    neutral: { icon: null, color: 'var(--text-muted)', label: '中性' },
+    bullish: { icon: TrendingUp, color: 'var(--brand-green)', label: t('sentiment.bullish') },
+    bearish: { icon: TrendingDown, color: 'var(--brand-red)', label: t('sentiment.bearish') },
+    neutral: { icon: null, color: 'var(--text-muted)', label: t('sentiment.neutral') },
   };
   const { icon: Icon, color, label } = config[sentiment];
   return (
@@ -118,6 +128,7 @@ interface NewsListModalProps {
 }
 
 export function NewsListModal({ isOpen, onClose, onSelectNews, currentSymbol = 'BTC' }: NewsListModalProps) {
+  const { t, language } = useTranslation();
   const [activeTab, setActiveTab] = useState<'related' | 'subscribed'>('related');
   const [subscribedSources, setSubscribedSources] = useState<Set<string>>(new Set(['coindesk', 'whalealert']));
   const [searchQuery, setSearchQuery] = useState('');
@@ -189,7 +200,7 @@ export function NewsListModal({ isOpen, onClose, onSelectNews, currentSymbol = '
         {/* Header */}
         <div className="p-4 border-b border-[var(--border-light)]">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-[16px] font-bold text-[var(--text-main)]">新闻资讯</h2>
+            <h2 className="text-[16px] font-bold text-[var(--text-main)]">{t('newsListModal.title')}</h2>
             <button
               onClick={onClose}
               className="p-1.5 hover:bg-[var(--bg-surface)] rounded-lg transition-colors"
@@ -208,7 +219,7 @@ export function NewsListModal({ isOpen, onClose, onSelectNews, currentSymbol = '
                   : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
               }`}
             >
-              {currentSymbol} 相关
+              {t('newsListModal.relatedTab', { symbol: currentSymbol })}
             </button>
             <button
               onClick={() => setActiveTab('subscribed')}
@@ -218,7 +229,7 @@ export function NewsListModal({ isOpen, onClose, onSelectNews, currentSymbol = '
                   : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
               }`}
             >
-              我的订阅
+              {t('newsListModal.subscribedTab')}
             </button>
           </div>
 
@@ -229,7 +240,7 @@ export function NewsListModal({ isOpen, onClose, onSelectNews, currentSymbol = '
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="搜索新闻..."
+              placeholder={t('newsListModal.searchPlaceholder')}
               className="w-full pl-9 pr-3 py-2 bg-[var(--bg-surface)] border border-[var(--border-light)] rounded-lg text-[13px] text-[var(--text-main)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-yellow)]"
             />
           </div>
@@ -240,7 +251,7 @@ export function NewsListModal({ isOpen, onClose, onSelectNews, currentSymbol = '
           {activeTab === 'subscribed' && (
             /* 订阅的新闻源 */
             <div className="p-4 border-b border-[var(--border-light)] bg-[var(--bg-surface)]">
-              <div className="text-[12px] text-[var(--text-muted)] mb-2">订阅新闻源</div>
+              <div className="text-[12px] text-[var(--text-muted)] mb-2">{t('newsListModal.subscribedSources')}</div>
               <div className="flex flex-wrap gap-2">
                 {newsSources.map(source => (
                   <button
@@ -270,8 +281,8 @@ export function NewsListModal({ isOpen, onClose, onSelectNews, currentSymbol = '
             {filteredNews.length === 0 ? (
               <div className="text-center py-8 text-[var(--text-muted)]">
                 {activeTab === 'related'
-                  ? `暂无 ${currentSymbol} 相关新闻`
-                  : '请先订阅新闻源'}
+                  ? t('newsListModal.emptyRelated', { symbol: currentSymbol })
+                  : t('newsListModal.emptySubscribed')}
               </div>
             ) : (
               filteredNews.map(news => (
@@ -302,7 +313,7 @@ export function NewsListModal({ isOpen, onClose, onSelectNews, currentSymbol = '
 
                   {/* Summary */}
                   <p className="text-[12px] text-[var(--text-muted)] mb-2 line-clamp-1">
-                    {news.summary}
+                    {language === 'zh' ? news.summary : news.summaryEn}
                   </p>
 
                   {/* Source */}
@@ -319,8 +330,8 @@ export function NewsListModal({ isOpen, onClose, onSelectNews, currentSymbol = '
         {/* Footer */}
         <div className="px-4 py-3 border-t border-[var(--border-light)] bg-[var(--bg-surface)]">
           <div className="flex items-center justify-between text-[11px] text-[var(--text-dim)]">
-            <span>共 {filteredNews.length} 条新闻</span>
-            <span>点击查看详情和 AI 解读</span>
+            <span>{t('newsListModal.footerCount', { count: filteredNews.length })}</span>
+            <span>{t('newsListModal.footerHint')}</span>
           </div>
         </div>
       </div>

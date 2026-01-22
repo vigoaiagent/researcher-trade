@@ -3,14 +3,15 @@ import { X, Crown, TrendingUp, TrendingDown, Lock, Clock, User, Bell, BellOff, S
 import { useUserStore } from '../../stores/userStore';
 import { LEVEL_CONFIG } from '../../types';
 import type { UserLevel } from '../../types';
+import { useTranslation } from '../../i18n';
 
 // 研究员数据
 const researchers = [
-  { id: 'alex', name: 'Alex Chen', avatar: '👨‍💼', specialty: '技术分析' },
-  { id: 'sarah', name: 'Sarah Wang', avatar: '👩‍💻', specialty: 'L2 生态' },
-  { id: 'mike', name: 'Mike Johnson', avatar: '👨‍🔬', specialty: 'Solana 生态' },
-  { id: 'james', name: 'Dr. James Lee', avatar: '👨‍🎓', specialty: '宏观经济' },
-  { id: 'team', name: 'VIP Research Team', avatar: '🏆', specialty: 'DeFi 策略' },
+  { id: 'alex', name: 'Alex Chen', nameEn: 'Alex Chen', avatar: '👨‍💼', specialty: '技术分析', specialtyEn: 'Technical Analysis' },
+  { id: 'sarah', name: 'Sarah Wang', nameEn: 'Sarah Wang', avatar: '👩‍💻', specialty: 'L2 生态', specialtyEn: 'L2 Ecosystem' },
+  { id: 'mike', name: 'Mike Johnson', nameEn: 'Mike Johnson', avatar: '👨‍🔬', specialty: 'Solana 生态', specialtyEn: 'Solana Ecosystem' },
+  { id: 'james', name: 'Dr. James Lee', nameEn: 'Dr. James Lee', avatar: '👨‍🎓', specialty: '宏观经济', specialtyEn: 'Macro Economy' },
+  { id: 'team', name: 'VIP Research Team', nameEn: 'VIP Research Team', avatar: '🏆', specialty: 'DeFi 策略', specialtyEn: 'DeFi Strategies' },
 ];
 
 // 研报数据
@@ -26,6 +27,7 @@ const allReports: Array<{
   publishedAt: string;
   requiredLevel: 'Gold' | 'Diamond';
   summary: string;
+  summaryEn: string;
   isRecommended: boolean;
 }> = [
   {
@@ -38,6 +40,7 @@ const allReports: Array<{
     publishedAt: '2 hours ago',
     requiredLevel: 'Gold' as const,
     summary: '比特币近期技术面显示强劲支撑位在 $94,500，多头趋势有望延续。',
+    summaryEn: 'BTC’s technicals show strong support around $94,500, with the uptrend likely intact.',
     isRecommended: true,
   },
   {
@@ -50,6 +53,7 @@ const allReports: Array<{
     publishedAt: '3 hours ago',
     requiredLevel: 'Gold' as const,
     summary: '以太坊 L2 生态持续繁荣，Arbitrum 和 Base 领跑市场。',
+    summaryEn: 'Ethereum L2s continue to thrive, with Arbitrum and Base leading the market.',
     isRecommended: true,
   },
   {
@@ -62,6 +66,7 @@ const allReports: Array<{
     publishedAt: '5 hours ago',
     requiredLevel: 'Diamond' as const,
     summary: 'Solana 网络活动激增，日交易量创历史新高，生态发展势头强劲。',
+    summaryEn: 'Solana activity is surging with record daily volume, signaling strong ecosystem momentum.',
     isRecommended: false,
   },
   {
@@ -74,6 +79,7 @@ const allReports: Array<{
     publishedAt: '6 hours ago',
     requiredLevel: 'Diamond' as const,
     summary: '美联储政策转向在即，对加密市场的影响分析。',
+    summaryEn: 'Analysis of how a Fed policy pivot could impact crypto markets.',
     isRecommended: true,
   },
   {
@@ -86,6 +92,7 @@ const allReports: Array<{
     publishedAt: '12 hours ago',
     requiredLevel: 'Diamond' as const,
     summary: 'DeFi 收益策略深度报告，精选高收益低风险机会。',
+    summaryEn: 'A deep dive into DeFi yield strategies highlighting high‑return, lower‑risk setups.',
     isRecommended: false,
   },
 ];
@@ -108,6 +115,7 @@ interface ResearchReportListModalProps {
 }
 
 export function ResearchReportListModal({ isOpen, onClose, onSelectReport }: ResearchReportListModalProps) {
+  const { t, language } = useTranslation();
   const { user } = useUserStore();
   const modalRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<'recommended' | 'subscribed'>('recommended');
@@ -188,7 +196,7 @@ export function ResearchReportListModal({ isOpen, onClose, onSelectReport }: Res
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Crown size={20} className="text-[var(--brand-yellow)]" />
-              <h2 className="text-[16px] font-bold text-[var(--text-main)]">VIP 研报</h2>
+              <h2 className="text-[16px] font-bold text-[var(--text-main)]">{t('reportListModal.title')}</h2>
             </div>
             <button
               onClick={onClose}
@@ -208,7 +216,7 @@ export function ResearchReportListModal({ isOpen, onClose, onSelectReport }: Res
                   : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
               }`}
             >
-              推荐
+              {t('reportListModal.recommended')}
             </button>
             <button
               onClick={() => setActiveTab('subscribed')}
@@ -218,7 +226,7 @@ export function ResearchReportListModal({ isOpen, onClose, onSelectReport }: Res
                   : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
               }`}
             >
-              我的订阅
+              {t('reportListModal.subscribed')}
             </button>
           </div>
 
@@ -229,7 +237,7 @@ export function ResearchReportListModal({ isOpen, onClose, onSelectReport }: Res
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="搜索研报..."
+              placeholder={t('reportListModal.searchPlaceholder')}
               className="w-full pl-9 pr-3 py-2 bg-[var(--bg-surface)] border border-[var(--border-light)] rounded-lg text-[13px] text-[var(--text-main)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-yellow)]"
             />
           </div>
@@ -240,7 +248,7 @@ export function ResearchReportListModal({ isOpen, onClose, onSelectReport }: Res
           {activeTab === 'subscribed' && (
             /* 订阅的研究员 */
             <div className="p-4 border-b border-[var(--border-light)] bg-[var(--bg-surface)]">
-              <div className="text-[12px] text-[var(--text-muted)] mb-2">订阅研究员</div>
+              <div className="text-[12px] text-[var(--text-muted)] mb-2">{t('reportListModal.subscribedResearchers')}</div>
               <div className="flex flex-wrap gap-2">
                 {researchers.map(researcher => (
                   <button
@@ -253,7 +261,7 @@ export function ResearchReportListModal({ isOpen, onClose, onSelectReport }: Res
                     }`}
                   >
                     <span>{researcher.avatar}</span>
-                    <span>{researcher.name}</span>
+                    <span>{language === 'zh' ? researcher.name : (researcher.nameEn || researcher.name)}</span>
                     {subscribedResearchers.has(researcher.id) ? (
                       <Bell size={12} />
                     ) : (
@@ -270,8 +278,8 @@ export function ResearchReportListModal({ isOpen, onClose, onSelectReport }: Res
             {filteredReports.length === 0 ? (
               <div className="text-center py-8 text-[var(--text-muted)]">
                 {activeTab === 'recommended'
-                  ? '暂无推荐研报'
-                  : '请先订阅研究员'}
+                  ? t('reportListModal.emptyRecommended')
+                  : t('reportListModal.emptySubscribed')}
               </div>
             ) : (
               filteredReports.map((report) => {
@@ -291,7 +299,7 @@ export function ResearchReportListModal({ isOpen, onClose, onSelectReport }: Res
                     <div className="flex items-center gap-2 mb-2">
                       <span className="flex items-center gap-1 px-1.5 py-0.5 bg-gradient-to-r from-[#FFD700] to-[#FFA500] rounded text-[9px] font-bold text-black">
                         <Crown size={10} />
-                        VIP
+                        {t('reportListModal.vipLabel')}
                       </span>
                       <span className={`text-[11px] font-bold px-2 py-0.5 rounded ${
                         report.sentiment === 'bullish'
@@ -322,7 +330,7 @@ export function ResearchReportListModal({ isOpen, onClose, onSelectReport }: Res
 
                     {/* Summary */}
                     <p className="text-[12px] text-[var(--text-muted)] mb-3 line-clamp-2">
-                      {report.summary}
+                      {language === 'zh' ? report.summary : report.summaryEn}
                     </p>
 
                     {/* Bottom Row */}
@@ -347,10 +355,11 @@ export function ResearchReportListModal({ isOpen, onClose, onSelectReport }: Res
         <div className="px-4 py-3 border-t border-[var(--border-light)] bg-[var(--bg-surface)]">
           <div className="flex items-center justify-between text-[11px]">
             <span className="text-[var(--text-muted)]">
-              共 {filteredReports.length} 篇研报
+              {t('reportListModal.footerCount', { count: filteredReports.length })}
             </span>
             <span className="text-[var(--text-dim)]">
-              当前等级: <span style={{ color: LEVEL_CONFIG[userLevel].color }}>{userLevel}</span>
+              {t('reportListModal.currentLevel')}
+              <span style={{ color: LEVEL_CONFIG[userLevel].color }}>{userLevel}</span>
             </span>
           </div>
         </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Crown, X, TrendingUp, TrendingDown, Bell, ChevronRight } from 'lucide-react';
 import { useUserStore } from '../../stores/userStore';
 import { LEVEL_CONFIG } from '../../types';
+import { useTranslation } from '../../i18n';
 
 interface NotificationReport {
   id: string;
@@ -20,6 +21,7 @@ interface ReportNotificationProps {
 
 export function ReportNotification({ report, onView, onDismiss }: ReportNotificationProps) {
   const { user } = useUserStore();
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
 
@@ -74,7 +76,7 @@ export function ReportNotification({ report, onView, onDismiss }: ReportNotifica
         <div className="flex items-center gap-2">
           <Bell size={14} className="text-[var(--brand-yellow)]" />
           <span className="text-[11px] font-medium text-[var(--brand-yellow)]">
-            新研报推送
+            {t('reportNotification.title')}
           </span>
         </div>
         <button
@@ -90,7 +92,7 @@ export function ReportNotification({ report, onView, onDismiss }: ReportNotifica
         <div className="flex items-start gap-2 mb-2">
           <span className="flex items-center gap-1 px-1.5 py-0.5 bg-gradient-to-r from-[#FFD700] to-[#FFA500] rounded text-[8px] font-bold text-black shrink-0">
             <Crown size={8} />
-            VIP
+            {t('reportNotification.vip')}
           </span>
           {report.symbol && (
             <span className="text-[10px] font-bold px-1.5 py-0.5 bg-[var(--bg-surface)] text-[var(--text-main)] rounded shrink-0">
@@ -106,7 +108,7 @@ export function ReportNotification({ report, onView, onDismiss }: ReportNotifica
 
         <div className="flex items-center justify-between">
           <span className="text-[10px] text-[var(--text-muted)]">
-            by {report.researcher}
+            {t('reportNotification.by', { name: report.researcher })}
           </span>
           <span
             className="text-[9px] px-1.5 py-0.5 rounded border"
@@ -127,16 +129,18 @@ export function ReportNotification({ report, onView, onDismiss }: ReportNotifica
             onClick={handleView}
             className="w-full flex items-center justify-center gap-1 py-2 bg-[var(--brand-yellow)] text-black text-[11px] font-medium rounded hover:opacity-90 transition-opacity"
           >
-            查看研报
+            {t('reportNotification.viewReport')}
             <ChevronRight size={14} />
           </button>
         ) : (
           <div className="text-center py-2 bg-[var(--bg-surface)] rounded">
             <div className="text-[11px] text-[var(--text-muted)]">
-              需要 <span style={{ color: LEVEL_CONFIG[report.requiredLevel].color }}>{report.requiredLevel}</span> 等级
+              {t('reportNotification.requiresLevel')}
+              <span style={{ color: LEVEL_CONFIG[report.requiredLevel].color }}>{report.requiredLevel}</span>
+              {t('reportNotification.levelSuffix')}
             </div>
             <div className="text-[10px] text-[var(--text-dim)]">
-              当前: {userLevel}
+              {t('reportNotification.currentLevel', { level: userLevel })}
             </div>
           </div>
         )}

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useLanguage } from '../i18n';
 import { voiceCallService } from '../services/voiceCall';
 import type { CallStatus } from '../services/voiceCall';
 import { getSocket } from '../services/socket';
@@ -126,14 +127,14 @@ export const useCallStore = create<CallStore>((set, get) => ({
       // 监听通话被拒绝
       socket.on('call:rejected', () => {
         console.log('📞 Call rejected by researcher');
-        set({ status: 'failed', error: '研究员拒绝了通话请求' });
+        set({ status: 'failed', error: useLanguage.getState().t('call.rejected') });
         voiceCallService.endCall();
       });
 
       // 监听通话超时
       socket.on('call:timeout', () => {
         console.log('📞 Call request timed out');
-        set({ status: 'failed', error: '通话请求超时，研究员未响应' });
+        set({ status: 'failed', error: useLanguage.getState().t('call.timeout') });
         voiceCallService.endCall();
       });
 

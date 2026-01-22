@@ -30,12 +30,16 @@ type RoadshowStatus = 'upcoming' | 'live' | 'ended' | 'cancelled';
 interface Roadshow {
   id: string;
   title: string;
+  titleEn?: string;
   description: string;
+  descriptionEn?: string;
   speaker: {
     id: string;
     name: string;
     avatar: string | null;
     title: string;
+    nameEn?: string;
+    titleEn?: string;
   };
   type: RoadshowType;
   status: RoadshowStatus;
@@ -45,6 +49,7 @@ interface Roadshow {
   maxAttendees: number;
   requiredLevel: 'Gold' | 'Diamond';
   tags: string[];
+  tagsEn?: string[];
   meetingUrl?: string;
 }
 
@@ -53,12 +58,16 @@ const mockRoadshows: Roadshow[] = [
   {
     id: 'rs-001',
     title: 'BTC 2025年行情展望与策略分析',
+    titleEn: 'BTC 2025 Outlook & Strategy',
     description: '深度解读比特币在2025年的宏观走势，以及如何在不同市场阶段制定交易策略。',
+    descriptionEn: 'Deep dive into Bitcoin’s 2025 macro outlook and strategies for different market phases.',
     speaker: {
       id: 'spk-001',
       name: 'Alex Chen',
       avatar: null,
       title: '首席分析师',
+      nameEn: 'Alex Chen',
+      titleEn: 'Chief Analyst',
     },
     type: 'video',
     status: 'upcoming',
@@ -68,16 +77,21 @@ const mockRoadshows: Roadshow[] = [
     maxAttendees: 200,
     requiredLevel: 'Gold',
     tags: ['BTC', '宏观分析', '策略'],
+    tagsEn: ['BTC', 'Macro', 'Strategy'],
   },
   {
     id: 'rs-002',
     title: 'DeFi 新趋势：RWA与链上金融',
+    titleEn: 'DeFi Trends: RWA & On-chain Finance',
     description: '探讨 Real World Assets 如何改变 DeFi 生态，以及2025年值得关注的项目。',
+    descriptionEn: 'Explore how Real World Assets reshape DeFi and the projects to watch in 2025.',
     speaker: {
       id: 'spk-002',
       name: '李明阳',
       avatar: null,
       title: '研究总监',
+      nameEn: 'Leo Li',
+      titleEn: 'Research Director',
     },
     type: 'video',
     status: 'upcoming',
@@ -87,16 +101,21 @@ const mockRoadshows: Roadshow[] = [
     maxAttendees: 150,
     requiredLevel: 'Gold',
     tags: ['DeFi', 'RWA', '项目分析'],
+    tagsEn: ['DeFi', 'RWA', 'Project analysis'],
   },
   {
     id: 'rs-003',
     title: 'VIP 专属: 2025 Q1 投资组合配置',
+    titleEn: 'VIP Exclusive: 2025 Q1 Portfolio Allocation',
     description: 'Diamond 会员专属路演，分享机构级投资组合配置策略与风险管理。',
+    descriptionEn: 'Diamond member roadshow sharing institutional portfolio allocation and risk management.',
     speaker: {
       id: 'spk-003',
       name: 'Michael Liu',
       avatar: null,
       title: '高级策略师',
+      nameEn: 'Michael Liu',
+      titleEn: 'Senior Strategist',
     },
     type: 'video',
     status: 'upcoming',
@@ -106,16 +125,21 @@ const mockRoadshows: Roadshow[] = [
     maxAttendees: 50,
     requiredLevel: 'Diamond',
     tags: ['投资组合', '风险管理', 'VIP专属'],
+    tagsEn: ['Portfolio', 'Risk management', 'VIP'],
   },
   {
     id: 'rs-004',
     title: 'AMA: Layer2 生态发展与机会',
+    titleEn: 'AMA: Layer2 Ecosystem Opportunities',
     description: '与研究员实时互动，回答关于 Layer2 生态的所有问题。',
+    descriptionEn: 'Live AMA with researchers to answer all your Layer2 questions.',
     speaker: {
       id: 'spk-004',
       name: 'Sarah Wang',
       avatar: null,
       title: '链上研究员',
+      nameEn: 'Sarah Wang',
+      titleEn: 'On-chain Researcher',
     },
     type: 'ama',
     status: 'upcoming',
@@ -125,16 +149,21 @@ const mockRoadshows: Roadshow[] = [
     maxAttendees: 300,
     requiredLevel: 'Gold',
     tags: ['Layer2', 'AMA', '互动'],
+    tagsEn: ['Layer2', 'AMA', 'Q&A'],
   },
   {
     id: 'rs-005',
     title: 'Meme币投资指南：如何识别机会与风险',
+    titleEn: 'Meme Coin Investing: Opportunities & Risks',
     description: '分析 Meme 币市场的运作机制，以及如何在高波动中寻找机会。',
+    descriptionEn: 'Analyze meme coin market mechanics and how to spot opportunities amid volatility.',
     speaker: {
       id: 'spk-005',
       name: '张晓风',
       avatar: null,
       title: '市场分析师',
+      nameEn: 'Xiaofeng Zhang',
+      titleEn: 'Market Analyst',
     },
     type: 'audio',
     status: 'upcoming',
@@ -144,6 +173,7 @@ const mockRoadshows: Roadshow[] = [
     maxAttendees: 500,
     requiredLevel: 'Gold',
     tags: ['Meme', '短线', '风险'],
+    tagsEn: ['Meme', 'Short-term', 'Risk'],
   },
 ];
 
@@ -161,6 +191,11 @@ export function RoadshowCalendar({ isOpen, onClose }: RoadshowCalendarProps) {
 
   const userLevel = (user?.level || 'Bronze') as UserLevel;
   const hasRoadshowAccess = user ? LEVEL_CONFIG[userLevel]?.hasRoadshowAccess : false;
+  const getLocalizedTitle = (roadshow: Roadshow) => (language === 'zh' ? roadshow.title : (roadshow.titleEn || roadshow.title));
+  const getLocalizedDescription = (roadshow: Roadshow) => (language === 'zh' ? roadshow.description : (roadshow.descriptionEn || roadshow.description));
+  const getLocalizedSpeakerName = (roadshow: Roadshow) => (language === 'zh' ? roadshow.speaker.name : (roadshow.speaker.nameEn || roadshow.speaker.name));
+  const getLocalizedSpeakerTitle = (roadshow: Roadshow) => (language === 'zh' ? roadshow.speaker.title : (roadshow.speaker.titleEn || roadshow.speaker.title));
+  const getLocalizedTags = (roadshow: Roadshow) => (language === 'zh' ? roadshow.tags : (roadshow.tagsEn || roadshow.tags));
 
   // 检查用户等级是否满足路演要求
   const canAccessRoadshow = (requiredLevel: 'Gold' | 'Diamond') => {
@@ -250,6 +285,16 @@ export function RoadshowCalendar({ isOpen, onClose }: RoadshowCalendarProps) {
     const formatICSDate = (date: Date) => {
       return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
     };
+    const title = getLocalizedTitle(roadshow);
+    const description = getLocalizedDescription(roadshow);
+    const speakerName = getLocalizedSpeakerName(roadshow);
+    const speakerTitle = getLocalizedSpeakerTitle(roadshow);
+    const tags = getLocalizedTags(roadshow).join(', ');
+    const summaryPrefix = language === 'zh' ? '【SoDEX路演】' : 'SoDEX Roadshow: ';
+    const speakerLabel = language === 'zh' ? '讲师' : 'Speaker';
+    const tagsLabel = language === 'zh' ? '标签' : 'Tags';
+    const locationLabel = language === 'zh' ? 'SoDEX 在线直播' : 'SoDEX Live Stream';
+    const reminderText = language === 'zh' ? 'SoDEX路演即将开始' : 'SoDEX roadshow starting soon';
 
     const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
@@ -259,13 +304,13 @@ UID:${roadshow.id}@sodex.com
 DTSTAMP:${formatICSDate(new Date())}
 DTSTART:${formatICSDate(roadshow.startTime)}
 DTEND:${formatICSDate(roadshow.endTime)}
-SUMMARY:【SoDEX路演】${roadshow.title}
-DESCRIPTION:讲师: ${roadshow.speaker.name} (${roadshow.speaker.title})\\n\\n${roadshow.description}\\n\\n标签: ${roadshow.tags.join(', ')}
-LOCATION:SoDEX 在线直播
-ORGANIZER;CN=${roadshow.speaker.name}:mailto:roadshow@sodex.com
+SUMMARY:${summaryPrefix}${title}
+DESCRIPTION:${speakerLabel}: ${speakerName} (${speakerTitle})\\n\\n${description}\\n\\n${tagsLabel}: ${tags}
+LOCATION:${locationLabel}
+ORGANIZER;CN=${speakerName}:mailto:roadshow@sodex.com
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:SoDEX路演即将开始
+DESCRIPTION:${reminderText}
 TRIGGER:-PT30M
 END:VALARM
 END:VEVENT
@@ -299,13 +344,22 @@ END:VCALENDAR`;
     const formatGoogleDate = (date: Date) => {
       return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
     };
+    const title = getLocalizedTitle(roadshow);
+    const description = getLocalizedDescription(roadshow);
+    const speakerName = getLocalizedSpeakerName(roadshow);
+    const speakerTitle = getLocalizedSpeakerTitle(roadshow);
+    const tags = getLocalizedTags(roadshow).join(', ');
+    const summaryPrefix = language === 'zh' ? '【SoDEX路演】' : 'SoDEX Roadshow: ';
+    const speakerLabel = language === 'zh' ? '讲师' : 'Speaker';
+    const tagsLabel = language === 'zh' ? '标签' : 'Tags';
+    const locationLabel = language === 'zh' ? 'SoDEX 在线直播' : 'SoDEX Live Stream';
 
     const params = new URLSearchParams({
       action: 'TEMPLATE',
-      text: `【SoDEX路演】${roadshow.title}`,
+      text: `${summaryPrefix}${title}`,
       dates: `${formatGoogleDate(roadshow.startTime)}/${formatGoogleDate(roadshow.endTime)}`,
-      details: `讲师: ${roadshow.speaker.name} (${roadshow.speaker.title})\n\n${roadshow.description}\n\n标签: ${roadshow.tags.join(', ')}`,
-      location: 'SoDEX 在线直播',
+      details: `${speakerLabel}: ${speakerName} (${speakerTitle})\n\n${description}\n\n${tagsLabel}: ${tags}`,
+      location: locationLabel,
     });
 
     return `https://calendar.google.com/calendar/render?${params.toString()}`;
@@ -513,7 +567,7 @@ END:VCALENDAR`;
                             )}
                           </div>
                           <h4 className="text-[15px] font-medium text-[var(--text-main)] line-clamp-1">
-                            {roadshow.title}
+                            {getLocalizedTitle(roadshow)}
                           </h4>
                         </div>
                         {!canAccess && (
@@ -523,20 +577,20 @@ END:VCALENDAR`;
 
                       {/* 描述 */}
                       <p className="text-[13px] text-[var(--text-muted)] line-clamp-2 mb-3">
-                        {roadshow.description}
+                        {getLocalizedDescription(roadshow)}
                       </p>
 
                       {/* 讲师信息 */}
                       <div className="flex items-center gap-3 mb-3">
                         <div className="w-8 h-8 rounded-full bg-[var(--brand-green)] flex items-center justify-center text-black text-[12px] font-bold">
-                          {roadshow.speaker.name.charAt(0)}
+                          {getLocalizedSpeakerName(roadshow).charAt(0)}
                         </div>
                         <div>
                           <div className="text-[13px] font-medium text-[var(--text-main)]">
-                            {roadshow.speaker.name}
+                            {getLocalizedSpeakerName(roadshow)}
                           </div>
                           <div className="text-[11px] text-[var(--text-muted)]">
-                            {roadshow.speaker.title}
+                            {getLocalizedSpeakerTitle(roadshow)}
                           </div>
                         </div>
                       </div>
@@ -560,7 +614,7 @@ END:VCALENDAR`;
 
                       {/* 标签 */}
                       <div className="flex flex-wrap gap-1.5 mb-3">
-                        {roadshow.tags.map((tag, idx) => (
+                        {getLocalizedTags(roadshow).map((tag, idx) => (
                           <span
                             key={idx}
                             className="px-2 py-0.5 text-[11px] rounded bg-[var(--bg-app)] text-[var(--text-muted)]"
@@ -711,25 +765,25 @@ END:VCALENDAR`;
 
               {/* 标题 */}
               <h4 className="text-[17px] font-bold text-[var(--text-main)] mb-3">
-                {selectedRoadshow.title}
+                {getLocalizedTitle(selectedRoadshow)}
               </h4>
 
               {/* 描述 */}
               <p className="text-[14px] text-[var(--text-muted)] mb-4 leading-relaxed">
-                {selectedRoadshow.description}
+                {getLocalizedDescription(selectedRoadshow)}
               </p>
 
               {/* 讲师卡片 */}
               <div className="flex items-center gap-3 p-3 bg-[var(--bg-surface)] rounded-lg mb-4">
                 <div className="w-12 h-12 rounded-full bg-[var(--brand-green)] flex items-center justify-center text-black text-[16px] font-bold">
-                  {selectedRoadshow.speaker.name.charAt(0)}
+                  {getLocalizedSpeakerName(selectedRoadshow).charAt(0)}
                 </div>
                 <div className="flex-1">
                   <div className="text-[15px] font-medium text-[var(--text-main)]">
-                    {selectedRoadshow.speaker.name}
+                    {getLocalizedSpeakerName(selectedRoadshow)}
                   </div>
                   <div className="text-[13px] text-[var(--text-muted)]">
-                    {selectedRoadshow.speaker.title}
+                    {getLocalizedSpeakerTitle(selectedRoadshow)}
                   </div>
                 </div>
                 <a
@@ -770,7 +824,7 @@ END:VCALENDAR`;
 
               {/* 标签 */}
               <div className="flex flex-wrap gap-1.5 mb-5">
-                {selectedRoadshow.tags.map((tag, idx) => (
+                {getLocalizedTags(selectedRoadshow).map((tag, idx) => (
                   <span
                     key={idx}
                     className="px-2.5 py-1 text-[12px] rounded-lg bg-[var(--brand-green-dim)] text-[var(--brand-green)]"

@@ -32,6 +32,14 @@ export const zh = {
     language: '语言',
   },
 
+  // Language
+  language: {
+    zhShort: '中文',
+    enShort: 'EN',
+    zhFull: '简体中文',
+    enFull: 'English',
+  },
+
   // Login
   login: {
     title: '欢迎来到 SoDEX',
@@ -39,6 +47,7 @@ export const zh = {
     walletPlaceholder: '输入钱包地址 (0x...)',
     connectWallet: '连接钱包',
     connecting: '连接中...',
+    enterWalletAlert: '请输入钱包地址',
     quickDemo: '快速体验',
     whitelistOnly: '仅限白名单用户。请联系客服获取访问权限。',
     or: '或',
@@ -124,6 +133,44 @@ export const zh = {
     startExperience: '开始体验',
   },
 
+  // Level Upgrade Modal
+  levelUpgrade: {
+    benefits: {
+      aiSupport: {
+        title: 'AI 客服',
+        description: '24小时在线解答基础问题',
+      },
+      aiResearcher: {
+        title: 'AI 研究员',
+        description: '智能深度分析与解答',
+      },
+      exclusiveResearcher: {
+        title: '专属研究员',
+        description: '1v1专业研究员咨询',
+      },
+      exclusiveReports: {
+        title: '专属研报',
+        description: '获取独家市场分析报告',
+      },
+      community: {
+        title: '加入社群',
+        description: '加入Gold专属交流群',
+      },
+      vipResearcher: {
+        title: 'VIP 研究员',
+        description: '顶级研究员专属服务',
+      },
+      phoneConsult: {
+        title: '电话咨询',
+        description: '支持与研究员电话沟通',
+      },
+      privateChannel: {
+        title: '私享频道',
+        description: '加入Diamond专属交流群',
+      },
+    },
+  },
+
   // Roadshow Calendar
   roadshow: {
     title: '路演日历',
@@ -167,6 +214,7 @@ export const zh = {
   calendar: {
     title: '财经日历',
     subtitle: '路演 & 宏观事件',
+    viewCalendar: '财经日历',
   },
 
   // Research Reports
@@ -175,6 +223,8 @@ export const zh = {
     vipReports: 'VIP报告',
     upgradeToGold: '升级到 Gold',
     unlockVipReports: '解锁 VIP 研究员报告',
+    viewAllNews: '查看全部新闻',
+    viewAllReports: '查看全部研报',
   },
 
   // Researcher Service
@@ -697,6 +747,24 @@ export const zh = {
     micUnavailable: '无法获取麦克风，请检查设备',
   },
 
+  // Call Errors
+  call: {
+    rejected: '研究员拒绝了通话请求',
+    timeout: '通话请求超时，研究员未响应',
+  },
+
+  // Energy History
+  energyHistory: {
+    locked: '服务预扣',
+    unlocked: '服务退回',
+    spent: '咨询服务',
+    weeklyDecay: '周衰减 ({rate}%)',
+    weeklyDecayWithShield: '周衰减 ({rate}%, Shield保护{shield})',
+    spot: '现货',
+    futures: '合约',
+    tradeDesc: '{type}交易 {volume}{boost}',
+  },
+
   // Trade Panel
   tradePanel: {
     demoTrading: '模拟交易',
@@ -876,6 +944,234 @@ export const zh = {
     retry: '重试',
     recordingNotice: '通话将被录音用于服务质量监控',
     userHangup: '用户已挂断',
+  },
+
+  aiCat: {
+    tooltip: {
+      researcherAccessTitle: '研究员权限',
+      researcherAccessDesc: '连接专家研究员',
+      aiServiceTitle: 'AI 客服',
+      aiServiceDesc: '即时 AI 帮助',
+      reachGoldHint: '达到 Gold 解锁研究员',
+    },
+    upgradeBanner: '🎉 升级啦！',
+  },
+
+  userLevelBadge: {
+    tokenBoost: '代币加成',
+    collapse: '收起',
+    simulatorLabel: '模拟设置',
+    boost: {
+      title: '能量铸造加成 (Boost)',
+      description: '持有 SoSo 代币可获得能量铸造加成，最高 {maxBoost}。',
+      minHolding: '• 最低持有: {amount} SoSo',
+      maxHolding: '• 满额持有: {amount} SoSo',
+      example: '例: 交易产生 $100 手续费，正常获得 100 能量，+10% Boost 后获得 110 能量。',
+      unlockHint: '持有 {amount}+ 解锁',
+    },
+    shield: {
+      title: '能量护盾 (Shield)',
+      description: '质押 SSI 可保护部分能量不参与每周衰减。',
+      floorTitle: 'Shield 保底额度:',
+      floor: {
+        normal: '• 普通质押: 50 能量/周',
+        core: '• Core SSI ($200k+): 150 能量/周',
+        vip: '• VIP SSI ($1M+): 500 能量/周',
+      },
+      phoneAccess: 'Core SSI 还可解锁电话咨询服务。',
+      weeklyProtected: '每周保护 {amount} 能量',
+      stakeHint: '质押 SSI 获得衰减保护',
+    },
+    ssiTier: {
+      none: '无',
+      normal: '普通',
+      core: 'Core',
+      vip: 'VIP',
+    },
+    simulator: {
+      sosoHolding: 'SoSo 持有量',
+      ssiStaked: 'SSI 质押 (USD)',
+      presets: {
+        normal: '普通用户',
+        core: 'Core SSI',
+        vip: 'VIP SSI',
+      },
+      apply: '应用设置',
+    },
+    energyAvailable: '可用能量',
+    progress: '升级进度 {progress}% → {nextLevel}',
+    stats: {
+      available: '可用',
+      spent: '已消耗',
+      trades: '交易',
+      decay: '衰减',
+    },
+    currentBenefits: '当前权益',
+    nextBenefits: '{level} 专属权益',
+    simulateTrade: '模拟交易',
+    tradeType: {
+      spot: '现货',
+      futures: '合约',
+    },
+    tradeAmount: '自定义金额',
+    trade: '交易',
+    fee: '手续费:',
+    energyEarned: '获得能量:',
+  },
+
+  positionAlert: {
+    title: '持仓相关资讯',
+    markAllRead: '全部已读',
+    urgent: '重要',
+    side: {
+      long: '多',
+      short: '空',
+    },
+    collapse: '收起',
+    viewAll: '查看全部 {count} 条',
+  },
+
+  reportNotification: {
+    title: '新研报推送',
+    vip: 'VIP',
+    by: '{name}',
+    viewReport: '查看研报',
+    requiresLevel: '需要 ',
+    levelSuffix: ' 等级',
+    currentLevel: '当前: {level}',
+  },
+
+  newsListModal: {
+    title: '新闻资讯',
+    relatedTab: '{symbol} 相关',
+    subscribedTab: '我的订阅',
+    searchPlaceholder: '搜索新闻...',
+    subscribedSources: '订阅新闻源',
+    emptyRelated: '暂无 {symbol} 相关新闻',
+    emptySubscribed: '请先订阅新闻源',
+    footerCount: '共 {count} 条新闻',
+    footerHint: '点击查看详情和 AI 解读',
+  },
+
+  sentiment: {
+    bullish: '利好',
+    bearish: '利空',
+    neutral: '中性',
+  },
+
+  newsPreviewModal: {
+    aiQuickBrief: 'AI 快速解读',
+    generated: '已生成',
+    source: '数据来源: {source}',
+    disclaimer: 'AI 解读仅供参考，不构成投资建议',
+  },
+
+  reportListModal: {
+    title: 'VIP 研报',
+    recommended: '推荐',
+    subscribed: '我的订阅',
+    searchPlaceholder: '搜索研报...',
+    subscribedResearchers: '订阅研究员',
+    emptyRecommended: '暂无推荐研报',
+    emptySubscribed: '请先订阅研究员',
+    footerCount: '共 {count} 篇研报',
+    currentLevel: '当前等级: ',
+    vipLabel: 'VIP',
+  },
+
+  reportModal: {
+    vip: 'VIP',
+    researcherTitleFallback: '分析师',
+    privateMessageTitle: '私信研究员 ({cost} 能量)',
+    privateMessage: '私信',
+    oneOnOneTitle: '1v1 咨询 ({cost} 能量)',
+    oneOnOneShort: '1v1',
+    scheduleCall: '预约通话',
+    schedule: '预约',
+    readCount: '{count} 阅读',
+    tab: {
+      content: '研报内容',
+      comments: '评论 ({count})',
+    },
+    summary: '摘要',
+    aiBrief: 'AI 智能解读',
+    generated: '已生成',
+    collapseContent: '收起正文',
+    expandContent: '展开正文',
+    commentPlaceholder: '写下你的评论...',
+    emptyComments: '暂无评论，来抢沙发吧',
+    previewSummary: '研报摘要',
+    freePreview: '免费预览',
+    detailedAnalysis: '详细分析',
+    unlockFullPrefix: '升级到 ',
+    unlockFullSuffix: ' 解锁完整内容',
+    currentLevel: '当前等级: ',
+    tip: '赞赏',
+    subscribed: '已订阅',
+    subscribe: '订阅',
+    copied: '已复制',
+    copy: '复制',
+    tipSuccess: '赞赏成功！',
+    tipThanks: '感谢您对 {name} 的支持',
+    tipTitle: '赞赏研究员',
+    tipSubtitle: '支持 {name} 创作更多优质内容',
+    tipCustom: '自定义金额 (USDT)',
+    tipConfirm: '确认赞赏',
+    messageSentTitle: '发送成功！',
+    messageSentHint: '{name} 会尽快回复您',
+    messageTitle: '私信 {name}',
+    messagePlaceholder: '输入您想咨询的问题...',
+    energyCost: '消耗 {cost} 能量',
+    currentEnergy: '当前: {amount}',
+    cancel: '取消',
+    send: '发送',
+    insufficientEnergy: '能量不足',
+    energyRequired: '{action}需要 {required} 能量',
+    currentEnergyFull: '当前能量: {amount}',
+    energyHow: '如何获取能量？',
+    energyHowItems: {
+      trade: '交易产生手续费自动铸造能量',
+      soso: '持有 SoSo 代币获得铸造加成',
+      ssi: '质押 SSI 代币保护能量不衰减',
+    },
+    gotIt: '我知道了',
+    action: {
+      privateMessage: '私信',
+      oneOnOne: '1v1 咨询',
+    },
+    energy: {
+      privateMessage: '私信 {name}',
+      oneOnOne: '1v1 咨询 {name}',
+    },
+    consultation: {
+      title: '关于研报《{title}》的咨询',
+      summary: '研报标题：{title}\n研报摘要：{summary}',
+    },
+    aiFallback: {
+      analyzing: '正在分析研报内容...',
+      professional: '这是一份专业的市场分析报告。',
+      riskNote: '建议结合自身风险偏好做出决策。',
+    },
+  },
+
+  reportSentiment: {
+    bullish: '看多',
+    bearish: '看空',
+    neutral: '中性',
+  },
+
+  levelBenefits: {
+    aiSupport: 'AI 辅助',
+    basicMarket: '基础行情',
+    aiResearcher: 'AI 研究员',
+    deepAnalysis: '深度分析',
+    exclusiveResearcher: '专属研究员',
+    exclusiveReports: 'VIP 研报',
+    community: '私密社群',
+    roadshowCalendar: '路演日历',
+    vipResearcher: 'VIP 研究员',
+    phoneConsult: '电话咨询',
+    privateChannel: '私密频道',
   },
 
 };

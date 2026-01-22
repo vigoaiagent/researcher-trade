@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useLanguage } from '../i18n';
 import { persist } from 'zustand/middleware';
 import type { User, UserLevel, TradeRecord, EnergyTransaction } from '../types';
 import { LEVEL_CONFIG, FEE_RATES, getSoSoMultiplier, getSSIShieldAmount } from '../types';
@@ -87,7 +88,7 @@ export interface DemoUser {
   walletAddress: string;
 }
 
-export const DEMO_USERS: DemoUser[] = [
+const DEMO_USERS_ZH: DemoUser[] = [
   {
     id: 'demo_bronze',
     name: '新手小白',
@@ -129,6 +130,53 @@ export const DEMO_USERS: DemoUser[] = [
     walletAddress: '0xDiamond...demo',
   },
 ];
+
+const DEMO_USERS_EN: DemoUser[] = [
+  {
+    id: 'demo_bronze',
+    name: 'Beginner',
+    level: 'Bronze',
+    fees30d: 50,
+    energyAvailable: 50,
+    sosoHolding: 0,
+    ssiStaked: 0,
+    walletAddress: '0xBronze...demo',
+  },
+  {
+    id: 'demo_silver',
+    name: 'Intermediate',
+    level: 'Silver',
+    fees30d: 500,
+    energyAvailable: 500,
+    sosoHolding: 5000,
+    ssiStaked: 0,
+    walletAddress: '0xSilver...demo',
+  },
+  {
+    id: 'demo_gold',
+    name: 'VIP Member',
+    level: 'Gold',
+    fees30d: 2500,
+    energyAvailable: 2500,
+    sosoHolding: 25000,
+    ssiStaked: 200000,
+    walletAddress: '0xGold...demo',
+  },
+  {
+    id: 'demo_diamond',
+    name: 'Diamond Pro',
+    level: 'Diamond',
+    fees30d: 10000,
+    energyAvailable: 10000,
+    sosoHolding: 50000,
+    ssiStaked: 1000000,
+    walletAddress: '0xDiamond...demo',
+  },
+];
+
+export const getDemoUsers = (language: 'zh' | 'en') => (
+  language === 'zh' ? DEMO_USERS_ZH : DEMO_USERS_EN
+);
 
 interface UserState {
   user: User | null;
@@ -283,12 +331,14 @@ export const useUserStore = create<UserState>()(
       },
 
       // 锁定能量（服务预扣）
-      lockEnergy: (amount: number, description = '服务预扣') => {
+      lockEnergy: (amount: number, description) => {
+        const t = useLanguage.getState().t;
+        const finalDescription = description || t('energyHistory.locked');
         const { user } = get();
         if (!user || user.energyAvailable < amount) return false;
 
         const newAvailable = user.energyAvailable - amount;
-        const tx = createEnergyTransaction('locked', amount, newAvailable, description);
+        const tx = createEnergyTransaction('locked', amount, newAvailable, finalDescription);
 
         set({
           user: {
@@ -302,13 +352,15 @@ export const useUserStore = create<UserState>()(
       },
 
       // 解锁能量（服务取消/退回）
-      unlockEnergy: (amount: number, description = '服务退回') => {
+      unlockEnergy: (amount: number, description) => {
+        const t = useLanguage.getState().t;
+        const finalDescription = description || t('energyHistory.unlocked');
         const { user } = get();
         if (!user) return;
 
         const unlockAmount = Math.min(amount, user.energyLocked);
         const newAvailable = user.energyAvailable + unlockAmount;
-        const tx = createEnergyTransaction('unlocked', unlockAmount, newAvailable, description);
+        const tx = createEnergyTransaction('unlocked', unlockAmount, newAvailable, finalDescription);
 
         set({
           user: {
@@ -321,12 +373,14 @@ export const useUserStore = create<UserState>()(
       },
 
       // 消耗能量（服务完成）
-      spendEnergy: (amount: number, description = '咨询服务') => {
+      spendEnergy: (amount: number, description) => {
+        const t = useLanguage.getState().t;
+        const finalDescription = description || t('energyHistory.spent');
         const { user } = get();
         if (!user) return;
 
         const spendAmount = Math.min(amount, user.energyLocked);
-        const tx = createEnergyTransaction('spent', spendAmount, user.energyAvailable, description);
+        const tx = createEnergyTransaction('spent', spendAmount, user.energyAvailable, finalDescription);
 
         set({
           user: {
@@ -358,11 +412,18 @@ export const useUserStore = create<UserState>()(
 
         if (decayAmount > 0) {
           const newAvailable = user.energyAvailable - decayAmount;
+          const t = useLanguage.getState().t;
+          const rate = (config.decayRate * 100).toFixed(0);
+          const description = shieldAmount > 0
+            ? t('energyHistory.weeklyDecayWithShield')
+              .replace('{rate}', rate)
+              .replace('{shield}', shieldAmount.toFixed(0))
+            : t('energyHistory.weeklyDecay').replace('{rate}', rate);
           const tx = createEnergyTransaction(
             'expired',
             decayAmount,
             newAvailable,
-            `周衰减 (${(config.decayRate * 100).toFixed(0)}%${shieldAmount > 0 ? `, Shield保护${shieldAmount.toFixed(0)}` : ''})`
+            description
           );
 
           set({
@@ -442,14 +503,15 @@ export const useUserStore = create<UserState>()(
         const newAvailable = user.energyAvailable + energyMinted;
 
         // 创建能量交易记录
-        const typeLabel = type === 'spot' ? '现货' : '合约';
+        const t = useLanguage.getState().t;
+        const typeLabel = type === 'spot' ? t('energyHistory.spot') : t('energyHistory.futures');
         const volumeLabel = volume >= 1000 ? `$${(volume / 1000).toFixed(0)}k` : `$${volume}`;
         const boostLabel = boost > 0 ? ` (+${(boost * 100).toFixed(0)}% Boost)` : '';
         const tx = createEnergyTransaction(
           'minted',
           energyMinted,
           newAvailable,
-          `${typeLabel}交易 ${volumeLabel}${boostLabel}`,
+          t('energyHistory.tradeDesc').replace('{type}', typeLabel).replace('{volume}', volumeLabel).replace('{boost}', boostLabel),
           trade.id
         );
 

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { X, TrendingUp, TrendingDown, Clock, ExternalLink, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 
 // 新闻详情数据
 const newsDetails: Record<string, {
@@ -11,6 +12,7 @@ const newsDetails: Record<string, {
   publishedAt: string;
   content: string;
   aiInterpretation: string[];
+  aiInterpretationEn: string[];
 }> = {
   'n1': {
     id: 'n1',
@@ -34,6 +36,12 @@ The inflow comes amid a broader trend of institutional adoption, with several ma
       '从资金流向看，机构对BTC的配置需求持续增长，这为价格提供了强有力的支撑。',
       '建议关注：如果ETF持续大额流入，短期内BTC可能测试前高。可考虑逢低布局。',
       '风险提示：需注意ETF流入可能存在短期波动，不宜追高，建议分批建仓。',
+    ],
+    aiInterpretationEn: [
+      'This is a strong bullish signal: BlackRock’s ETF logged a record $500M single‑day inflow, showing accelerating institutional demand.',
+      'Flows indicate sustained allocation appetite for BTC, which provides meaningful price support.',
+      'Watch for continued ETF inflows—BTC could retest recent highs; consider scaling in on dips.',
+      'Risk note: ETF flows can be volatile in the short term; avoid chasing and build positions gradually.',
     ],
   },
   'n2': {
@@ -59,6 +67,12 @@ Several analysts note this could lead to renewed interest in Ethereum-based appl
       '从技术面看，这意味着ETH网络正在变得更加高效和用户友好。',
       '投资建议：可关注ETH生态中的优质DeFi协议，低Gas费环境下用户体验将大幅改善。',
     ],
+    aiInterpretationEn: [
+      'Lower gas is bullish for ETH, signaling L2 scaling is effectively relieving mainnet congestion.',
+      'Cheaper fees can boost DeFi activity and overall ecosystem engagement.',
+      'From a tech perspective, ETH is becoming more efficient and user‑friendly.',
+      'Idea: watch high‑quality DeFi protocols as lower fees can significantly improve UX.',
+    ],
   },
   'n3': {
     id: 'n3',
@@ -83,6 +97,12 @@ Market participants are now speculating on which cryptocurrency might be next in
       'SOL短期可能迎来一波拉升，但需注意获批后"卖事实"的风险。',
       '建议策略：可适当布局SOL，但仓位不宜过重。关注ETF正式上线后的资金流入情况。',
     ],
+    aiInterpretationEn: [
+      'Major bullish catalyst: SOL ETF approval signals a regulatory shift and opens an institutional channel.',
+      'This could trigger a wave of altcoin ETF filings—XRP and ADA may be next.',
+      'SOL could rally near‑term, but watch for “sell‑the‑news” risk after approval.',
+      'Strategy: build a measured position and track inflows once the ETF goes live.',
+    ],
   },
   'n4': {
     id: 'n4',
@@ -106,6 +126,12 @@ The exchange has assured users that operations remain normal and all withdrawals
       '但也可以理解为用户安全意识提高，选择自托管而非担心市场走势。',
       '需要结合其他数据判断：如果多家交易所同时出现大额流出，需要提高警惕。',
       '建议：短期保持观望，关注后续市场动向。如果是获利了结导致，回调可能是布局机会。',
+    ],
+    aiInterpretationEn: [
+      'Large exchange outflows can be a bearish signal, suggesting some investors are reducing exposure.',
+      'It can also reflect better self‑custody habits rather than pure market concern.',
+      'Context matters—if multiple exchanges see outflows, risk increases.',
+      'Near term, stay cautious and watch follow‑through; profit‑taking dips can be entry opportunities.',
     ],
   },
   'n5': {
@@ -132,6 +158,12 @@ Market impact remains uncertain as the identity and intentions of the wallet own
       '目前目的地未知，建议持续关注后续资金动向。',
       '操作建议：暂不需要特别反应，保持现有仓位，等待更多信息明朗。',
     ],
+    aiInterpretationEn: [
+      'A large BTC transfer warrants attention but not panic; it could be institutional rebalancing or cold‑wallet management.',
+      'If it’s moving to an exchange, it may hint at selling; if it’s leaving exchanges, it can be accumulation.',
+      'Destination is unknown—keep monitoring follow‑up flows.',
+      'No immediate action needed; hold positions and wait for more clarity.',
+    ],
   },
 };
 
@@ -141,12 +173,14 @@ interface NewsPreviewModalProps {
 }
 
 export function NewsPreviewModal({ newsId, onClose }: NewsPreviewModalProps) {
+  const { t, language } = useTranslation();
   const [showAI, setShowAI] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiMessages, setAiMessages] = useState<string[]>([]);
   const modalRef = useRef<HTMLDivElement>(null);
 
   const news = newsId ? newsDetails[newsId] : null;
+  const localizedInterpretation = news ? (language === 'zh' ? news.aiInterpretation : news.aiInterpretationEn) : [];
 
   // 点击外部关闭
   useEffect(() => {
@@ -190,9 +224,9 @@ export function NewsPreviewModal({ newsId, onClose }: NewsPreviewModalProps) {
     setShowAI(true);
 
     // 模拟 AI 逐条输出
-    for (let i = 0; i < news.aiInterpretation.length; i++) {
+    for (let i = 0; i < localizedInterpretation.length; i++) {
       await new Promise(resolve => setTimeout(resolve, 600));
-      setAiMessages(prev => [...prev, news.aiInterpretation[i]]);
+      setAiMessages(prev => [...prev, localizedInterpretation[i]]);
     }
 
     setAiLoading(false);
@@ -200,9 +234,9 @@ export function NewsPreviewModal({ newsId, onClose }: NewsPreviewModalProps) {
 
   const SentimentBadge = () => {
     const config = {
-      bullish: { icon: TrendingUp, color: 'var(--brand-green)', label: '利好' },
-      bearish: { icon: TrendingDown, color: 'var(--brand-red)', label: '利空' },
-      neutral: { icon: null, color: 'var(--text-muted)', label: '中性' },
+      bullish: { icon: TrendingUp, color: 'var(--brand-green)', label: t('sentiment.bullish') },
+      bearish: { icon: TrendingDown, color: 'var(--brand-red)', label: t('sentiment.bearish') },
+      neutral: { icon: null, color: 'var(--text-muted)', label: t('sentiment.neutral') },
     };
     const { icon: Icon, color, label } = config[news.sentiment];
     return (
@@ -273,10 +307,10 @@ export function NewsPreviewModal({ newsId, onClose }: NewsPreviewModalProps) {
             >
               <div className="flex items-center gap-2">
                 <Sparkles size={16} className="text-[#8b5cf6]" />
-                <span className="text-[13px] font-medium text-[var(--text-main)]">AI 快速解读</span>
+                <span className="text-[13px] font-medium text-[var(--text-main)]">{t('newsPreviewModal.aiQuickBrief')}</span>
                 {aiMessages.length > 0 && (
                   <span className="text-[10px] px-1.5 py-0.5 bg-[#8b5cf6]/20 text-[#8b5cf6] rounded">
-                    已生成
+                    {t('newsPreviewModal.generated')}
                   </span>
                 )}
               </div>
@@ -324,8 +358,8 @@ export function NewsPreviewModal({ newsId, onClose }: NewsPreviewModalProps) {
         {/* Footer */}
         <div className="px-4 py-3 border-t border-[var(--border-light)] bg-[var(--bg-surface)]">
           <div className="flex items-center justify-between text-[11px] text-[var(--text-dim)]">
-            <span>数据来源: {news.source}</span>
-            <span>AI 解读仅供参考，不构成投资建议</span>
+            <span>{t('newsPreviewModal.source', { source: news.source })}</span>
+            <span>{t('newsPreviewModal.disclaimer')}</span>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AICatButton } from './components/AICatButton';
 import { ChatPanel } from './components/ChatPanel';
-import { useUserStore, DEMO_USERS } from './stores/userStore';
+import { useUserStore, getDemoUsers } from './stores/userStore';
 import { useTranslation } from './i18n';
 import { TopNav, MarketTicker, OrderBook, ChartArea, TradePanel, MobileBottomBar } from './components/trading';
 import { CatBubbleAlert, AlertPanel, AlertSettingsPanel } from './components/CatBubbleAlert';
@@ -211,7 +211,7 @@ function TradingPage() {
   // Wallet connection handler
   const handleConnect = async () => {
     if (!walletInput.trim()) {
-      alert('Please enter wallet address');
+      alert(t('login.enterWalletAlert'));
       return;
     }
     try {
@@ -234,7 +234,7 @@ function TradingPage() {
             >
               <Globe size={16} className="text-[var(--text-muted)]" />
               <span className="text-[13px] text-[var(--text-muted)] font-medium">
-                {language === 'zh' ? '中文' : 'EN'}
+                {language === 'zh' ? t('language.zhShort') : t('language.enShort')}
               </span>
             </button>
 
@@ -254,7 +254,7 @@ function TradingPage() {
                       language === 'zh' ? 'text-[var(--brand-yellow)]' : 'text-[var(--text-main)]'
                     }`}
                   >
-                    <span>简体中文</span>
+                    <span>{t('language.zhFull')}</span>
                     {language === 'zh' && <Check size={14} />}
                   </button>
                   <button
@@ -266,7 +266,7 @@ function TradingPage() {
                       language === 'en' ? 'text-[var(--brand-yellow)]' : 'text-[var(--text-main)]'
                     }`}
                   >
-                    <span>English</span>
+                    <span>{t('language.enFull')}</span>
                     {language === 'en' && <Check size={14} />}
                   </button>
                 </div>
@@ -319,7 +319,7 @@ function TradingPage() {
 
             {/* Demo Users Grid */}
             <div className="grid grid-cols-2 gap-3">
-              {DEMO_USERS.map((demoUser) => {
+              {getDemoUsers(language).map((demoUser) => {
                 // Map level to translation key
                 const nameKey = `login.${demoUser.level.toLowerCase()}User` as const;
                 return (

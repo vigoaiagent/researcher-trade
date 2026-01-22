@@ -21,10 +21,12 @@ const getSubscriptionBenefits = (t: (key: string) => string) => [
 interface RecommendedResearcher {
   id: string;
   name: string;
+  nameEn?: string;
   avatar: string | null;
   ratingScore: number;
   serviceCount: number;
   specialties: string[];
+  specialtiesEn?: string[];
 }
 
 // 模拟推荐研究员数据
@@ -32,42 +34,52 @@ const mockRecommendedResearchers: RecommendedResearcher[] = [
   {
     id: 'rec-001',
     name: 'Alex Chen',
+    nameEn: 'Alex Chen',
     avatar: null,
     ratingScore: 4.9,
     serviceCount: 328,
     specialties: ['BTC', 'ETH', '链上数据分析'],
+    specialtiesEn: ['BTC', 'ETH', 'On-chain analysis'],
   },
   {
     id: 'rec-002',
     name: '李明阳',
+    nameEn: 'Leo Li',
     avatar: null,
     ratingScore: 4.8,
     serviceCount: 256,
     specialties: ['DeFi', 'Layer2', '项目基本面'],
+    specialtiesEn: ['DeFi', 'Layer2', 'Fundamentals'],
   },
   {
     id: 'rec-003',
     name: 'Sarah Wang',
+    nameEn: 'Sarah Wang',
     avatar: null,
     ratingScore: 4.7,
     serviceCount: 189,
     specialties: ['NFT', 'GameFi', '新兴赛道'],
+    specialtiesEn: ['NFT', 'GameFi', 'Emerging sectors'],
   },
   {
     id: 'rec-004',
     name: '张晓风',
+    nameEn: 'Xiaofeng Zhang',
     avatar: null,
     ratingScore: 4.9,
     serviceCount: 412,
     specialties: ['宏观分析', '市场情绪', '技术分析'],
+    specialtiesEn: ['Macro analysis', 'Market sentiment', 'Technical analysis'],
   },
   {
     id: 'rec-005',
     name: 'Michael Liu',
+    nameEn: 'Michael Liu',
     avatar: null,
     ratingScore: 4.6,
     serviceCount: 167,
     specialties: ['Solana生态', 'Meme币', '短线策略'],
+    specialtiesEn: ['Solana ecosystem', 'Meme coins', 'Short-term strategies'],
   },
 ];
 
@@ -92,8 +104,15 @@ export function RatingPhase() {
   const [reviewStats, setReviewStats] = useState<{ total: number; average: number } | null>(null);
   const { selectedResearcher, submitRating, isLoading } = useChatStore();
   const { user, spendEnergy, syncEnergyBalance } = useUserStore();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const subscriptionBenefits = getSubscriptionBenefits(t);
+  const localizedMockResearchers = mockRecommendedResearchers.map((researcher) => ({
+    ...researcher,
+    name: language === 'zh' ? researcher.name : (researcher.nameEn || researcher.name),
+    specialties: language === 'zh'
+      ? researcher.specialties
+      : (researcher.specialtiesEn || researcher.specialties),
+  }));
 
   // 检查是否已收藏
   useEffect(() => {
@@ -148,7 +167,7 @@ export function RatingPhase() {
             }));
           // 如果API没有返回数据，使用模拟数据
           if (filtered.length === 0) {
-            const mockFiltered = mockRecommendedResearchers
+            const mockFiltered = localizedMockResearchers
               .filter(r => r.id !== selectedResearcher?.researcherId)
               .slice(0, 3);
             setRecommendedResearchers(mockFiltered);
@@ -158,7 +177,7 @@ export function RatingPhase() {
         })
         .catch(() => {
           // API 出错时使用模拟数据
-          const mockFiltered = mockRecommendedResearchers
+          const mockFiltered = localizedMockResearchers
             .filter(r => r.id !== selectedResearcher?.researcherId)
             .slice(0, 3);
           setRecommendedResearchers(mockFiltered);

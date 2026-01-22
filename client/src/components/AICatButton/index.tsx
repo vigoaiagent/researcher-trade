@@ -5,10 +5,12 @@ import { RoboCatIcon } from '../trading/RoboCatIcon';
 import { LEVEL_CONFIG } from '../../types';
 import type { UserLevel } from '../../types';
 import { Bot, Users, Sparkles } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 
 export function AICatButton() {
   const { openChat, isOpen } = useChatStore();
   const { user, levelUpgrade } = useUserStore();
+  const { t } = useTranslation();
   const [showUpgradeEffect, setShowUpgradeEffect] = useState(false);
 
   // 检测升级事件，显示升级特效
@@ -49,19 +51,19 @@ export function AICatButton() {
           <>
             <div className="flex items-center gap-1.5">
               <Users size={12} className="text-[var(--brand-green)]" />
-              <span className="font-bold text-[var(--brand-green)]">Researcher Access</span>
+              <span className="font-bold text-[var(--brand-green)]">{t('aiCat.tooltip.researcherAccessTitle')}</span>
             </div>
-            <div className="text-[var(--text-muted)] text-[10px]">Connect with expert researchers</div>
+            <div className="text-[var(--text-muted)] text-[10px]">{t('aiCat.tooltip.researcherAccessDesc')}</div>
           </>
         ) : (
           <>
             <div className="flex items-center gap-1.5">
               <Bot size={12} className="text-[var(--brand-yellow)]" />
-              <span className="font-bold text-[var(--brand-yellow)]">AI Customer Service</span>
+              <span className="font-bold text-[var(--brand-yellow)]">{t('aiCat.tooltip.aiServiceTitle')}</span>
             </div>
-            <div className="text-[var(--text-muted)] text-[10px]">Get instant AI assistance</div>
+            <div className="text-[var(--text-muted)] text-[10px]">{t('aiCat.tooltip.aiServiceDesc')}</div>
             <div className="text-[9px] text-[var(--brand-yellow)] mt-1 border-t border-[var(--border-light)] pt-1">
-              Reach Gold to unlock Researchers
+              {t('aiCat.tooltip.reachGoldHint')}
             </div>
           </>
         )}
@@ -103,7 +105,7 @@ export function AICatButton() {
             </div>
             {/* Upgrade banner */}
             <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[var(--brand-yellow)] to-[var(--brand-green)] text-black text-[13px] font-bold px-4 py-2 rounded-full whitespace-nowrap animate-bounce shadow-lg z-20">
-              🎉 升级啦！
+              {t('aiCat.upgradeBanner')}
             </div>
             {/* Enhanced glow */}
             <div

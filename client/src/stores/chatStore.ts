@@ -3,12 +3,15 @@ import type { ChatPhase, Consultation, ResearcherAnswer, Message, ResearcherBadg
 import { consultationApi } from '../services/api';
 import { difyApi } from '../services/dify';
 import { markTrialVoucherUsed } from '../components/NewUserWelcomeModal';
+import { useLanguage } from '../i18n';
 
 // Mock badges and expertise data for demo
 const MOCK_RESEARCHER_ENHANCEMENTS: Record<string, {
   badges: ResearcherBadge[];
   expertiseAreas: ExpertiseArea[];
+  expertiseAreasEn: ExpertiseArea[];
   bio: string;
+  bioEn: string;
   successRate: number;
 }> = {
   default_1: {
@@ -17,7 +20,12 @@ const MOCK_RESEARCHER_ENHANCEMENTS: Record<string, {
       { domain: 'BTC 趋势分析', yearsExp: 5, accuracy: 82 },
       { domain: '链上数据解读', yearsExp: 4, accuracy: 78 },
     ],
+    expertiseAreasEn: [
+      { domain: 'BTC Trend Analysis', yearsExp: 5, accuracy: 82 },
+      { domain: 'On-chain Data Insights', yearsExp: 4, accuracy: 78 },
+    ],
     bio: '前高盛量化分析师，专注加密货币市场研究',
+    bioEn: 'Former Goldman Sachs quant analyst specializing in crypto market research.',
     successRate: 79,
   },
   default_2: {
@@ -26,7 +34,12 @@ const MOCK_RESEARCHER_ENHANCEMENTS: Record<string, {
       { domain: 'DeFi 协议研究', yearsExp: 3, accuracy: 75 },
       { domain: 'ETH 生态分析', yearsExp: 4, accuracy: 80 },
     ],
+    expertiseAreasEn: [
+      { domain: 'DeFi Protocol Research', yearsExp: 3, accuracy: 75 },
+      { domain: 'ETH Ecosystem Analysis', yearsExp: 4, accuracy: 80 },
+    ],
     bio: '资深 DeFi 研究员，擅长协议机制分析',
+    bioEn: 'Senior DeFi researcher focused on protocol mechanics.',
     successRate: 76,
   },
   default_3: {
@@ -35,7 +48,12 @@ const MOCK_RESEARCHER_ENHANCEMENTS: Record<string, {
       { domain: 'Solana 生态', yearsExp: 2, accuracy: 71 },
       { domain: 'NFT 市场', yearsExp: 2 },
     ],
+    expertiseAreasEn: [
+      { domain: 'Solana Ecosystem', yearsExp: 2, accuracy: 71 },
+      { domain: 'NFT Markets', yearsExp: 2 },
+    ],
     bio: 'Solana 生态深耕者，新锐分析师',
+    bioEn: 'Emerging analyst specializing in the Solana ecosystem.',
     successRate: 68,
   },
   default_4: {
@@ -44,7 +62,12 @@ const MOCK_RESEARCHER_ENHANCEMENTS: Record<string, {
       { domain: '宏观经济分析', yearsExp: 8, accuracy: 85 },
       { domain: '市场周期研究', yearsExp: 7, accuracy: 83 },
     ],
+    expertiseAreasEn: [
+      { domain: 'Macro Economic Analysis', yearsExp: 8, accuracy: 85 },
+      { domain: 'Market Cycle Research', yearsExp: 7, accuracy: 83 },
+    ],
     bio: '10年+金融市场经验，宏观分析专家',
+    bioEn: 'Macro analyst with 10+ years in financial markets.',
     successRate: 84,
   },
 };
@@ -264,16 +287,23 @@ export const useChatStore = create<ChatState>((set, get) => ({
       const { answers } = await consultationApi.getAnswers(currentConsultation.id);
 
       // Enrich researcher data with mock badges and expertise for demo
+      const language = useLanguage.getState().language;
       const enrichedAnswers = answers.map((answer, index) => {
         const mockKey = `default_${(index % 4) + 1}`;
         const enhancement = MOCK_RESEARCHER_ENHANCEMENTS[mockKey];
+        const expertiseAreas = enhancement
+          ? (language === 'zh' ? enhancement.expertiseAreas : enhancement.expertiseAreasEn)
+          : undefined;
+        const bio = enhancement
+          ? (language === 'zh' ? enhancement.bio : enhancement.bioEn)
+          : undefined;
         return {
           ...answer,
           researcher: {
             ...answer.researcher,
             badges: answer.researcher.badges ?? enhancement?.badges,
-            expertiseAreas: answer.researcher.expertiseAreas ?? enhancement?.expertiseAreas,
-            bio: answer.researcher.bio ?? enhancement?.bio,
+            expertiseAreas: answer.researcher.expertiseAreas ?? expertiseAreas,
+            bio: answer.researcher.bio ?? bio,
             successRate: answer.researcher.successRate ?? enhancement?.successRate,
           },
         };
@@ -469,11 +499,19 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
 // AI模拟响应 (等待Dify API接入后替换)
 function getAIMockResponse(_question: string): string {
-  const responses = [
+  const language = useLanguage.getState().language;
+  const responsesZh = [
     "您好！我是SoDEX AI研究员。关于您的问题，让我来为您解答。\n\n目前BTC市场呈现震荡走势，建议关注67,000-68,000区间的支撑和阻力位。如果您需要更专业的分析，可以升级到Gold等级解锁专属研究员1v1服务。",
     "感谢您的咨询！根据当前市场数据分析：\n\n1. BTC 24小时波动率：2.45%\n2. 多空比例：1.2:1\n3. 资金费率：0.01%\n\n建议保持适当仓位，设置好止损。如需深度分析，欢迎升级到Gold解锁专属研究员服务。",
     "您好！关于交易策略，我建议：\n\n• 短线：关注MA7和MA25的交叉信号\n• 中线：等待回调至支撑位再入场\n• 风控：单笔交易不超过总资金的5%\n\n更详细的策略分析可以升级到Gold解锁专属研究员服务。",
     "这是一个很好的问题！当前加密市场受宏观经济影响较大，美联储政策是关键因素。\n\n我们的研究团队每日发布市场分析报告，Gold及以上等级用户可以免费查看并获得专属研究员服务。",
   ];
+  const responsesEn = [
+    "Hi! I'm SoDEX AI researcher. Let me help with your question.\n\nBTC is currently range‑bound; watch the 67,000–68,000 zone for support and resistance. For deeper analysis, upgrade to Gold to unlock 1v1 researcher access.",
+    "Thanks for reaching out! Current market stats:\n\n1. BTC 24h volatility: 2.45%\n2. Long/short ratio: 1.2:1\n3. Funding rate: 0.01%\n\nKeep position sizing prudent and use stops. For a deeper dive, upgrade to Gold for researcher support.",
+    "On trading strategy, I suggest:\n\n• Short term: watch MA7/MA25 cross signals\n• Mid term: wait for pullbacks to support before entry\n• Risk: keep per‑trade risk below 5% of capital\n\nFor more detailed analysis, upgrade to Gold to unlock 1v1 researcher services.",
+    "Great question! Crypto markets are highly sensitive to macro factors; Fed policy is a key driver.\n\nOur research team publishes daily market reports. Gold+ users can access them for free and get dedicated researcher support.",
+  ];
+  const responses = language === 'zh' ? responsesZh : responsesEn;
   return responses[Math.floor(Math.random() * responses.length)];
 }

@@ -3,28 +3,29 @@ import { Crown, Sparkles, Zap, Users, FileText, Star, X } from 'lucide-react';
 import { useUserStore } from '../../stores/userStore';
 import { LEVEL_CONFIG } from '../../types';
 import type { UserLevel } from '../../types';
+import { useTranslation } from '../../i18n';
 
-// 每个等级解锁的功能描述（中文）
-const LEVEL_BENEFITS: Record<UserLevel, { icon: typeof Crown; title: string; description: string }[]> = {
+const LEVEL_BENEFITS: Record<UserLevel, { icon: typeof Crown; titleKey: string; descriptionKey: string }[]> = {
   Bronze: [
-    { icon: Zap, title: 'AI 客服', description: '24小时在线解答基础问题' },
+    { icon: Zap, titleKey: 'levelUpgrade.benefits.aiSupport.title', descriptionKey: 'levelUpgrade.benefits.aiSupport.description' },
   ],
   Silver: [
-    { icon: Sparkles, title: 'AI 研究员', description: '智能深度分析与解答' },
+    { icon: Sparkles, titleKey: 'levelUpgrade.benefits.aiResearcher.title', descriptionKey: 'levelUpgrade.benefits.aiResearcher.description' },
   ],
   Gold: [
-    { icon: Crown, title: '专属研究员', description: '1v1专业研究员咨询' },
-    { icon: FileText, title: '专属研报', description: '获取独家市场分析报告' },
-    { icon: Users, title: '加入社群', description: '加入Gold专属交流群' },
+    { icon: Crown, titleKey: 'levelUpgrade.benefits.exclusiveResearcher.title', descriptionKey: 'levelUpgrade.benefits.exclusiveResearcher.description' },
+    { icon: FileText, titleKey: 'levelUpgrade.benefits.exclusiveReports.title', descriptionKey: 'levelUpgrade.benefits.exclusiveReports.description' },
+    { icon: Users, titleKey: 'levelUpgrade.benefits.community.title', descriptionKey: 'levelUpgrade.benefits.community.description' },
   ],
   Diamond: [
-    { icon: Crown, title: 'VIP 研究员', description: '顶级研究员专属服务' },
-    { icon: Zap, title: '电话咨询', description: '支持与研究员电话沟通' },
-    { icon: Star, title: '私享频道', description: '加入Diamond专属交流群' },
+    { icon: Crown, titleKey: 'levelUpgrade.benefits.vipResearcher.title', descriptionKey: 'levelUpgrade.benefits.vipResearcher.description' },
+    { icon: Zap, titleKey: 'levelUpgrade.benefits.phoneConsult.title', descriptionKey: 'levelUpgrade.benefits.phoneConsult.description' },
+    { icon: Star, titleKey: 'levelUpgrade.benefits.privateChannel.title', descriptionKey: 'levelUpgrade.benefits.privateChannel.description' },
   ],
 };
 
 export function LevelUpgradeModal() {
+  const { t } = useTranslation();
   const { levelUpgrade, clearLevelUpgrade } = useUserStore();
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -99,7 +100,7 @@ export function LevelUpgradeModal() {
 
           {/* Title */}
           <h2 className="text-[24px] font-bold text-[var(--text-main)] mb-2">
-            恭喜升级！
+            {t('level.congratsUpgrade')}
           </h2>
           <div className="flex items-center justify-center gap-3 text-[18px]">
             <span className="text-[var(--text-muted)]">{previousLevel}</span>
@@ -113,7 +114,7 @@ export function LevelUpgradeModal() {
         {/* Benefits List */}
         <div className="px-6 pb-5">
           <div className="text-[14px] text-[var(--text-muted)] mb-4 text-center">
-            您已解锁以下权益
+            {t('level.unlockedBenefits')}
           </div>
           <div className="space-y-3">
             {benefits.map((benefit, index) => (
@@ -129,10 +130,10 @@ export function LevelUpgradeModal() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-[16px] font-bold text-[var(--text-main)]">
-                    {benefit.title}
+                    {t(benefit.titleKey)}
                   </div>
                   <div className="text-[14px] text-[var(--text-muted)]">
-                    {benefit.description}
+                    {t(benefit.descriptionKey)}
                   </div>
                 </div>
               </div>
@@ -145,7 +146,7 @@ export function LevelUpgradeModal() {
           <div className="flex items-center justify-center gap-2.5 py-3 rounded-xl bg-[var(--brand-yellow)]/10 border border-[var(--brand-yellow)]/30">
             <Zap size={18} className="text-[var(--brand-yellow)]" />
             <span className="text-[14px] text-[var(--brand-yellow)] font-medium">
-              +20 能量值奖励已发放
+              {t('level.energyBonus')}
             </span>
           </div>
         </div>

@@ -32,6 +32,14 @@ export const en = {
     language: 'Language',
   },
 
+  // Language
+  language: {
+    zhShort: '中文',
+    enShort: 'EN',
+    zhFull: 'Simplified Chinese',
+    enFull: 'English',
+  },
+
   // Login
   login: {
     title: 'Welcome to SoDEX',
@@ -39,6 +47,7 @@ export const en = {
     walletPlaceholder: 'Enter wallet address (0x...)',
     connectWallet: 'Connect Wallet',
     connecting: 'Connecting...',
+    enterWalletAlert: 'Please enter wallet address',
     quickDemo: 'Quick Demo',
     whitelistOnly: 'Whitelist users only. Contact support for access.',
     or: 'or',
@@ -124,6 +133,44 @@ export const en = {
     startExperience: 'Start Now',
   },
 
+  // Level Upgrade Modal
+  levelUpgrade: {
+    benefits: {
+      aiSupport: {
+        title: 'AI Support',
+        description: '24/7 help for basic questions',
+      },
+      aiResearcher: {
+        title: 'AI Researcher',
+        description: 'Smart deep analysis and answers',
+      },
+      exclusiveResearcher: {
+        title: 'Exclusive Researcher',
+        description: '1v1 professional researcher consultation',
+      },
+      exclusiveReports: {
+        title: 'Exclusive Reports',
+        description: 'Access exclusive market analysis reports',
+      },
+      community: {
+        title: 'Community',
+        description: 'Join the Gold exclusive community',
+      },
+      vipResearcher: {
+        title: 'VIP Researcher',
+        description: 'Top-tier researcher dedicated service',
+      },
+      phoneConsult: {
+        title: 'Phone Consultation',
+        description: 'Phone calls with researchers supported',
+      },
+      privateChannel: {
+        title: 'Private Channel',
+        description: 'Join the Diamond exclusive community',
+      },
+    },
+  },
+
   // Roadshow Calendar
   roadshow: {
     title: 'Roadshow Calendar',
@@ -167,6 +214,7 @@ export const en = {
   calendar: {
     title: 'Calendar',
     subtitle: 'Roadshows & Macro Events',
+    viewCalendar: 'Financial Calendar',
   },
 
   // Research Reports
@@ -175,6 +223,8 @@ export const en = {
     vipReports: 'VIP Reports',
     upgradeToGold: 'Upgrade to Gold',
     unlockVipReports: 'Unlock VIP researcher reports',
+    viewAllNews: 'View all news',
+    viewAllReports: 'View all reports',
   },
 
   // Researcher Service
@@ -697,6 +747,24 @@ export const en = {
     micUnavailable: 'Unable to access microphone, please check your device',
   },
 
+  // Call Errors
+  call: {
+    rejected: 'The researcher rejected the call request',
+    timeout: 'Call request timed out, researcher did not respond',
+  },
+
+  // Energy History
+  energyHistory: {
+    locked: 'Service pre-authorization',
+    unlocked: 'Service refund',
+    spent: 'Consultation service',
+    weeklyDecay: 'Weekly decay ({rate}%)',
+    weeklyDecayWithShield: 'Weekly decay ({rate}%, Shield {shield})',
+    spot: 'Spot',
+    futures: 'Futures',
+    tradeDesc: '{type} trade {volume}{boost}',
+  },
+
   // Trade Panel
   tradePanel: {
     demoTrading: 'Demo Trading',
@@ -811,6 +879,234 @@ export const en = {
     liveBadge: 'LIVE',
     by: 'by',
     vipBadge: 'VIP',
+  },
+
+  aiCat: {
+    tooltip: {
+      researcherAccessTitle: 'Researcher Access',
+      researcherAccessDesc: 'Connect with expert researchers',
+      aiServiceTitle: 'AI Customer Service',
+      aiServiceDesc: 'Get instant AI assistance',
+      reachGoldHint: 'Reach Gold to unlock Researchers',
+    },
+    upgradeBanner: '🎉 Upgraded!',
+  },
+
+  userLevelBadge: {
+    tokenBoost: 'Token Boost',
+    collapse: 'Collapse',
+    simulatorLabel: 'Simulator',
+    boost: {
+      title: 'Energy Mint Boost',
+      description: 'Hold SoSo tokens to gain energy mint boost, up to {maxBoost}.',
+      minHolding: '• Min holding: {amount} SoSo',
+      maxHolding: '• Max boost at: {amount} SoSo',
+      example: 'Example: $100 fee normally mints 100 energy; +10% boost yields 110 energy.',
+      unlockHint: 'Hold {amount}+ to unlock',
+    },
+    shield: {
+      title: 'Energy Shield',
+      description: 'Staking SSI protects a portion of energy from weekly decay.',
+      floorTitle: 'Shield floor per week:',
+      floor: {
+        normal: '• Normal stake: 50 energy/week',
+        core: '• Core SSI ($200k+): 150 energy/week',
+        vip: '• VIP SSI ($1M+): 500 energy/week',
+      },
+      phoneAccess: 'Core SSI also unlocks phone consultation.',
+      weeklyProtected: 'Protects {amount} energy/week',
+      stakeHint: 'Stake SSI to reduce decay',
+    },
+    ssiTier: {
+      none: 'None',
+      normal: 'Normal',
+      core: 'Core',
+      vip: 'VIP',
+    },
+    simulator: {
+      sosoHolding: 'SoSo Holding',
+      ssiStaked: 'SSI Staked (USD)',
+      presets: {
+        normal: 'Normal',
+        core: 'Core SSI',
+        vip: 'VIP SSI',
+      },
+      apply: 'Apply',
+    },
+    energyAvailable: 'Energy Available',
+    progress: 'Progress {progress}% → {nextLevel}',
+    stats: {
+      available: 'Available',
+      spent: 'Spent',
+      trades: 'Trades',
+      decay: 'Decay',
+    },
+    currentBenefits: 'Current Benefits',
+    nextBenefits: '{level} Benefits',
+    simulateTrade: 'Simulated Trade',
+    tradeType: {
+      spot: 'Spot',
+      futures: 'Futures',
+    },
+    tradeAmount: 'Custom amount',
+    trade: 'Trade',
+    fee: 'Fee:',
+    energyEarned: 'Energy earned:',
+  },
+
+  positionAlert: {
+    title: 'Position Alerts',
+    markAllRead: 'Mark all read',
+    urgent: 'Urgent',
+    side: {
+      long: 'Long',
+      short: 'Short',
+    },
+    collapse: 'Collapse',
+    viewAll: 'View all {count}',
+  },
+
+  reportNotification: {
+    title: 'New Report',
+    vip: 'VIP',
+    by: 'by {name}',
+    viewReport: 'View Report',
+    requiresLevel: 'Requires ',
+    levelSuffix: ' level',
+    currentLevel: 'Current: {level}',
+  },
+
+  newsListModal: {
+    title: 'News',
+    relatedTab: '{symbol} Related',
+    subscribedTab: 'My Subscriptions',
+    searchPlaceholder: 'Search news...',
+    subscribedSources: 'Subscribed Sources',
+    emptyRelated: 'No {symbol} news yet',
+    emptySubscribed: 'Subscribe to news sources first',
+    footerCount: 'Total {count} news',
+    footerHint: 'Click to view details and AI insights',
+  },
+
+  sentiment: {
+    bullish: 'Bullish',
+    bearish: 'Bearish',
+    neutral: 'Neutral',
+  },
+
+  newsPreviewModal: {
+    aiQuickBrief: 'AI Quick Brief',
+    generated: 'Generated',
+    source: 'Source: {source}',
+    disclaimer: 'AI insights are for reference only, not financial advice',
+  },
+
+  reportListModal: {
+    title: 'VIP Reports',
+    recommended: 'Recommended',
+    subscribed: 'My Subscriptions',
+    searchPlaceholder: 'Search reports...',
+    subscribedResearchers: 'Subscribed Researchers',
+    emptyRecommended: 'No recommended reports yet',
+    emptySubscribed: 'Subscribe to researchers first',
+    footerCount: 'Total {count} reports',
+    currentLevel: 'Current level: ',
+    vipLabel: 'VIP',
+  },
+
+  reportModal: {
+    vip: 'VIP',
+    researcherTitleFallback: 'Analyst',
+    privateMessageTitle: 'Message researcher ({cost} energy)',
+    privateMessage: 'Message',
+    oneOnOneTitle: '1v1 consult ({cost} energy)',
+    oneOnOneShort: '1v1',
+    scheduleCall: 'Schedule Call',
+    schedule: 'Schedule',
+    readCount: '{count} reads',
+    tab: {
+      content: 'Report',
+      comments: 'Comments ({count})',
+    },
+    summary: 'Summary',
+    aiBrief: 'AI Brief',
+    generated: 'Generated',
+    collapseContent: 'Collapse content',
+    expandContent: 'Expand content',
+    commentPlaceholder: 'Write a comment...',
+    emptyComments: 'No comments yet. Be the first!',
+    previewSummary: 'Report Summary',
+    freePreview: 'Free Preview',
+    detailedAnalysis: 'Detailed Analysis',
+    unlockFullPrefix: 'Upgrade to ',
+    unlockFullSuffix: ' to unlock full content',
+    currentLevel: 'Current level: ',
+    tip: 'Tip',
+    subscribed: 'Subscribed',
+    subscribe: 'Subscribe',
+    copied: 'Copied',
+    copy: 'Copy',
+    tipSuccess: 'Tip Sent!',
+    tipThanks: 'Thanks for supporting {name}',
+    tipTitle: 'Tip the Researcher',
+    tipSubtitle: 'Support {name} to create more quality content',
+    tipCustom: 'Custom amount (USDT)',
+    tipConfirm: 'Confirm Tip',
+    messageSentTitle: 'Sent!',
+    messageSentHint: '{name} will reply soon',
+    messageTitle: 'Message {name}',
+    messagePlaceholder: 'Type your question...',
+    energyCost: 'Cost {cost} energy',
+    currentEnergy: 'Current: {amount}',
+    cancel: 'Cancel',
+    send: 'Send',
+    insufficientEnergy: 'Insufficient Energy',
+    energyRequired: '{action} requires {required} energy',
+    currentEnergyFull: 'Current energy: {amount}',
+    energyHow: 'How to get energy?',
+    energyHowItems: {
+      trade: 'Trade fees mint energy automatically',
+      soso: 'Hold SoSo tokens for mint boosts',
+      ssi: 'Stake SSI to protect energy from decay',
+    },
+    gotIt: 'Got it',
+    action: {
+      privateMessage: 'Message',
+      oneOnOne: '1v1 consult',
+    },
+    energy: {
+      privateMessage: 'Message {name}',
+      oneOnOne: '1v1 consult {name}',
+    },
+    consultation: {
+      title: 'Consultation about report "{title}"',
+      summary: 'Report title: {title}\nReport summary: {summary}',
+    },
+    aiFallback: {
+      analyzing: 'Analyzing report content...',
+      professional: 'This is a professional market analysis report.',
+      riskNote: 'Consider your risk profile when making decisions.',
+    },
+  },
+
+  reportSentiment: {
+    bullish: 'Bullish',
+    bearish: 'Bearish',
+    neutral: 'Neutral',
+  },
+
+  levelBenefits: {
+    aiSupport: 'AI Support',
+    basicMarket: 'Basic market insights',
+    aiResearcher: 'AI Researcher',
+    deepAnalysis: 'Deep market analysis',
+    exclusiveResearcher: 'Exclusive researcher access',
+    exclusiveReports: 'VIP research reports',
+    community: 'Private community',
+    roadshowCalendar: 'Roadshow calendar',
+    vipResearcher: 'VIP researcher access',
+    phoneConsult: 'Phone consultation',
+    privateChannel: 'Private channel',
   },
 
   // Appointment Booking

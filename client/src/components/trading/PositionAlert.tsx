@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, TrendingUp, TrendingDown, ChevronRight, AlertCircle, Newspaper } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 
 // 模拟用户仓位数据
 interface Position {
@@ -24,11 +25,14 @@ interface PositionNews {
   id: string;
   symbol: string;
   title: string;
+  titleEn: string;
   summary: string;
+  summaryEn: string;
   sentiment: 'positive' | 'negative' | 'neutral';
   impact: 'high' | 'medium' | 'low';
   source: string;
   time: string;
+  timeEn: string;
   isUrgent?: boolean;
 }
 
@@ -37,53 +41,68 @@ const mockPositionNews: PositionNews[] = [
     id: 'pn1',
     symbol: 'BTC/USDT',
     title: '美联储会议纪要显示鸽派信号',
+    titleEn: 'Fed minutes show dovish signals',
     summary: '美联储最新会议纪要显示，多数委员支持在年内降息，风险资产或将受益。',
+    summaryEn: 'Latest Fed minutes show most members favor rate cuts this year, benefiting risk assets.',
     sentiment: 'positive',
     impact: 'high',
     source: 'Reuters',
     time: '10分钟前',
+    timeEn: '10 min ago',
     isUrgent: true,
   },
   {
     id: 'pn2',
     symbol: 'ETH/USDT',
     title: 'Vitalik 发布以太坊路线图更新',
+    titleEn: 'Vitalik updates Ethereum roadmap',
     summary: 'Vitalik Buterin 详细介绍了以太坊未来两年的技术升级计划，包括 Danksharding 和账户抽象。',
+    summaryEn: 'Vitalik Buterin detailed Ethereum’s next two-year upgrades, including Danksharding and account abstraction.',
     sentiment: 'positive',
     impact: 'medium',
     source: 'The Block',
     time: '25分钟前',
+    timeEn: '25 min ago',
   },
   {
     id: 'pn3',
     symbol: 'SOL/USDT',
     title: 'Solana 网络出现短暂拥堵',
+    titleEn: 'Solana sees brief network congestion',
     summary: 'Solana 网络在过去一小时内出现交易延迟，团队正在调查原因。',
+    summaryEn: 'Solana saw transaction delays over the past hour; the team is investigating.',
     sentiment: 'negative',
     impact: 'high',
     source: 'CoinDesk',
     time: '5分钟前',
+    timeEn: '5 min ago',
     isUrgent: true,
   },
   {
     id: 'pn4',
     symbol: 'BTC/USDT',
     title: '灰度 GBTC 净流入创新高',
+    titleEn: 'Grayscale GBTC net inflows hit new high',
     summary: '灰度比特币信托基金连续第五天录得净流入，机构需求持续强劲。',
+    summaryEn: 'Grayscale’s Bitcoin trust posted net inflows for a fifth straight day, showing strong institutional demand.',
     sentiment: 'positive',
     impact: 'medium',
     source: 'Bloomberg',
     time: '1小时前',
+    timeEn: '1 hour ago',
   },
   {
     id: 'pn5',
     symbol: 'ETH/USDT',
     title: '某 DeFi 协议遭遇闪电贷攻击',
+    titleEn: 'A DeFi protocol hit by a flash loan attack',
     summary: '一个以太坊上的 DeFi 协议遭遇闪电贷攻击，损失约 500 万美元。',
+    summaryEn: 'An Ethereum DeFi protocol suffered a flash loan attack with about $5M in losses.',
     sentiment: 'negative',
     impact: 'medium',
     source: 'DeFi Llama',
     time: '45分钟前',
+    timeEn: '45 min ago',
   },
 ];
 
@@ -92,6 +111,7 @@ interface PositionAlertProps {
 }
 
 export function PositionAlert({ onOpenNews }: PositionAlertProps) {
+  const { t, language } = useTranslation();
   const [alerts, setAlerts] = useState<PositionNews[]>([]);
   const [dismissedAlerts, setDismissedAlerts] = useState<Set<string>>(new Set());
   const [showAll, setShowAll] = useState(false);
@@ -121,6 +141,9 @@ export function PositionAlert({ onOpenNews }: PositionAlertProps) {
 
   const urgentAlerts = alerts.filter(a => a.isUrgent);
   const displayedAlerts = showAll ? alerts : alerts.slice(0, 3);
+  const localizedTitle = (alert: PositionNews) => (language === 'zh' ? alert.title : alert.titleEn);
+  const localizedSummary = (alert: PositionNews) => (language === 'zh' ? alert.summary : alert.summaryEn);
+  const localizedTime = (alert: PositionNews) => (language === 'zh' ? alert.time : alert.timeEn);
 
   if (alerts.length === 0) return null;
 
@@ -136,7 +159,7 @@ export function PositionAlert({ onOpenNews }: PositionAlertProps) {
             )}
           </div>
           <span className="text-[14px] font-medium text-[var(--text-main)]">
-            持仓相关资讯
+            {t('positionAlert.title')}
           </span>
           <span className="text-[12px] px-1.5 py-0.5 bg-[var(--bg-surface)] text-[var(--text-muted)] rounded">
             {alerts.length}
@@ -147,7 +170,7 @@ export function PositionAlert({ onOpenNews }: PositionAlertProps) {
             onClick={handleDismissAll}
             className="text-[12px] text-[var(--text-muted)] hover:text-[var(--text-main)] transition"
           >
-            全部已读
+            {t('positionAlert.markAllRead')}
           </button>
         </div>
       </div>
@@ -168,7 +191,7 @@ export function PositionAlert({ onOpenNews }: PositionAlertProps) {
               {alert.isUrgent && (
                 <div className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 bg-[var(--brand-yellow)]/20 rounded text-[10px] font-medium text-[var(--brand-yellow)]">
                   <AlertCircle size={10} />
-                  重要
+                  {t('positionAlert.urgent')}
                 </div>
               )}
 
@@ -182,19 +205,19 @@ export function PositionAlert({ onOpenNews }: PositionAlertProps) {
                     position.side === 'long' ? 'text-[var(--brand-green)]' : 'text-[var(--brand-red)]'
                   }`}>
                     {position.side === 'long' ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                    {position.side === 'long' ? '多' : '空'} {position.leverage}x
+                    {t(`positionAlert.side.${position.side}`)} {position.leverage}x
                   </span>
                 )}
               </div>
 
               {/* Title */}
               <h4 className="text-[14px] font-medium text-[var(--text-main)] leading-snug mb-1 pr-12">
-                {alert.title}
+                {localizedTitle(alert)}
               </h4>
 
               {/* Summary */}
               <p className="text-[12px] text-[var(--text-muted)] leading-relaxed line-clamp-2 mb-2">
-                {alert.summary}
+                {localizedSummary(alert)}
               </p>
 
               {/* Footer */}
@@ -202,7 +225,7 @@ export function PositionAlert({ onOpenNews }: PositionAlertProps) {
                 <div className="flex items-center gap-2">
                   <span>{alert.source}</span>
                   <span>·</span>
-                  <span>{alert.time}</span>
+                  <span>{localizedTime(alert)}</span>
                 </div>
                 <button
                   onClick={(e) => handleDismiss(alert.id, e)}
@@ -223,7 +246,9 @@ export function PositionAlert({ onOpenNews }: PositionAlertProps) {
             onClick={() => setShowAll(!showAll)}
             className="w-full flex items-center justify-center gap-1 text-[13px] text-[var(--text-muted)] hover:text-[var(--brand-yellow)] transition"
           >
-            {showAll ? '收起' : `查看全部 ${alerts.length} 条`}
+            {showAll
+              ? t('positionAlert.collapse')
+              : t('positionAlert.viewAll', { count: alerts.length })}
             <ChevronRight size={14} className={`transition-transform ${showAll ? 'rotate-90' : ''}`} />
           </button>
         </div>

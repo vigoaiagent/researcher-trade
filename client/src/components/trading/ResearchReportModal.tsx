@@ -4,6 +4,7 @@ import { AppointmentBooking } from '../AppointmentBooking';
 import { useUserStore } from '../../stores/userStore';
 import { useChatStore } from '../../stores/chatStore';
 import { LEVEL_CONFIG } from '../../types';
+import { useTranslation } from '../../i18n';
 
 // 能量消耗配置
 const ENERGY_COSTS = {
@@ -26,7 +27,9 @@ export interface ResearchReport {
   publishedAt: string;
   requiredLevel: 'Gold' | 'Diamond';
   summary: string;
+  summaryEn?: string;
   content: string;
+  contentEn?: string;
   tags: string[];
   readCount?: number;
   likeCount?: number;
@@ -39,6 +42,7 @@ interface Comment {
   userName: string;
   userAvatar?: string;
   content: string;
+  contentEn?: string;
   createdAt: string;
   likes: number;
   isLiked?: boolean;
@@ -47,22 +51,22 @@ interface Comment {
 // Mock 评论数据
 const mockComments: Record<string, Comment[]> = {
   'r1': [
-    { id: 'c1', userId: 'u1', userName: 'CryptoTrader', content: '分析很到位，$94,500 确实是关键支撑', createdAt: '30 min ago', likes: 12, isLiked: false },
-    { id: 'c2', userId: 'u2', userName: 'BTC_Holder', content: '止损设在 $92,000 是不是太紧了？', createdAt: '1 hour ago', likes: 5, isLiked: true },
-    { id: 'c3', userId: 'u3', userName: 'WhaleWatcher', content: '链上数据确实显示大户在增持，看多', createdAt: '2 hours ago', likes: 23, isLiked: false },
+    { id: 'c1', userId: 'u1', userName: 'CryptoTrader', content: '分析很到位，$94,500 确实是关键支撑', contentEn: 'Solid analysis—$94,500 does look like key support.', createdAt: '30 min ago', likes: 12, isLiked: false },
+    { id: 'c2', userId: 'u2', userName: 'BTC_Holder', content: '止损设在 $92,000 是不是太紧了？', contentEn: 'Is a stop at $92,000 too tight?', createdAt: '1 hour ago', likes: 5, isLiked: true },
+    { id: 'c3', userId: 'u3', userName: 'WhaleWatcher', content: '链上数据确实显示大户在增持，看多', contentEn: 'On-chain data shows whales accumulating—bullish.', createdAt: '2 hours ago', likes: 23, isLiked: false },
   ],
   'r2': [
-    { id: 'c4', userId: 'u4', userName: 'DeFiDegen', content: 'Arbitrum 生态确实很强，ARB 目标 $2.5 合理', createdAt: '1 hour ago', likes: 8, isLiked: false },
-    { id: 'c5', userId: 'u5', userName: 'L2Researcher', content: 'Base 的增长速度惊人，Coinbase 的支持很关键', createdAt: '2 hours ago', likes: 15, isLiked: false },
+    { id: 'c4', userId: 'u4', userName: 'DeFiDegen', content: 'Arbitrum 生态确实很强，ARB 目标 $2.5 合理', contentEn: 'Arbitrum is strong; a $2.5 target seems fair.', createdAt: '1 hour ago', likes: 8, isLiked: false },
+    { id: 'c5', userId: 'u5', userName: 'L2Researcher', content: 'Base 的增长速度惊人，Coinbase 的支持很关键', contentEn: 'Base growth is impressive; Coinbase backing is key.', createdAt: '2 hours ago', likes: 15, isLiked: false },
   ],
   'r3': [
-    { id: 'c6', userId: 'u6', userName: 'SOLmaxi', content: 'SOL 网络稳定性问题解决了吗？', createdAt: '3 hours ago', likes: 7, isLiked: false },
+    { id: 'c6', userId: 'u6', userName: 'SOLmaxi', content: 'SOL 网络稳定性问题解决了吗？', contentEn: 'Have Solana stability issues been resolved?', createdAt: '3 hours ago', likes: 7, isLiked: false },
   ],
   'r4': [
-    { id: 'c7', userId: 'u7', userName: 'MacroAnalyst', content: '降息预期是否过于乐观？', createdAt: '4 hours ago', likes: 19, isLiked: false },
+    { id: 'c7', userId: 'u7', userName: 'MacroAnalyst', content: '降息预期是否过于乐观？', contentEn: 'Are rate‑cut expectations too optimistic?', createdAt: '4 hours ago', likes: 19, isLiked: false },
   ],
   'r5': [
-    { id: 'c8', userId: 'u8', userName: 'YieldFarmer', content: 'Aerodrome 40% APY 风险如何？', createdAt: '6 hours ago', likes: 11, isLiked: false },
+    { id: 'c8', userId: 'u8', userName: 'YieldFarmer', content: 'Aerodrome 40% APY 风险如何？', contentEn: 'How risky is Aerodrome’s 40% APY?', createdAt: '6 hours ago', likes: 11, isLiked: false },
   ],
 };
 
@@ -82,6 +86,7 @@ const mockReportDetails: Record<string, ResearchReport> = {
     publishedAt: '2 hours ago',
     requiredLevel: 'Gold',
     summary: '比特币近期技术面显示强劲支撑位在 $94,500，多头趋势有望延续。',
+    summaryEn: 'BTC technicals show strong support around $94,500, with the uptrend likely to continue.',
     content: `## 核心观点
 
 比特币目前处于明显的上升趋势中，$94,500 作为关键支撑位已经过多次验证。
@@ -117,6 +122,41 @@ const mockReportDetails: Record<string, ResearchReport> = {
 - 宏观经济不确定性
 - 监管政策变化
 - 地缘政治风险`,
+    contentEn: `## Key Takeaways
+
+Bitcoin remains in a clear uptrend, with $94,500 repeatedly validated as key support.
+
+### Technical Analysis
+
+1. **Support and Resistance**
+   - Major support: $94,500 (200-day MA)
+   - Secondary support: $92,000 (prior breakout retest)
+   - Near-term resistance: $98,000
+   - Mid-term target: $105,000
+
+2. **Volume**
+   Volume has been rising steadily, showing persistent bid flow. OBV printed new highs, confirming trend strength.
+
+3. **RSI**
+   Daily RSI sits near 62, leaving room before overbought conditions.
+
+### Market Sentiment
+
+- Fear & Greed Index: 72 (Greed)
+- Whale positioning: continued accumulation
+- Exchange balances: trending lower (bullish signal)
+
+### Trade Plan
+
+- Scale in on pullbacks toward $94,500
+- Place stops below $92,000
+- Targets: $98,000 / $105,000
+
+### Risks
+
+- Macro uncertainty
+- Regulatory changes
+- Geopolitical risk`,
     tags: ['Technical Analysis', 'BTC', 'Support Level'],
     readCount: 1234,
     likeCount: 89,
@@ -135,6 +175,7 @@ const mockReportDetails: Record<string, ResearchReport> = {
     publishedAt: '3 hours ago',
     requiredLevel: 'Gold',
     summary: '以太坊 L2 生态持续繁荣，Arbitrum 和 Base 领跑市场。',
+    summaryEn: 'Ethereum’s L2 ecosystem keeps expanding, with Arbitrum and Base leading.',
     content: `## Layer 2 生态系统概览
 
 以太坊 Layer 2 解决方案正在快速发展，TVL 已突破 $50B 大关。
@@ -164,6 +205,35 @@ const mockReportDetails: Record<string, ResearchReport> = {
 - 技术安全风险
 - 竞争加剧
 - 监管不确定性`,
+    contentEn: `## Layer 2 Ecosystem Overview
+
+Ethereum L2 solutions are scaling rapidly, with TVL surpassing $50B.
+
+### Major L2 Comparison
+
+| L2 | TVL | TPS | Fees |
+|---|---|---|---|
+| Arbitrum | $18B | 40,000 | $0.01 |
+| Base | $12B | 35,000 | $0.005 |
+| Optimism | $8B | 25,000 | $0.02 |
+
+### Investment Opportunities
+
+1. **Arbitrum (ARB)**
+   - Most mature ecosystem
+   - Largest DeFi coverage
+   - Target price: $2.5
+
+2. **Base**
+   - Backed by Coinbase
+   - Fastest growth
+   - Watch native ecosystem projects
+
+### Risks
+
+- Technical security risks
+- Intensifying competition
+- Regulatory uncertainty`,
     tags: ['Layer 2', 'ETH', 'DeFi'],
     readCount: 856,
     likeCount: 67,
@@ -182,6 +252,7 @@ const mockReportDetails: Record<string, ResearchReport> = {
     publishedAt: '5 hours ago',
     requiredLevel: 'Diamond',
     summary: 'Solana 网络活动激增，日交易量创历史新高，生态发展势头强劲。',
+    summaryEn: 'Solana activity is surging with record daily volume, showing strong ecosystem momentum.',
     content: `## Solana 网络分析
 
 Solana 近期网络活动显著增加，多项指标创下新高。
@@ -207,6 +278,31 @@ SOL 目前处于价值洼地，生态发展超预期。
 
 - 网络稳定性历史问题
 - 竞争加剧`,
+    contentEn: `## Solana Network Analysis
+
+Solana’s network activity has surged, with multiple metrics hitting new highs.
+
+### Key Data
+
+- Daily transactions: 50M+
+- Active addresses: 2M+
+- TVL: $8B
+- DEX volume: $2B/day
+
+### Ecosystem Highlights
+
+1. **Jupiter** - leading DEX aggregator
+2. **Marinade** - staking protocol
+3. **Tensor** - NFT marketplace
+
+### Investment View
+
+SOL still looks undervalued relative to the pace of ecosystem growth.
+
+### Risks
+
+- Historical network stability issues
+- Intensifying competition`,
     tags: ['SOL', 'Network', 'DeFi'],
     readCount: 623,
     likeCount: 45,
@@ -225,6 +321,7 @@ SOL 目前处于价值洼地，生态发展超预期。
     publishedAt: '6 hours ago',
     requiredLevel: 'Diamond',
     summary: '美联储政策转向在即，对加密市场的影响分析。',
+    summaryEn: 'Assessing how an impending Fed policy shift may impact crypto markets.',
     content: `## 宏观经济展望
 
 美联储政策变化将对加密市场产生重大影响。
@@ -248,6 +345,29 @@ SOL 目前处于价值洼地，生态发展超预期。
 - BTC: 50%
 - ETH: 30%
 - 山寨币: 20%`,
+    contentEn: `## Macro Outlook
+
+Federal Reserve policy changes can have a major impact on crypto markets.
+
+### Key Calls
+
+1. **Rate‑cut expectations**
+   - Cuts may start in Q2
+   - 75–100 bp of cuts possible over the year
+
+2. **Liquidity impact**
+   - Lower rates support risk assets
+   - A weaker USD is positive for BTC
+
+3. **Market implications**
+   - Higher short‑term volatility
+   - Constructive mid‑term outlook
+
+### Allocation Guide
+
+- BTC: 50%
+- ETH: 30%
+- Altcoins: 20%`,
     tags: ['Macro', 'Fed', 'Policy'],
     readCount: 1102,
     likeCount: 78,
@@ -266,6 +386,7 @@ SOL 目前处于价值洼地，生态发展超预期。
     publishedAt: '12 hours ago',
     requiredLevel: 'Diamond',
     summary: 'DeFi 收益策略深度报告，精选高收益低风险机会。',
+    summaryEn: 'A deep dive into DeFi yield strategies with curated, lower‑risk opportunities.',
     content: `## DeFi 收益策略报告
 
 本期精选 Q1 2026 最佳 DeFi 收益机会。
@@ -289,6 +410,27 @@ SOL 目前处于价值洼地，生态发展超预期。
 - 智能合约风险
 - 无常损失
 - 协议风险`,
+    contentEn: `## DeFi Yield Strategy Report
+
+This issue highlights the best DeFi yield opportunities for Q1 2026.
+
+### Recommended Strategies
+
+1. **Stablecoin yield**
+   - Aave and Curve for 8–12% APY with lower risk
+
+2. **Liquidity mining**
+   - Uniswap V3 and Aerodrome offer higher yield but with IL risk
+
+3. **Staking yield**
+   - ETH staking: 4.5% APY
+   - SOL staking: 7% APY
+
+### Risks
+
+- Smart contract risk
+- Impermanent loss
+- Protocol risk`,
     tags: ['DeFi', 'Yield', 'Strategy'],
     readCount: 892,
     likeCount: 56,
@@ -296,37 +438,77 @@ SOL 目前处于价值洼地，生态发展超预期。
 };
 
 // AI 解读模拟数据
-const mockAIInterpretations: Record<string, string[]> = {
-  'r1': [
-    '这份研报看多 BTC，核心逻辑是技术面支撑有效。$94,500 是关键价位，跌破则看空。',
-    '从链上数据看，交易所 BTC 余额持续下降是积极信号，说明长期持有者在增加。',
-    '建议关注的操作策略：分批建仓，严格止损。风险收益比约 1:2。',
-    '需要注意的风险：宏观环境仍有不确定性，建议仓位控制在 20% 以内。',
-  ],
-  'r2': [
-    '研报主题是 L2 生态，核心观点是 Arbitrum 和 Base 是当前最值得关注的 L2。',
-    'TVL 数据显示 L2 正在快速吸收流动性，这对 ETH 长期是利好。',
-    '投资建议倾向于 ARB，目标价 $2.5。Base 暂无代币但值得关注其生态项目。',
-    '风险提示：L2 技术仍在发展中，安全事件可能影响市场信心。',
-  ],
-  'r3': [
-    '研报看多 SOL，核心逻辑是网络活动数据强劲，生态发展超预期。',
-    '日交易量和活跃地址创新高，说明用户采用率在快速提升。',
-    'Jupiter 作为 DEX 聚合器龙头值得重点关注，可能有空投机会。',
-    '风险提示：Solana 历史上有网络中断问题，需关注网络稳定性。',
-  ],
-  'r4': [
-    '这是一篇宏观分析报告，核心观点是美联储降息利好加密市场。',
-    'Q2 降息预期较强，全年可能降息 75-100bp，流动性将改善。',
-    '配置建议偏保守：BTC 50%、ETH 30%、山寨币 20%。',
-    '短期可能波动加大，但中期看多，建议逢低布局。',
-  ],
-  'r5': [
-    '这是一份 DeFi 收益策略报告，精选了低风险高收益机会。',
-    '稳定币收益策略推荐 Aave 和 Curve，APY 8-12%，风险较低。',
-    '流动性挖矿可关注 Uniswap V3 和 Aerodrome，收益更高但有无常损失风险。',
-    '整体建议：根据风险偏好配置，稳健型选稳定币策略，激进型可尝试流动性挖矿。',
-  ],
+const mockAIInterpretations: Record<string, { zh: string[]; en: string[] }> = {
+  'r1': {
+    zh: [
+      '这份研报看多 BTC，核心逻辑是技术面支撑有效。$94,500 是关键价位，跌破则看空。',
+      '从链上数据看，交易所 BTC 余额持续下降是积极信号，说明长期持有者在增加。',
+      '建议关注的操作策略：分批建仓，严格止损。风险收益比约 1:2。',
+      '需要注意的风险：宏观环境仍有不确定性，建议仓位控制在 20% 以内。',
+    ],
+    en: [
+      'This report is bullish on BTC. The core thesis is that technical support is holding—$94,500 is the key level.',
+      'On-chain data shows exchange BTC balances trending lower, suggesting long‑term holders are accumulating.',
+      'Suggested strategy: scale in and keep stops tight. Risk/reward around 1:2.',
+      'Main risk: macro uncertainty; keep position sizing below 20%.',
+    ],
+  },
+  'r2': {
+    zh: [
+      '研报主题是 L2 生态，核心观点是 Arbitrum 和 Base 是当前最值得关注的 L2。',
+      'TVL 数据显示 L2 正在快速吸收流动性，这对 ETH 长期是利好。',
+      '投资建议倾向于 ARB，目标价 $2.5。Base 暂无代币但值得关注其生态项目。',
+      '风险提示：L2 技术仍在发展中，安全事件可能影响市场信心。',
+    ],
+    en: [
+      'Theme: L2 ecosystem. The report argues Arbitrum and Base are the top L2s to watch.',
+      'TVL data shows L2s are absorbing liquidity quickly, a long‑term positive for ETH.',
+      'Preference leans toward ARB with a $2.5 target. Base has no token yet but its ecosystem is worth tracking.',
+      'Risk: L2 tech is still evolving and security incidents could hit confidence.',
+    ],
+  },
+  'r3': {
+    zh: [
+      '研报看多 SOL，核心逻辑是网络活动数据强劲，生态发展超预期。',
+      '日交易量和活跃地址创新高，说明用户采用率在快速提升。',
+      'Jupiter 作为 DEX 聚合器龙头值得重点关注，可能有空投机会。',
+      '风险提示：Solana 历史上有网络中断问题，需关注网络稳定性。',
+    ],
+    en: [
+      'The report is bullish on SOL, driven by strong network activity and faster‑than‑expected ecosystem growth.',
+      'Record daily transactions and active addresses point to accelerating adoption.',
+      'Jupiter, the leading DEX aggregator, is a key watch with possible airdrop upside.',
+      'Risk: Solana’s historical downtime; monitor network stability.',
+    ],
+  },
+  'r4': {
+    zh: [
+      '这是一篇宏观分析报告，核心观点是美联储降息利好加密市场。',
+      'Q2 降息预期较强，全年可能降息 75-100bp，流动性将改善。',
+      '配置建议偏保守：BTC 50%、ETH 30%、山寨币 20%。',
+      '短期可能波动加大，但中期看多，建议逢低布局。',
+    ],
+    en: [
+      'Macro view: Fed rate cuts are constructive for crypto.',
+      'Cuts could begin in Q2 with 75–100 bp over the year, improving liquidity.',
+      'Conservative allocation: BTC 50%, ETH 30%, altcoins 20%.',
+      'Expect near‑term volatility; mid‑term bias remains positive—buy dips.',
+    ],
+  },
+  'r5': {
+    zh: [
+      '这是一份 DeFi 收益策略报告，精选了低风险高收益机会。',
+      '稳定币收益策略推荐 Aave 和 Curve，APY 8-12%，风险较低。',
+      '流动性挖矿可关注 Uniswap V3 和 Aerodrome，收益更高但有无常损失风险。',
+      '整体建议：根据风险偏好配置，稳健型选稳定币策略，激进型可尝试流动性挖矿。',
+    ],
+    en: [
+      'A DeFi yield strategy report featuring lower‑risk, higher‑return opportunities.',
+      'Stablecoin yields: Aave and Curve at ~8–12% APY with lower risk.',
+      'Liquidity mining: Uniswap V3 and Aerodrome offer higher yield with IL risk.',
+      'Overall: match strategies to risk profile—stablecoin yields for conservative, farming for aggressive.',
+    ],
+  },
 };
 
 // 赞赏金额选项
@@ -343,6 +525,7 @@ interface ResearchReportModalProps {
 }
 
 export function ResearchReportModal({ reportId, onClose }: ResearchReportModalProps) {
+  const { t, language } = useTranslation();
   const { user, lockEnergy, spendEnergy } = useUserStore();
   const { openChat, createConsultation, setServiceMode } = useChatStore();
   const [isAILoading, setIsAILoading] = useState(false);
@@ -370,6 +553,8 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
   const [showAppointment, setShowAppointment] = useState(false);
 
   const report = reportId ? mockReportDetails[reportId] : null;
+  const reportSummary = report ? (language === 'zh' ? report.summary : report.summaryEn || report.summary) : '';
+  const reportContent = report ? (language === 'zh' ? report.content : report.contentEn || report.content) : '';
 
   // 检查用户是否有权限查看
   const userLevel = user?.level || 'Bronze';
@@ -434,11 +619,14 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
     setShowAI(true);
 
     // 模拟 AI 逐条输出
-    const interpretations = mockAIInterpretations[reportId] || [
-      '正在分析研报内容...',
-      '这是一份专业的市场分析报告。',
-      '建议结合自身风险偏好做出决策。',
+    const fallbackInterpretations = [
+      t('reportModal.aiFallback.analyzing'),
+      t('reportModal.aiFallback.professional'),
+      t('reportModal.aiFallback.riskNote'),
     ];
+    const interpretations = mockAIInterpretations[reportId]
+      ? mockAIInterpretations[reportId][language === 'zh' ? 'zh' : 'en']
+      : fallbackInterpretations;
 
     for (let i = 0; i < interpretations.length; i++) {
       await new Promise(resolve => setTimeout(resolve, 800));
@@ -449,7 +637,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
   };
 
   const handleCopy = async () => {
-    const text = `${report.title}\n\n${report.summary}\n\n${report.content}`;
+    const text = `${report.title}\n\n${reportSummary}\n\n${reportContent}`;
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -507,7 +695,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
   const handleOpenMessage = () => {
     const energyAvailable = user?.energyAvailable || 0;
     if (energyAvailable < ENERGY_COSTS.privateMessage) {
-      setInsufficientEnergy({ action: '私信', required: ENERGY_COSTS.privateMessage });
+      setInsufficientEnergy({ action: t('reportModal.action.privateMessage'), required: ENERGY_COSTS.privateMessage });
       return;
     }
     setShowMessageModal(true);
@@ -517,12 +705,18 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
     if (!messageContent.trim()) return;
 
     // 锁定并消费能量
-    const success = lockEnergy(ENERGY_COSTS.privateMessage, `私信 ${report?.researcher.name}`);
+    const success = lockEnergy(
+      ENERGY_COSTS.privateMessage,
+      t('reportModal.energy.privateMessage', { name: report?.researcher.name })
+    );
     if (!success) {
-      setInsufficientEnergy({ action: '私信', required: ENERGY_COSTS.privateMessage });
+      setInsufficientEnergy({ action: t('reportModal.action.privateMessage'), required: ENERGY_COSTS.privateMessage });
       return;
     }
-    spendEnergy(ENERGY_COSTS.privateMessage, `私信 ${report?.researcher.name}`);
+    spendEnergy(
+      ENERGY_COSTS.privateMessage,
+      t('reportModal.energy.privateMessage', { name: report?.researcher.name })
+    );
 
     // 模拟发送成功
     setMessageSent(true);
@@ -537,14 +731,17 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
     // 检查能量
     const energyAvailable = user?.energyAvailable || 0;
     if (energyAvailable < ENERGY_COSTS.oneOnOneChat) {
-      setInsufficientEnergy({ action: '1v1 咨询', required: ENERGY_COSTS.oneOnOneChat });
+      setInsufficientEnergy({ action: t('reportModal.action.oneOnOne'), required: ENERGY_COSTS.oneOnOneChat });
       return;
     }
 
     // 锁定能量
-    const success = lockEnergy(ENERGY_COSTS.oneOnOneChat, `1v1 咨询 ${report?.researcher.name}`);
+    const success = lockEnergy(
+      ENERGY_COSTS.oneOnOneChat,
+      t('reportModal.energy.oneOnOne', { name: report?.researcher.name })
+    );
     if (!success) {
-      setInsufficientEnergy({ action: '1v1 咨询', required: ENERGY_COSTS.oneOnOneChat });
+      setInsufficientEnergy({ action: t('reportModal.action.oneOnOne'), required: ENERGY_COSTS.oneOnOneChat });
       return;
     }
 
@@ -557,8 +754,8 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
       try {
         await createConsultation(
           user.id,
-          `关于研报《${report.title}》的咨询`,
-          `研报标题：${report.title}\n研报摘要：${report.summary}`,
+          t('reportModal.consultation.title', { title: report.title }),
+          t('reportModal.consultation.summary', { title: report.title, summary: reportSummary }),
           report.researcher.id
         );
       } catch (error) {
@@ -572,9 +769,9 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
   const SentimentBadge = () => {
     if (!report.sentiment) return null;
     const config = {
-      bullish: { icon: TrendingUp, color: 'var(--brand-green)', label: '看多' },
-      bearish: { icon: TrendingDown, color: 'var(--brand-red)', label: '看空' },
-      neutral: { icon: null, color: 'var(--text-muted)', label: '中性' },
+      bullish: { icon: TrendingUp, color: 'var(--brand-green)', label: t('reportSentiment.bullish') },
+      bearish: { icon: TrendingDown, color: 'var(--brand-red)', label: t('reportSentiment.bearish') },
+      neutral: { icon: null, color: 'var(--text-muted)', label: t('reportSentiment.neutral') },
     };
     const { icon: Icon, color, label } = config[report.sentiment];
     return (
@@ -609,7 +806,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
             <div className="flex items-center gap-2 mb-2">
               <span className="flex items-center gap-1 px-1.5 py-0.5 bg-gradient-to-r from-[#FFD700] to-[#FFA500] rounded text-[9px] font-bold text-black">
                 <Crown size={10} />
-                VIP
+                {t('reportModal.vip')}
               </span>
               {report.symbol && (
                 <span className="text-[11px] font-bold px-2 py-0.5 bg-[var(--bg-surface)] text-[var(--text-main)] rounded">
@@ -644,7 +841,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                     {report.researcher.name}
                   </div>
                   <div className="text-[10px] text-[var(--text-dim)]">
-                    {report.researcher.title}
+                    {report.researcher.title || t('reportModal.researcherTitleFallback')}
                   </div>
                 </div>
               </div>
@@ -655,28 +852,28 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                   <button
                     onClick={handleOpenMessage}
                     className="flex items-center gap-1 px-2 py-1 text-[10px] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-surface)] rounded transition"
-                    title={`私信研究员 (${ENERGY_COSTS.privateMessage} 能量)`}
+                    title={t('reportModal.privateMessageTitle', { cost: ENERGY_COSTS.privateMessage })}
                   >
                     <Mail size={12} />
-                    <span className="hidden sm:inline">私信</span>
+                    <span className="hidden sm:inline">{t('reportModal.privateMessage')}</span>
                     <span className="text-[8px] text-[var(--brand-yellow)]">{ENERGY_COSTS.privateMessage}</span>
                   </button>
                   <button
                     onClick={handleStartChat}
                     className="flex items-center gap-1 px-2 py-1 text-[10px] text-[var(--brand-green)] hover:bg-[var(--brand-green)]/10 rounded transition"
-                    title={`1v1 咨询 (${ENERGY_COSTS.oneOnOneChat} 能量)`}
+                    title={t('reportModal.oneOnOneTitle', { cost: ENERGY_COSTS.oneOnOneChat })}
                   >
                     <MessageSquare size={12} />
-                    <span className="hidden sm:inline">1v1</span>
+                    <span className="hidden sm:inline">{t('reportModal.oneOnOneShort')}</span>
                     <span className="text-[8px] text-[var(--brand-yellow)]">{ENERGY_COSTS.oneOnOneChat}</span>
                   </button>
                   <button
                     onClick={() => setShowAppointment(true)}
                     className="flex items-center gap-1 px-2 py-1 text-[10px] text-[var(--brand-yellow)] hover:bg-[var(--brand-yellow)]/10 rounded transition"
-                    title="预约通话"
+                    title={t('reportModal.scheduleCall')}
                   >
                     <CalendarClock size={12} />
-                    <span className="hidden sm:inline">预约</span>
+                    <span className="hidden sm:inline">{t('reportModal.schedule')}</span>
                   </button>
                 </div>
               )}
@@ -687,7 +884,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                 <Clock size={12} />
                 <span>{report.publishedAt}</span>
               </div>
-              <span>{report.readCount?.toLocaleString()} 阅读</span>
+              <span>{t('reportModal.readCount', { count: report.readCount?.toLocaleString() || '0' })}</span>
             </div>
           </div>
           <button
@@ -709,7 +906,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                   : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
               }`}
             >
-              研报内容
+              {t('reportModal.tab.content')}
             </button>
             <button
               onClick={() => setActiveTab('comments')}
@@ -720,7 +917,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
               }`}
             >
               <MessageCircle size={14} />
-              评论 ({comments.length})
+              {t('reportModal.tab.comments', { count: comments.length })}
             </button>
           </div>
         )}
@@ -732,9 +929,9 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
               <>
                 {/* Summary */}
                 <div className="p-4 bg-[var(--bg-surface)] border-b border-[var(--border-light)]">
-                  <div className="text-[12px] text-[var(--text-muted)] mb-1">摘要</div>
+                  <div className="text-[12px] text-[var(--text-muted)] mb-1">{t('reportModal.summary')}</div>
                   <p className="text-[14px] text-[var(--text-main)] leading-relaxed">
-                    {report.summary}
+                    {reportSummary}
                   </p>
                 </div>
 
@@ -746,10 +943,10 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                   >
                     <div className="flex items-center gap-2">
                       <Sparkles size={16} className="text-[#8b5cf6]" />
-                      <span className="text-[13px] font-medium text-[var(--text-main)]">AI 智能解读</span>
+                      <span className="text-[13px] font-medium text-[var(--text-main)]">{t('reportModal.aiBrief')}</span>
                       {aiInterpretation.length > 0 && (
                         <span className="text-[10px] px-1.5 py-0.5 bg-[#8b5cf6]/20 text-[#8b5cf6] rounded">
-                          已生成
+                          {t('reportModal.generated')}
                         </span>
                       )}
                     </div>
@@ -800,7 +997,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                     className="flex items-center gap-2 text-[12px] text-[var(--text-muted)] mb-3 hover:text-[var(--text-main)]"
                   >
                     {showContent ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                    <span>{showContent ? '收起正文' : '展开正文'}</span>
+                    <span>{showContent ? t('reportModal.collapseContent') : t('reportModal.expandContent')}</span>
                   </button>
 
                   {showContent && (
@@ -809,7 +1006,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                         className="text-[13px] text-[var(--text-main)] leading-relaxed whitespace-pre-wrap"
                         style={{ fontFamily: 'inherit' }}
                       >
-                        {report.content.split('\n').map((line, i) => {
+                        {reportContent.split('\n').map((line, i) => {
                           if (line.startsWith('## ')) {
                             return <h2 key={i} className="text-[15px] font-bold mt-4 mb-2 text-[var(--text-main)]">{line.replace('## ', '')}</h2>;
                           }
@@ -856,7 +1053,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                     type="text"
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="写下你的评论..."
+                    placeholder={t('reportModal.commentPlaceholder')}
                     className="flex-1 px-3 py-2 bg-[var(--bg-surface)] border border-[var(--border-light)] rounded-lg text-[13px] text-[var(--text-main)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-yellow)]"
                     onKeyDown={(e) => e.key === 'Enter' && handleSubmitComment()}
                   />
@@ -873,7 +1070,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                 <div className="space-y-3">
                   {comments.length === 0 ? (
                     <div className="text-center py-8 text-[var(--text-muted)]">
-                      暂无评论，来抢沙发吧
+                      {t('reportModal.emptyComments')}
                     </div>
                   ) : (
                     comments.map((comment) => (
@@ -901,7 +1098,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                           </button>
                         </div>
                         <p className="text-[13px] text-[var(--text-main)]">
-                          {comment.content}
+                          {language === 'zh' ? comment.content : comment.contentEn || comment.content}
                         </p>
                       </div>
                     ))
@@ -916,11 +1113,11 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
             {/* Full Summary Preview */}
             <div className="p-4 border-b border-[var(--border-light)]">
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-[13px] font-medium text-[var(--text-main)]">研报摘要</span>
-                <span className="text-[10px] px-1.5 py-0.5 bg-[var(--brand-yellow)]/20 text-[var(--brand-yellow)] rounded">免费预览</span>
+                <span className="text-[13px] font-medium text-[var(--text-main)]">{t('reportModal.previewSummary')}</span>
+                <span className="text-[10px] px-1.5 py-0.5 bg-[var(--brand-yellow)]/20 text-[var(--brand-yellow)] rounded">{t('reportModal.freePreview')}</span>
               </div>
               <p className="text-[14px] text-[var(--text-main)] leading-[1.8]">
-                {report.summary}
+                {reportSummary}
               </p>
             </div>
 
@@ -929,11 +1126,11 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
               {/* Visible preview content - first paragraph */}
               <div className="p-4 pb-0">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-[13px] font-medium text-[var(--text-main)]">详细分析</span>
+                  <span className="text-[13px] font-medium text-[var(--text-main)]">{t('reportModal.detailedAnalysis')}</span>
                   <Lock size={12} className="text-[var(--text-dim)]" />
                 </div>
                 <div className="text-[13px] text-[var(--text-main)] leading-[1.8] whitespace-pre-line">
-                  {report.content.split('\n\n')[0]}
+                  {reportContent.split('\n\n')[0]}
                 </div>
               </div>
 
@@ -941,7 +1138,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
               <div className="relative mt-4">
                 {/* Blurred remaining content */}
                 <div className="px-4 text-[13px] text-[var(--text-muted)] leading-[1.8] whitespace-pre-line blur-[6px] select-none pointer-events-none" style={{ maxHeight: '120px', overflow: 'hidden' }}>
-                  {report.content.split('\n\n').slice(1).join('\n\n')}
+                  {reportContent.split('\n\n').slice(1).join('\n\n')}
                 </div>
 
                 {/* Gradient overlay */}
@@ -954,10 +1151,13 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                   <Crown size={24} className="text-[var(--brand-yellow)]" />
                   <div className="text-left">
                     <div className="text-[14px] font-medium text-[var(--text-main)]">
-                      升级到 <span style={{ color: LEVEL_CONFIG[report.requiredLevel].color }}>{report.requiredLevel}</span> 解锁完整内容
+                      {t('reportModal.unlockFullPrefix')}
+                      <span style={{ color: LEVEL_CONFIG[report.requiredLevel].color }}>{report.requiredLevel}</span>
+                      {t('reportModal.unlockFullSuffix')}
                     </div>
                     <div className="text-[12px] text-[var(--text-muted)]">
-                      当前等级: <span style={{ color: LEVEL_CONFIG[userLevel].color }}>{userLevel}</span>
+                      {t('reportModal.currentLevel')}
+                      <span style={{ color: LEVEL_CONFIG[userLevel].color }}>{userLevel}</span>
                     </div>
                   </div>
                 </div>
@@ -989,7 +1189,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 text-[#FFD700] rounded-lg text-[12px] font-medium hover:from-[#FFD700]/30 hover:to-[#FFA500]/30 transition"
               >
                 <Gift size={14} />
-                赞赏
+                {t('reportModal.tip')}
               </button>
             )}
           </div>
@@ -1004,14 +1204,14 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
               }`}
             >
               {isSubscribed ? <Bell size={14} /> : <BellOff size={14} />}
-              {isSubscribed ? '已订阅' : '订阅'}
+              {isSubscribed ? t('reportModal.subscribed') : t('reportModal.subscribe')}
             </button>
             <button
               onClick={handleCopy}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--bg-app)] text-[var(--text-muted)] hover:text-[var(--text-main)] rounded text-[11px] font-medium transition-colors"
             >
               {copied ? <Check size={14} className="text-[var(--brand-green)]" /> : <Copy size={14} />}
-              {copied ? '已复制' : '复制'}
+              {copied ? t('reportModal.copied') : t('reportModal.copy')}
             </button>
           </div>
         </div>
@@ -1029,18 +1229,18 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--brand-green)] flex items-center justify-center">
                   <Check size={32} className="text-white" />
                 </div>
-                <h3 className="text-[16px] font-bold text-[var(--text-main)]">赞赏成功！</h3>
+                <h3 className="text-[16px] font-bold text-[var(--text-main)]">{t('reportModal.tipSuccess')}</h3>
                 <p className="text-[13px] text-[var(--text-muted)] mt-2">
-                  感谢您对 {report.researcher.name} 的支持
+                  {t('reportModal.tipThanks', { name: report.researcher.name })}
                 </p>
               </div>
             ) : (
               <>
                 <div className="text-center mb-4">
                   <Gift size={32} className="text-[#FFD700] mx-auto mb-2" />
-                  <h3 className="text-[16px] font-bold text-[var(--text-main)]">赞赏研究员</h3>
+                  <h3 className="text-[16px] font-bold text-[var(--text-main)]">{t('reportModal.tipTitle')}</h3>
                   <p className="text-[12px] text-[var(--text-muted)] mt-1">
-                    支持 {report.researcher.name} 创作更多优质内容
+                    {t('reportModal.tipSubtitle', { name: report.researcher.name })}
                   </p>
                 </div>
 
@@ -1071,7 +1271,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                       setCustomTipAmount(e.target.value);
                       setSelectedTipAmount(null);
                     }}
-                    placeholder="自定义金额 (USDT)"
+                    placeholder={t('reportModal.tipCustom')}
                     className="w-full px-3 py-2.5 bg-[var(--bg-surface)] border border-[var(--border-light)] rounded-lg text-[14px] text-[var(--text-main)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-yellow)]"
                   />
                 </div>
@@ -1081,7 +1281,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                   disabled={!selectedTipAmount && !customTipAmount}
                   className="w-full py-3 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black rounded-lg font-bold text-[15px] disabled:opacity-50 hover:opacity-90 transition"
                 >
-                  确认赞赏
+                  {t('reportModal.tipConfirm')}
                 </button>
               </>
             )}
@@ -1101,9 +1301,9 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--brand-green)] flex items-center justify-center">
                   <Check size={32} className="text-white" />
                 </div>
-                <h3 className="text-[16px] font-bold text-[var(--text-main)]">发送成功！</h3>
+                <h3 className="text-[16px] font-bold text-[var(--text-main)]">{t('reportModal.messageSentTitle')}</h3>
                 <p className="text-[13px] text-[var(--text-muted)] mt-2">
-                  {report.researcher.name} 会尽快回复您
+                  {t('reportModal.messageSentHint', { name: report.researcher.name })}
                 </p>
               </div>
             ) : (
@@ -1116,10 +1316,10 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                   />
                   <div>
                     <div className="text-[14px] font-medium text-[var(--text-main)]">
-                      私信 {report.researcher.name}
+                      {t('reportModal.messageTitle', { name: report.researcher.name })}
                     </div>
                     <div className="text-[11px] text-[var(--text-muted)]">
-                      {report.researcher.title}
+                      {report.researcher.title || t('reportModal.researcherTitleFallback')}
                     </div>
                   </div>
                 </div>
@@ -1127,7 +1327,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                 <textarea
                   value={messageContent}
                   onChange={(e) => setMessageContent(e.target.value)}
-                  placeholder="输入您想咨询的问题..."
+                  placeholder={t('reportModal.messagePlaceholder')}
                   rows={4}
                   className="w-full px-3 py-2.5 bg-[var(--bg-surface)] border border-[var(--border-light)] rounded-lg text-[14px] text-[var(--text-main)] placeholder:text-[var(--text-dim)] focus:outline-none focus:border-[var(--brand-yellow)] resize-none mb-4"
                 />
@@ -1136,10 +1336,10 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                 <div className="flex items-center justify-between mb-4 p-2 bg-[var(--bg-app)] rounded-lg">
                   <div className="flex items-center gap-1.5 text-[12px] text-[var(--text-muted)]">
                     <Zap size={14} className="text-[var(--brand-yellow)]" />
-                    <span>消耗 <span className="font-bold text-[var(--brand-yellow)]">{ENERGY_COSTS.privateMessage}</span> 能量</span>
+                    <span>{t('reportModal.energyCost', { cost: ENERGY_COSTS.privateMessage })}</span>
                   </div>
                   <div className="text-[11px] text-[var(--text-dim)]">
-                    当前: {user?.energyAvailable?.toFixed(0) || 0}
+                    {t('reportModal.currentEnergy', { amount: user?.energyAvailable?.toFixed(0) || 0 })}
                   </div>
                 </div>
 
@@ -1148,14 +1348,14 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                     onClick={() => setShowMessageModal(false)}
                     className="flex-1 py-2.5 bg-[var(--bg-surface)] text-[var(--text-muted)] rounded-lg font-medium text-[14px] hover:bg-[var(--bg-highlight)] transition"
                   >
-                    取消
+                    {t('reportModal.cancel')}
                   </button>
                   <button
                     onClick={handleSendMessage}
                     disabled={!messageContent.trim()}
                     className="flex-1 py-2.5 bg-[var(--brand-yellow)] text-black rounded-lg font-bold text-[14px] disabled:opacity-50 hover:opacity-90 transition"
                   >
-                    发送
+                    {t('reportModal.send')}
                   </button>
                 </div>
               </>
@@ -1175,28 +1375,28 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
               <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-[var(--brand-red)]/20 flex items-center justify-center">
                 <AlertCircle size={32} className="text-[var(--brand-red)]" />
               </div>
-              <h3 className="text-[16px] font-bold text-[var(--text-main)]">能量不足</h3>
+              <h3 className="text-[16px] font-bold text-[var(--text-main)]">{t('reportModal.insufficientEnergy')}</h3>
               <p className="text-[13px] text-[var(--text-muted)] mt-2">
-                {insufficientEnergy.action}需要 <span className="font-bold text-[var(--brand-yellow)]">{insufficientEnergy.required}</span> 能量
+                {t('reportModal.energyRequired', { action: insufficientEnergy.action, required: insufficientEnergy.required })}
               </p>
               <p className="text-[12px] text-[var(--text-dim)] mt-1">
-                当前能量: {user?.energyAvailable?.toFixed(0) || 0}
+                {t('reportModal.currentEnergyFull', { amount: user?.energyAvailable?.toFixed(0) || 0 })}
               </p>
 
               <div className="mt-4 p-3 bg-[var(--bg-surface)] rounded-lg text-left">
-                <div className="text-[12px] text-[var(--text-muted)] mb-2">如何获取能量？</div>
+                <div className="text-[12px] text-[var(--text-muted)] mb-2">{t('reportModal.energyHow')}</div>
                 <ul className="text-[11px] text-[var(--text-main)] space-y-1">
                   <li className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand-green)]" />
-                    交易产生手续费自动铸造能量
+                    {t('reportModal.energyHowItems.trade')}
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand-green)]" />
-                    持有 SoSo 代币获得铸造加成
+                    {t('reportModal.energyHowItems.soso')}
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand-green)]" />
-                    质押 SSI 代币保护能量不衰减
+                    {t('reportModal.energyHowItems.ssi')}
                   </li>
                 </ul>
               </div>
@@ -1205,7 +1405,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
                 onClick={() => setInsufficientEnergy(null)}
                 className="w-full mt-4 py-2.5 bg-[var(--bg-surface)] text-[var(--text-main)] rounded-lg font-medium text-[14px] hover:bg-[var(--bg-highlight)] transition"
               >
-                我知道了
+                {t('reportModal.gotIt')}
               </button>
             </div>
           </div>
@@ -1220,7 +1420,7 @@ export function ResearchReportModal({ reportId, onClose }: ResearchReportModalPr
           id: report.researcher.id,
           name: report.researcher.name,
           avatar: report.researcher.avatar || '',
-          title: report.researcher.title || '分析师',
+          title: report.researcher.title || t('reportModal.researcherTitleFallback'),
           rating: 4.8,
           specialties: report.tags || [],
           voicePrice: 30,

@@ -41,8 +41,10 @@ interface ResearcherInfo {
   name: string;
   avatar?: string;
   title: string;
+  titleEn?: string;
   rating: number;
   specialties: string[];
+  specialtiesEn?: string[];
   voicePrice: number; // 语音通话价格（能量）
   videoPrice: number; // 视频通话价格（能量）
 }
@@ -62,8 +64,10 @@ const mockResearcher: ResearcherInfo = {
   name: 'Alex Chen',
   avatar: undefined,
   title: '高级分析师',
+  titleEn: 'Senior Analyst',
   rating: 4.8,
   specialties: ['BTC', '技术分析', '量化策略'],
+  specialtiesEn: ['BTC', 'Technical Analysis', 'Quant Strategies'],
   voicePrice: 30,
   videoPrice: 50,
 };
@@ -206,6 +210,13 @@ export function AppointmentBooking({
   const { t } = useTranslation();
   const { language } = useLanguage();
   const locale = language === 'zh' ? 'zh-CN' : 'en-US';
+  const displayedResearcher = language === 'zh'
+    ? researcher
+    : {
+      ...researcher,
+      title: researcher.titleEn || researcher.title,
+      specialties: researcher.specialtiesEn || researcher.specialties,
+    };
   const [step, setStep] = useState<'date' | 'time' | 'confirm' | 'success'>('date');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
@@ -222,7 +233,7 @@ export function AppointmentBooking({
     return generateTimeSlots(selectedDate);
   }, [selectedDate]);
 
-  const price = appointmentType === 'voice' ? researcher.voicePrice : researcher.videoPrice;
+  const price = appointmentType === 'voice' ? displayedResearcher.voicePrice : displayedResearcher.videoPrice;
   const energyAvailable = user?.energyAvailable || 0;
   const canAfford = energyAvailable >= price;
 
@@ -333,13 +344,13 @@ export function AppointmentBooking({
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="text-[14px] font-medium text-[var(--text-main)]">{researcher.name}</span>
-                  <span className="text-[12px] text-[var(--text-muted)]">{researcher.title}</span>
+                  <span className="text-[12px] text-[var(--text-muted)]">{displayedResearcher.title}</span>
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
                   <Star size={12} className="text-[var(--brand-yellow)] fill-[var(--brand-yellow)]" />
                   <span className="text-[12px] text-[var(--text-muted)]">{researcher.rating}</span>
                   <span className="text-[12px] text-[var(--text-dim)]">·</span>
-                  <span className="text-[12px] text-[var(--text-dim)]">{researcher.specialties.join(', ')}</span>
+                  <span className="text-[12px] text-[var(--text-dim)]">{displayedResearcher.specialties.join(', ')}</span>
                 </div>
               </div>
             </div>
@@ -370,7 +381,7 @@ export function AppointmentBooking({
                       </div>
                       <div className="text-[12px] text-[var(--text-muted)] flex items-center gap-1">
                         <Zap size={10} />
-                        {researcher.voicePrice} {t('booking.energyPer30min')}
+                        {displayedResearcher.voicePrice} {t('booking.energyPer30min')}
                       </div>
                     </div>
                   </button>
@@ -389,7 +400,7 @@ export function AppointmentBooking({
                       </div>
                       <div className="text-[12px] text-[var(--text-muted)] flex items-center gap-1">
                         <Zap size={10} />
-                        {researcher.videoPrice} {t('booking.energyPer30min')}
+                        {displayedResearcher.videoPrice} {t('booking.energyPer30min')}
                       </div>
                     </div>
                   </button>

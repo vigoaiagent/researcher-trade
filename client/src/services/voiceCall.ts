@@ -208,7 +208,7 @@ class VoiceCallService {
         // 解析候选类型
         const candidateStr = event.candidate.candidate;
         let candidateType = 'unknown';
-        if (candidateStr.includes('typ host')) candidateType = 'host (本地)';
+        if (candidateStr.includes('typ host')) candidateType = 'host (local)';
         else if (candidateStr.includes('typ srflx')) candidateType = 'srflx (STUN)';
         else if (candidateStr.includes('typ relay')) candidateType = 'relay (TURN)';
         else if (candidateStr.includes('typ prflx')) candidateType = 'prflx (peer reflexive)';

@@ -209,7 +209,7 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                                     key={i}
                                     className="text-[13px] md:text-[15px] text-[var(--text-muted)]"
                                   >
-                                    {benefit}{i < config.benefits.length - 1 ? ' · ' : ''}
+                                    {t(benefit)}{i < config.benefits.length - 1 ? ' · ' : ''}
                                   </span>
                                 ))}
                               </div>
@@ -472,7 +472,7 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                                       isCurrentLevel || isUnlocked ? 'text-[var(--text-muted)]' : 'text-[var(--text-dim)]'
                                     }`}>
                                       {levelConfig.hasResearcherAccess && '★ '}
-                                      {levelConfig.benefits.join(' · ')}
+                                      {levelConfig.benefits.map((benefit) => t(benefit)).join(' · ')}
                                     </span>
                                     {isCurrentLevel && (
                                       <span className="text-[11px] md:text-[13px] px-2 md:px-3 py-1 md:py-1.5 bg-[var(--brand-yellow)] text-black rounded font-bold shrink-0">
@@ -604,7 +604,7 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
           >
             <Globe size={18} className="text-[var(--text-muted)] hover:text-[var(--text-main)]" />
             <span className="text-[12px] text-[var(--text-muted)] font-medium">
-              {language === 'zh' ? '中文' : 'EN'}
+              {language === 'zh' ? t('language.zhShort') : t('language.enShort')}
             </span>
           </button>
 
@@ -626,7 +626,7 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                     language === 'zh' ? 'text-[var(--brand-yellow)]' : 'text-[var(--text-main)]'
                   }`}
                 >
-                  <span>简体中文</span>
+                  <span>{t('language.zhFull')}</span>
                   {language === 'zh' && <Check size={14} />}
                 </button>
                 <button
@@ -638,7 +638,7 @@ export function TopNav({ onOpenTrialVoucher }: TopNavProps) {
                     language === 'en' ? 'text-[var(--brand-yellow)]' : 'text-[var(--text-main)]'
                   }`}
                 >
-                  <span>English</span>
+                  <span>{t('language.enFull')}</span>
                   {language === 'en' && <Check size={14} />}
                 </button>
               </div>

@@ -324,7 +324,7 @@ export function ResearchReportsTicker({ onOpenCalendar, onOpenReport, onOpenRepo
         <button
           onClick={onOpenNewsList}
           className="flex items-center gap-1.5 px-3 h-full hover:bg-[var(--bg-surface)] transition"
-          title="查看全部新闻"
+          title={t('reports.viewAllNews')}
         >
           <Newspaper size={14} className="text-[var(--text-muted)]" />
           <span className="text-[12px] text-[var(--text-muted)]">{t('reports.news')}</span>
@@ -335,7 +335,7 @@ export function ResearchReportsTicker({ onOpenCalendar, onOpenReport, onOpenRepo
         <button
           onClick={onOpenReportList}
           className="flex items-center gap-1.5 px-3 h-full hover:bg-[var(--bg-surface)] transition border-l border-[var(--border-light)]"
-          title="查看全部研报"
+          title={t('reports.viewAllReports')}
         >
           <Crown size={14} className="text-[var(--brand-yellow)]" />
           <span className="text-[12px] text-[var(--brand-yellow)]">VIP</span>
@@ -347,7 +347,7 @@ export function ResearchReportsTicker({ onOpenCalendar, onOpenReport, onOpenRepo
           <button
             onClick={onOpenCalendar}
             className="flex items-center gap-1.5 px-3 h-full hover:bg-[var(--bg-surface)] transition border-l border-[var(--border-light)]"
-            title="财经日历"
+            title={t('calendar.viewCalendar')}
           >
             <Calendar size={14} className="text-[var(--brand-yellow)]" />
             <span className="text-[12px] text-[var(--text-muted)]">{t('calendar.title')}</span>

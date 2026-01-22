@@ -3,6 +3,7 @@ import { ChevronUp, ChevronDown, Zap, TrendingUp, Award, AlertTriangle, Rocket, 
 import { useUserStore, getNextLevelInfo } from '../../stores/userStore';
 import { LEVEL_CONFIG, FEE_RATES, getSoSoBoost, getSSIShieldAmount, getSSITier, SOSO_BOOST_CONFIG } from '../../types';
 import type { UserLevel, SSITier } from '../../types';
+import { useTranslation } from '../../i18n';
 
 const fmt = (num: number) =>
   num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
@@ -20,12 +21,11 @@ const LevelIcon = ({ level }: { level: UserLevel }) => {
   return <span className="text-[16px]">{icons[level]}</span>;
 };
 
-// SSI Tier 显示名称
-const SSI_TIER_LABELS: Record<SSITier, { label: string; color: string }> = {
-  none: { label: '无', color: 'var(--text-muted)' },
-  normal: { label: '普通', color: '#c0c0c0' },
-  core: { label: 'Core', color: '#ffd700' },
-  vip: { label: 'VIP', color: '#b9f2ff' },
+const SSI_TIER_COLORS: Record<SSITier, string> = {
+  none: 'var(--text-muted)',
+  normal: '#c0c0c0',
+  core: '#ffd700',
+  vip: '#b9f2ff',
 };
 
 // Tooltip 组件
@@ -64,6 +64,7 @@ function BoostShieldStatus({
   onUpdateSoSo: (amount: number) => void;
   onUpdateSSI: (amount: number) => void;
 }) {
+  const { t } = useTranslation();
   const [showSimulator, setShowSimulator] = useState(false);
   const [tempSoSo, setTempSoSo] = useState(sosoHolding.toString());
   const [tempSSI, setTempSSI] = useState(ssiStaked.toString());
@@ -71,7 +72,7 @@ function BoostShieldStatus({
   const boostPercent = getSoSoBoost(sosoHolding) * 100;
   const shieldAmount = getSSIShieldAmount(ssiStaked);
   const ssiTier = getSSITier(ssiStaked);
-  const tierInfo = SSI_TIER_LABELS[ssiTier];
+  const tierColor = SSI_TIER_COLORS[ssiTier];
 
   const handleApply = () => {
     const sosoValue = parseFloat(tempSoSo) || 0;
@@ -84,12 +85,12 @@ function BoostShieldStatus({
   return (
     <div className="bg-[var(--bg-surface)] rounded-lg p-2">
       <div className="flex items-center justify-between mb-2">
-        <div className="text-[10px] text-[var(--text-muted)]">代币加成</div>
+        <div className="text-[10px] text-[var(--text-muted)]">{t('userLevelBadge.tokenBoost')}</div>
         <button
           onClick={() => setShowSimulator(!showSimulator)}
           className="text-[9px] text-[var(--brand-yellow)] hover:underline"
         >
-          {showSimulator ? '收起' : '模拟设置'}
+          {showSimulator ? t('userLevelBadge.collapse') : t('userLevelBadge.simulatorLabel')}
         </button>
       </div>
 
@@ -99,12 +100,12 @@ function BoostShieldStatus({
         <Tooltip
           content={
             <div className="text-[11px]">
-              <div className="font-bold text-[#ff6b35] mb-2">能量铸造加成 (Boost)</div>
+              <div className="font-bold text-[#ff6b35] mb-2">{t('userLevelBadge.boost.title')}</div>
               <div className="text-[var(--text-muted)] space-y-1.5">
-                <p>持有 SoSo 代币可获得能量铸造加成，最高 <span className="text-[#ff6b35]">+10%</span>。</p>
-                <p>• 最低持有: {fmt(SOSO_BOOST_CONFIG.threshold)} SoSo</p>
-                <p>• 满额持有: {fmt(SOSO_BOOST_CONFIG.maxHolding)} SoSo</p>
-                <p className="text-[var(--text-dim)] mt-2">例: 交易产生 $100 手续费，正常获得 100 能量，+10% Boost 后获得 110 能量。</p>
+                <p>{t('userLevelBadge.boost.description', { maxBoost: '+10%' })}</p>
+                <p>{t('userLevelBadge.boost.minHolding', { amount: fmt(SOSO_BOOST_CONFIG.threshold) })}</p>
+                <p>{t('userLevelBadge.boost.maxHolding', { amount: fmt(SOSO_BOOST_CONFIG.maxHolding) })}</p>
+                <p className="text-[var(--text-dim)] mt-2">{t('userLevelBadge.boost.example')}</p>
               </div>
             </div>
           }
@@ -122,7 +123,7 @@ function BoostShieldStatus({
             </div>
             {boostPercent === 0 && sosoHolding < SOSO_BOOST_CONFIG.threshold && (
               <div className="text-[8px] text-[var(--text-dim)] mt-1">
-                持有 {fmt(SOSO_BOOST_CONFIG.threshold)}+ 解锁
+                {t('userLevelBadge.boost.unlockHint', { amount: fmt(SOSO_BOOST_CONFIG.threshold) })}
               </div>
             )}
             {boostPercent > 0 && boostPercent < SOSO_BOOST_CONFIG.maxBoost * 100 && (
@@ -140,14 +141,14 @@ function BoostShieldStatus({
         <Tooltip
           content={
             <div className="text-[11px]">
-              <div className="font-bold text-[#4dabf7] mb-2">能量护盾 (Shield)</div>
+              <div className="font-bold text-[#4dabf7] mb-2">{t('userLevelBadge.shield.title')}</div>
               <div className="text-[var(--text-muted)] space-y-1.5">
-                <p>质押 SSI 可保护部分能量<span className="text-[#4dabf7]">不参与每周衰减</span>。</p>
-                <p className="font-medium mt-2">Shield 保底额度:</p>
-                <p>• 普通质押: 50 能量/周</p>
-                <p>• Core SSI ($200k+): 150 能量/周</p>
-                <p>• VIP SSI ($1M+): 500 能量/周</p>
-                <p className="text-[var(--text-dim)] mt-2">Core SSI 还可解锁电话咨询服务。</p>
+                <p>{t('userLevelBadge.shield.description')}</p>
+                <p className="font-medium mt-2">{t('userLevelBadge.shield.floorTitle')}</p>
+                <p>{t('userLevelBadge.shield.floor.normal')}</p>
+                <p>{t('userLevelBadge.shield.floor.core')}</p>
+                <p>{t('userLevelBadge.shield.floor.vip')}</p>
+                <p className="text-[var(--text-dim)] mt-2">{t('userLevelBadge.shield.phoneAccess')}</p>
               </div>
             </div>
           }
@@ -159,9 +160,9 @@ function BoostShieldStatus({
               {ssiTier !== 'none' && (
                 <span
                   className="text-[8px] px-1 rounded"
-                  style={{ backgroundColor: `${tierInfo.color}20`, color: tierInfo.color }}
+                  style={{ backgroundColor: `${tierColor}20`, color: tierColor }}
                 >
-                  {tierInfo.label}
+                  {t(`userLevelBadge.ssiTier.${ssiTier}`)}
                 </span>
               )}
             </div>
@@ -173,12 +174,12 @@ function BoostShieldStatus({
             </div>
             {shieldAmount > 0 && (
               <div className="text-[8px] text-[#4dabf7] mt-1">
-                每周保护 {fmtDecimal(shieldAmount)} 能量
+                {t('userLevelBadge.shield.weeklyProtected', { amount: fmtDecimal(shieldAmount) })}
               </div>
             )}
             {ssiStaked === 0 && (
               <div className="text-[8px] text-[var(--text-dim)] mt-1">
-                质押 SSI 获得衰减保护
+                {t('userLevelBadge.shield.stakeHint')}
               </div>
             )}
           </div>
@@ -190,7 +191,7 @@ function BoostShieldStatus({
         <div className="mt-2 pt-2 border-t border-[var(--border-light)]">
           <div className="grid grid-cols-2 gap-2 mb-2">
             <div>
-              <label className="text-[9px] text-[var(--text-muted)] block mb-1">SoSo 持有量</label>
+              <label className="text-[9px] text-[var(--text-muted)] block mb-1">{t('userLevelBadge.simulator.sosoHolding')}</label>
               <input
                 type="number"
                 value={tempSoSo}
@@ -200,7 +201,7 @@ function BoostShieldStatus({
               />
             </div>
             <div>
-              <label className="text-[9px] text-[var(--text-muted)] block mb-1">SSI 质押 (USD)</label>
+              <label className="text-[9px] text-[var(--text-muted)] block mb-1">{t('userLevelBadge.simulator.ssiStaked')}</label>
               <input
                 type="number"
                 value={tempSSI}
@@ -215,26 +216,26 @@ function BoostShieldStatus({
               onClick={() => { setTempSoSo('10000'); setTempSSI('50000'); }}
               className="flex-1 py-1 text-[9px] bg-[var(--bg-app)] text-[var(--text-main)] rounded hover:bg-[var(--brand-yellow)]/20"
             >
-              普通用户
+              {t('userLevelBadge.simulator.presets.normal')}
             </button>
             <button
               onClick={() => { setTempSoSo('30000'); setTempSSI('200000'); }}
               className="flex-1 py-1 text-[9px] bg-[var(--bg-app)] text-[var(--text-main)] rounded hover:bg-[var(--brand-yellow)]/20"
             >
-              Core SSI
+              {t('userLevelBadge.simulator.presets.core')}
             </button>
             <button
               onClick={() => { setTempSoSo('50000'); setTempSSI('1000000'); }}
               className="flex-1 py-1 text-[9px] bg-[var(--bg-app)] text-[var(--text-main)] rounded hover:bg-[var(--brand-yellow)]/20"
             >
-              VIP SSI
+              {t('userLevelBadge.simulator.presets.vip')}
             </button>
           </div>
           <button
             onClick={handleApply}
             className="w-full mt-2 py-1.5 text-[10px] bg-[var(--brand-green)] text-white rounded hover:opacity-90 font-medium"
           >
-            应用设置
+            {t('userLevelBadge.simulator.apply')}
           </button>
         </div>
       )}
@@ -243,6 +244,7 @@ function BoostShieldStatus({
 }
 
 export function UserLevelBadge() {
+  const { t } = useTranslation();
   const { user, simulateTrade } = useUserStore();
   const [isExpanded, setIsExpanded] = useState(false);
   const [tradeVolume, setTradeVolume] = useState('');
@@ -286,7 +288,7 @@ export function UserLevelBadge() {
         </div>
         <div className="flex items-center gap-2">
           <div className="text-right">
-            <div className="text-[10px] text-[var(--text-muted)]">可用能量</div>
+            <div className="text-[10px] text-[var(--text-muted)]">{t('userLevelBadge.energyAvailable')}</div>
             <div className="text-[11px] font-mono-num text-[var(--brand-green)]">
               ⚡ {fmtDecimal(user.energyAvailable ?? 0)}
             </div>
@@ -313,7 +315,7 @@ export function UserLevelBadge() {
         {nextLevel && (
           <div className="flex justify-between mt-1 text-[9px] text-[var(--text-muted)]">
             <span>{userLevel}</span>
-            <span>升级进度 {progress.toFixed(0)}% → {nextLevel}</span>
+            <span>{t('userLevelBadge.progress', { progress: progress.toFixed(0), nextLevel })}</span>
           </div>
         )}
       </div>
@@ -325,24 +327,24 @@ export function UserLevelBadge() {
           <div className="grid grid-cols-4 gap-2">
             <div className="bg-[var(--bg-surface)] rounded p-2 text-center">
               <Zap size={12} className="mx-auto text-[var(--brand-green)] mb-1" />
-              <div className="text-[9px] text-[var(--text-muted)]">可用</div>
+              <div className="text-[9px] text-[var(--text-muted)]">{t('userLevelBadge.stats.available')}</div>
               <div className="text-[11px] font-bold text-[var(--brand-green)]">
                 {fmtDecimal(user.energyAvailable ?? 0)}
               </div>
             </div>
             <div className="bg-[var(--bg-surface)] rounded p-2 text-center">
               <TrendingUp size={12} className="mx-auto text-[var(--text-muted)] mb-1" />
-              <div className="text-[9px] text-[var(--text-muted)]">已消耗</div>
+              <div className="text-[9px] text-[var(--text-muted)]">{t('userLevelBadge.stats.spent')}</div>
               <div className="text-[11px] font-bold">{fmtDecimal(user.energySpent ?? 0)}</div>
             </div>
             <div className="bg-[var(--bg-surface)] rounded p-2 text-center">
               <Award size={12} className="mx-auto text-[var(--brand-yellow)] mb-1" />
-              <div className="text-[9px] text-[var(--text-muted)]">交易</div>
+              <div className="text-[9px] text-[var(--text-muted)]">{t('userLevelBadge.stats.trades')}</div>
               <div className="text-[11px] font-bold">{user.totalTrades ?? 0}</div>
             </div>
             <div className="bg-[var(--bg-surface)] rounded p-2 text-center">
               <AlertTriangle size={12} className="mx-auto text-[var(--brand-red)] mb-1" />
-              <div className="text-[9px] text-[var(--text-muted)]">衰减</div>
+              <div className="text-[9px] text-[var(--text-muted)]">{t('userLevelBadge.stats.decay')}</div>
               <div className="text-[11px] font-bold text-[var(--text-dim)]">
                 {(config.decayRate * 100).toFixed(0)}%
               </div>
@@ -359,14 +361,14 @@ export function UserLevelBadge() {
 
           {/* Benefits */}
           <div>
-            <div className="text-[10px] text-[var(--text-muted)] mb-1">当前权益</div>
+            <div className="text-[10px] text-[var(--text-muted)] mb-1">{t('userLevelBadge.currentBenefits')}</div>
             <div className="flex flex-wrap gap-1">
               {config.benefits.map((benefit, i) => (
                 <span
                   key={i}
                   className="text-[9px] px-2 py-0.5 bg-[var(--bg-surface)] text-[var(--text-main)] rounded"
                 >
-                  {benefit}
+                  {t(benefit)}
                 </span>
               ))}
             </div>
@@ -376,7 +378,7 @@ export function UserLevelBadge() {
           {nextLevel && (
             <div className="bg-[var(--bg-surface)] rounded p-2">
               <div className="text-[10px] text-[var(--text-muted)] mb-1">
-                {nextLevel} 专属权益
+                {t('userLevelBadge.nextBenefits', { level: nextLevel })}
               </div>
               <div className="flex flex-wrap gap-1">
                 {LEVEL_CONFIG[nextLevel].benefits.map((benefit, i) => (
@@ -384,7 +386,7 @@ export function UserLevelBadge() {
                     key={i}
                     className="text-[9px] px-2 py-0.5 border border-dashed border-[var(--brand-yellow)] text-[var(--brand-yellow)] rounded"
                   >
-                    {benefit}
+                    {t(benefit)}
                   </span>
                 ))}
               </div>
@@ -393,7 +395,7 @@ export function UserLevelBadge() {
 
           {/* Simulate Trade */}
           <div className="border-t border-[var(--border-light)] pt-3">
-            <div className="text-[10px] text-[var(--text-muted)] mb-2">模拟交易</div>
+            <div className="text-[10px] text-[var(--text-muted)] mb-2">{t('userLevelBadge.simulateTrade')}</div>
 
             {/* Trade Type & Side */}
             <div className="flex gap-2 mb-2">
@@ -402,8 +404,8 @@ export function UserLevelBadge() {
                 onChange={(e) => setTradeType(e.target.value as 'spot' | 'futures')}
                 className="flex-1 text-[9px] bg-[var(--bg-surface)] text-[var(--text-main)] rounded px-2 py-1 border-none focus:outline-none"
               >
-                <option value="spot">现货</option>
-                <option value="futures">合约</option>
+                <option value="spot">{t('userLevelBadge.tradeType.spot')}</option>
+                <option value="futures">{t('userLevelBadge.tradeType.futures')}</option>
               </select>
               <select
                 value={tradeSide}
@@ -431,14 +433,14 @@ export function UserLevelBadge() {
                 type="number"
                 value={tradeVolume}
                 onChange={(e) => setTradeVolume(e.target.value)}
-                placeholder="自定义金额"
+                placeholder={t('userLevelBadge.tradeAmount')}
                 className="flex-1 bg-[var(--bg-surface)] text-[var(--text-main)] text-[11px] px-2 py-1.5 rounded border border-transparent focus:border-[var(--brand-yellow)] focus:outline-none"
               />
               <button
                 onClick={handleSimulateTrade}
                 className="px-3 py-1.5 text-[10px] bg-[var(--brand-green)] text-white rounded hover:opacity-90 transition-opacity font-medium"
               >
-                交易
+                {t('userLevelBadge.trade')}
               </button>
             </div>
 
@@ -446,13 +448,13 @@ export function UserLevelBadge() {
             {tradeVolume && parseFloat(tradeVolume) > 0 && (
               <div className="mt-2 text-[9px] text-[var(--text-muted)] bg-[var(--bg-app)] rounded p-2">
                 <div className="flex justify-between">
-                  <span>手续费:</span>
+                  <span>{t('userLevelBadge.fee')}</span>
                   <span className="text-[var(--brand-yellow)]">
                     ${fmtDecimal(parseFloat(tradeVolume) * FEE_RATES[tradeType][tradeSide])}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>获得能量:</span>
+                  <span>{t('userLevelBadge.energyEarned')}</span>
                   <span className="text-[var(--brand-green)]">
                     +{fmtDecimal(parseFloat(tradeVolume) * FEE_RATES[tradeType][tradeSide])}
                   </span>

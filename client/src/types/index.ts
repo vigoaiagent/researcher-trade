@@ -27,7 +27,7 @@ export const LEVEL_CONFIG: Record<UserLevel, {
     decayRate: 0.20,      // 20%/周
     energyCap: 1,
     color: '#cd7f32',
-    benefits: ['AI客服', '基础行情'],
+    benefits: ['levelBenefits.aiSupport', 'levelBenefits.basicMarket'],
     hasResearcherAccess: false,
     hasPhoneAccess: false,
     hasRoadshowAccess: false,
@@ -39,7 +39,7 @@ export const LEVEL_CONFIG: Record<UserLevel, {
     decayRate: 0.15,      // 15%/周
     energyCap: 2,
     color: '#c0c0c0',
-    benefits: ['AI研究员', '深度分析'],
+    benefits: ['levelBenefits.aiResearcher', 'levelBenefits.deepAnalysis'],
     hasResearcherAccess: false,
     hasPhoneAccess: false,
     hasRoadshowAccess: false,
@@ -51,7 +51,7 @@ export const LEVEL_CONFIG: Record<UserLevel, {
     decayRate: 0.10,      // 10%/周
     energyCap: 3,
     color: '#ffd700',
-    benefits: ['专属研究员', '专属研报', '加入社群', '路演日历'],
+    benefits: ['levelBenefits.exclusiveResearcher', 'levelBenefits.exclusiveReports', 'levelBenefits.community', 'levelBenefits.roadshowCalendar'],
     hasResearcherAccess: true,
     hasPhoneAccess: false,
     hasRoadshowAccess: true,
@@ -63,7 +63,7 @@ export const LEVEL_CONFIG: Record<UserLevel, {
     decayRate: 0.05,      // 5%/周
     energyCap: 5,
     color: '#b9f2ff',
-    benefits: ['VIP研究员', '电话咨询', '私享频道', '路演日历'],
+    benefits: ['levelBenefits.vipResearcher', 'levelBenefits.phoneConsult', 'levelBenefits.privateChannel', 'levelBenefits.roadshowCalendar'],
     hasResearcherAccess: true,
     hasPhoneAccess: true,
     hasRoadshowAccess: true,
