@@ -1,27 +1,157 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAlertStore } from '../stores/alertStore';
 import type { DoNotDisturbDuration } from '../stores/alertStore';
-import { X, ThumbsUp, ThumbsDown, ChevronRight, Newspaper, Settings, Bell, BellOff, Clock } from 'lucide-react';
+import { X, ThumbsUp, ThumbsDown, ChevronRight, Newspaper, Settings, Bell, BellOff, Clock, GripHorizontal } from 'lucide-react';
 import { useTranslation } from '../i18n';
+
+// localStorage key for saving position
+const BUBBLE_POSITION_KEY = 'sodex-alert-bubble-position';
+
+// Default position (left-bottom)
+const DEFAULT_POSITION = { x: 16, y: window.innerHeight - 280 };
+
+// Load saved position from localStorage
+const loadSavedPosition = (): { x: number; y: number } => {
+  try {
+    const saved = localStorage.getItem(BUBBLE_POSITION_KEY);
+    if (saved) {
+      const pos = JSON.parse(saved);
+      // Validate position is within viewport
+      const maxX = window.innerWidth - 320;
+      const maxY = window.innerHeight - 200;
+      return {
+        x: Math.max(0, Math.min(pos.x, maxX)),
+        y: Math.max(0, Math.min(pos.y, maxY)),
+      };
+    }
+  } catch {
+    // ignore
+  }
+  return DEFAULT_POSITION;
+};
+
+// Save position to localStorage
+const savePosition = (pos: { x: number; y: number }) => {
+  try {
+    localStorage.setItem(BUBBLE_POSITION_KEY, JSON.stringify(pos));
+  } catch {
+    // ignore
+  }
+};
 
 export function CatBubbleAlert() {
   const { t } = useTranslation();
   const { currentAlert, showBubble, alerts, dismissedIds, setFeedback, openPanel, closeBubble, openSettings } = useAlertStore();
 
+  // 拖拽状态
+  const [position, setPosition] = useState(loadSavedPosition);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
+  const bubbleRef = useRef<HTMLDivElement>(null);
+
   // 计算未读数量
   const unreadCount = alerts.filter(a => !dismissedIds.has(a.id) && !a.feedback).length;
+
+  // 拖拽开始
+  const handleDragStart = useCallback((clientX: number, clientY: number) => {
+    setIsDragging(true);
+    dragStartRef.current = {
+      x: clientX,
+      y: clientY,
+      posX: position.x,
+      posY: position.y,
+    };
+  }, [position]);
+
+  // 拖拽移动
+  const handleDragMove = useCallback((clientX: number, clientY: number) => {
+    if (!isDragging || !dragStartRef.current) return;
+
+    const deltaX = clientX - dragStartRef.current.x;
+    const deltaY = clientY - dragStartRef.current.y;
+
+    const newX = dragStartRef.current.posX + deltaX;
+    const newY = dragStartRef.current.posY + deltaY;
+
+    // 限制在屏幕范围内
+    const maxX = window.innerWidth - 320;
+    const maxY = window.innerHeight - 200;
+
+    setPosition({
+      x: Math.max(0, Math.min(newX, maxX)),
+      y: Math.max(0, Math.min(newY, maxY)),
+    });
+  }, [isDragging]);
+
+  // 拖拽结束
+  const handleDragEnd = useCallback(() => {
+    if (isDragging) {
+      setIsDragging(false);
+      dragStartRef.current = null;
+      savePosition(position);
+    }
+  }, [isDragging, position]);
+
+  // Mouse events
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleDragStart(e.clientX, e.clientY);
+  };
+
+  // Touch events
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    handleDragStart(touch.clientX, touch.clientY);
+  };
+
+  // Global event listeners for drag
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e: MouseEvent) => handleDragMove(e.clientX, e.clientY);
+    const handleTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      handleDragMove(touch.clientX, touch.clientY);
+    };
+    const handleMouseUp = () => handleDragEnd();
+    const handleTouchEnd = () => handleDragEnd();
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isDragging, handleDragMove, handleDragEnd]);
 
   if (!showBubble || !currentAlert) return null;
 
   return (
-    <div data-alert-bubble className="fixed bottom-[100px] left-4 md:bottom-[120px] md:left-8 z-[99] animate-in slide-in-from-bottom-4 fade-in duration-300">
-      {/* 气泡箭头 - 指向左下角 */}
-      <div className="absolute -bottom-2 left-8 w-4 h-4 bg-[var(--bg-panel)] border-r border-b border-[var(--border-light)] rotate-45" />
-
+    <div
+      ref={bubbleRef}
+      data-alert-bubble
+      className="fixed z-[99] animate-in slide-in-from-bottom-4 fade-in duration-300"
+      style={{
+        left: position.x,
+        top: position.y,
+        cursor: isDragging ? 'grabbing' : 'default',
+      }}
+    >
       {/* 气泡内容 */}
       <div className="bg-[var(--bg-panel)] border border-[var(--border-light)] rounded-xl shadow-2xl w-[300px] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between px-3 py-2 bg-[var(--bg-surface)] border-b border-[var(--border-light)]">
+        {/* Header - 可拖拽区域 */}
+        <div
+          className="flex items-center justify-between px-3 py-2 bg-[var(--bg-surface)] border-b border-[var(--border-light)] cursor-grab active:cursor-grabbing select-none"
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
+        >
           <div className="flex items-center gap-2">
+            <GripHorizontal size={14} className="text-[var(--text-dim)]" />
             <Newspaper size={14} className="text-[var(--brand-yellow)]" />
             <span className="text-[12px] font-medium text-[var(--text-main)]">
               {t('alerts.relatedToHoldings')}
@@ -32,7 +162,7 @@ export function CatBubbleAlert() {
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1" onMouseDown={e => e.stopPropagation()} onTouchStart={e => e.stopPropagation()}>
             <button
               onClick={(e) => {
                 e.stopPropagation();
