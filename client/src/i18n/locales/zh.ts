@@ -39,9 +39,14 @@ export const zh = {
     walletPlaceholder: '输入钱包地址 (0x...)',
     connectWallet: '连接钱包',
     connecting: '连接中...',
-    quickDemo: '快速演示（测试账户）',
+    quickDemo: '快速体验',
     whitelistOnly: '仅限白名单用户。请联系客服获取访问权限。',
     or: '或',
+    // Demo user names
+    bronzeUser: '新手小白',
+    silverUser: '进阶玩家',
+    goldUser: 'VIP会员',
+    diamondUser: '钻石大佬',
   },
 
   // Top Navigation

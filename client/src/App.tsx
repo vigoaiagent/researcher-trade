@@ -319,31 +319,35 @@ function TradingPage() {
 
             {/* Demo Users Grid */}
             <div className="grid grid-cols-2 gap-3">
-              {DEMO_USERS.map((demoUser) => (
-                <button
-                  key={demoUser.id}
-                  onClick={() => loginAsDemo(demoUser)}
-                  disabled={isLoading}
-                  className="p-3 bg-[var(--bg-surface)] border border-[var(--border-light)] rounded-lg hover:border-[color:var(--level-color)] hover:bg-[var(--bg-highlight)] transition-all group"
-                  style={{ '--level-color': levelColors[demoUser.level] } as React.CSSProperties}
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl">{levelIcons[demoUser.level]}</span>
-                    <span
-                      className="text-[13px] font-bold"
-                      style={{ color: levelColors[demoUser.level] }}
-                    >
-                      {demoUser.level}
-                    </span>
-                  </div>
-                  <div className="text-left">
-                    <div className="text-[12px] text-[var(--text-main)] font-medium">{demoUser.name}</div>
-                    <div className="text-[10px] text-[var(--text-muted)]">
-                      ⚡ {demoUser.energyAvailable} {t('topNav.energy')}
+              {DEMO_USERS.map((demoUser) => {
+                // Map level to translation key
+                const nameKey = `login.${demoUser.level.toLowerCase()}User` as const;
+                return (
+                  <button
+                    key={demoUser.id}
+                    onClick={() => loginAsDemo(demoUser)}
+                    disabled={isLoading}
+                    className="p-3 bg-[var(--bg-surface)] border border-[var(--border-light)] rounded-lg hover:border-[color:var(--level-color)] hover:bg-[var(--bg-highlight)] transition-all group"
+                    style={{ '--level-color': levelColors[demoUser.level] } as React.CSSProperties}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xl">{levelIcons[demoUser.level]}</span>
+                      <span
+                        className="text-[13px] font-bold"
+                        style={{ color: levelColors[demoUser.level] }}
+                      >
+                        {demoUser.level}
+                      </span>
                     </div>
-                  </div>
-                </button>
-              ))}
+                    <div className="text-left">
+                      <div className="text-[12px] text-[var(--text-main)] font-medium">{t(nameKey)}</div>
+                      <div className="text-[10px] text-[var(--text-muted)]">
+                        ⚡ {demoUser.energyAvailable} {t('topNav.energy')}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 

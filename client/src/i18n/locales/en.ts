@@ -39,9 +39,14 @@ export const en = {
     walletPlaceholder: 'Enter wallet address (0x...)',
     connectWallet: 'Connect Wallet',
     connecting: 'Connecting...',
-    quickDemo: 'Quick Demo (Test Account)',
+    quickDemo: 'Quick Demo',
     whitelistOnly: 'Whitelist users only. Contact support for access.',
     or: 'or',
+    // Demo user names
+    bronzeUser: 'Beginner',
+    silverUser: 'Intermediate',
+    goldUser: 'VIP Member',
+    diamondUser: 'Diamond Pro',
   },
 
   // Top Navigation
