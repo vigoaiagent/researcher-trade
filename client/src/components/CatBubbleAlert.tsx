@@ -13,9 +13,9 @@ export function CatBubbleAlert() {
   if (!showBubble || !currentAlert) return null;
 
   return (
-    <div data-alert-bubble className="fixed bottom-[180px] right-4 md:bottom-[160px] md:right-8 z-[99] animate-in slide-in-from-bottom-4 fade-in duration-300">
-      {/* 气泡箭头 */}
-      <div className="absolute -bottom-2 right-8 w-4 h-4 bg-[var(--bg-panel)] border-r border-b border-[var(--border-light)] rotate-45" />
+    <div data-alert-bubble className="fixed bottom-[100px] left-4 md:bottom-[120px] md:left-8 z-[99] animate-in slide-in-from-bottom-4 fade-in duration-300">
+      {/* 气泡箭头 - 指向左下角 */}
+      <div className="absolute -bottom-2 left-8 w-4 h-4 bg-[var(--bg-panel)] border-r border-b border-[var(--border-light)] rotate-45" />
 
       {/* 气泡内容 */}
       <div className="bg-[var(--bg-panel)] border border-[var(--border-light)] rounded-xl shadow-2xl w-[300px] overflow-hidden">
