@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Calendar, Radio, Clock, Users, ChevronRight, Crown } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 
 // 路演数据接口
 export interface RoadshowEvent {
@@ -81,6 +82,7 @@ interface RoadshowTickerProps {
 export function RoadshowTicker({ onOpenCalendar, onOpenLive }: RoadshowTickerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const { t, language } = useTranslation();
 
   // 获取正在进行的路演
   const liveEvent = mockRoadshowEvents.find(e => e.isLive);
@@ -105,21 +107,22 @@ export function RoadshowTicker({ onOpenCalendar, onOpenLive }: RoadshowTickerPro
   const getCountdown = (startTime: Date) => {
     const now = new Date();
     const diff = startTime.getTime() - now.getTime();
-    if (diff < 0) return '已开始';
+    if (diff < 0) return t('roadshow.countdown.started');
 
     const days = Math.floor(diff / (24 * 60 * 60 * 1000));
     const hours = Math.floor((diff % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
     const minutes = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000));
 
-    if (days > 0) return `${days}天${hours}小时后`;
-    if (hours > 0) return `${hours}小时${minutes}分钟后`;
-    return `${minutes}分钟后`;
+    if (days > 0) return `${days}${t('roadshow.countdown.days')} ${hours}${t('roadshow.countdown.hours')}${t('roadshow.countdown.after')}`;
+    if (hours > 0) return `${hours}${t('roadshow.countdown.hours')} ${minutes}${t('roadshow.countdown.minutes')}${t('roadshow.countdown.after')}`;
+    return `${minutes}${t('roadshow.countdown.minutes')}${t('roadshow.countdown.after')}`;
   };
 
   // 格式化时间
   const formatTime = (date: Date) => {
-    return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }) + ' ' +
-           date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    const locale = language === 'zh' ? 'zh-CN' : 'en-US';
+    return date.toLocaleDateString(locale, { month: 'short', day: 'numeric' }) + ' ' +
+           date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
   };
 
   const currentEvent = upcomingEvents[currentIndex];
@@ -134,7 +137,7 @@ export function RoadshowTicker({ onOpenCalendar, onOpenLive }: RoadshowTickerPro
         >
           <Calendar size={12} className="md:hidden text-[var(--brand-yellow)]" />
           <Calendar size={14} className="hidden md:block text-[var(--brand-yellow)]" />
-          <span className="text-[10px] md:text-[12px] font-medium text-[var(--brand-yellow)]">路演</span>
+          <span className="text-[10px] md:text-[12px] font-medium text-[var(--brand-yellow)]">{t('roadshowTicker.roadshow')}</span>
         </button>
 
         <div className="w-px h-3 md:h-4 bg-[var(--border-light)] mx-1.5 md:mx-3" />
@@ -159,7 +162,7 @@ export function RoadshowTicker({ onOpenCalendar, onOpenLive }: RoadshowTickerPro
               </span>
               <div className="hidden md:flex items-center gap-1 text-[11px] text-[var(--brand-red)]">
                 <Users size={10} />
-                <span>{liveEvent.registeredCount} 观看中</span>
+                <span>{liveEvent.registeredCount} {t('roadshow.watching')}</span>
               </div>
             </div>
             <div className="w-px h-3 md:h-4 bg-[var(--border-light)] mx-1.5 md:mx-3" />
@@ -205,7 +208,7 @@ export function RoadshowTicker({ onOpenCalendar, onOpenLive }: RoadshowTickerPro
               </div>
             </div>
           ) : (
-            <span className="text-[10px] md:text-[12px] text-[var(--text-muted)]">暂无即将开始的路演</span>
+            <span className="text-[10px] md:text-[12px] text-[var(--text-muted)]">{t('roadshow.noUpcoming')}</span>
           )}
         </div>
 
@@ -214,7 +217,7 @@ export function RoadshowTicker({ onOpenCalendar, onOpenLive }: RoadshowTickerPro
           onClick={onOpenCalendar}
           className="flex items-center gap-1 px-2 py-1 text-[11px] text-[var(--text-muted)] hover:text-[var(--brand-yellow)] transition shrink-0"
         >
-          <span>查看全部</span>
+          <span>{t('roadshowTicker.viewAll')}</span>
           <ChevronRight size={12} />
         </button>
 

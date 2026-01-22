@@ -396,7 +396,7 @@ END:VCALENDAR`;
 
               {/* 星期标题 */}
               <div className="grid grid-cols-7 gap-1 mb-2">
-                {['日', '一', '二', '三', '四', '五', '六'].map((day) => (
+                {(language === 'zh' ? ['日', '一', '二', '三', '四', '五', '六'] : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']).map((day) => (
                   <div
                     key={day}
                     className="text-center text-[12px] text-[var(--text-dim)] py-1"

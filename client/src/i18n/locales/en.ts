@@ -688,6 +688,24 @@ export const en = {
     failed: 'Call failed',
   },
 
+  // Trade Panel
+  tradePanel: {
+    demoTrading: 'Demo Trading',
+    earnEnergy: 'Earn Energy',
+    spot: 'Spot',
+    futures: 'Futures',
+    customAmount: 'Custom (USDT)',
+    trade: 'Trade',
+    estimatedFee: 'Est. Fee',
+    estimatedEnergy: 'Est. Energy',
+  },
+
+  // Roadshow Ticker
+  roadshowTicker: {
+    roadshow: 'Roadshow',
+    viewAll: 'View All',
+  },
+
   // Appointment Booking
   booking: {
     title: 'Senior Analyst',

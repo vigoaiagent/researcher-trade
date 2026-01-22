@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { HelpCircle, Zap, Rocket } from 'lucide-react';
 import { useUserStore } from '../../stores/userStore';
 import { FEE_RATES, getSoSoBoost } from '../../types';
+import { useTranslation } from '../../i18n';
 
 interface TradePanelProps {
   price: number;
@@ -12,6 +13,7 @@ const fmt = (num: number, digits = 2) =>
 
 export function TradePanel({ price }: TradePanelProps) {
   const { user, simulateTrade } = useUserStore();
+  const { t } = useTranslation();
   const [side, setSide] = useState<'buy' | 'sell'>('buy');
   const [orderType, setOrderType] = useState<'limit' | 'market' | 'stop'>('limit');
   const [sliderValue, setSliderValue] = useState(0);
@@ -171,8 +173,8 @@ export function TradePanel({ price }: TradePanelProps) {
         <div className="mt-auto border-t border-[var(--border-light)] p-3 bg-[var(--bg-surface)]">
           <div className="flex items-center gap-2 mb-3">
             <Rocket size={14} className="text-[var(--brand-yellow)]" />
-            <span className="text-[12px] font-bold text-[var(--text-main)]">模拟交易</span>
-            <span className="text-[10px] text-[var(--text-muted)]">获取能量</span>
+            <span className="text-[12px] font-bold text-[var(--text-main)]">{t('tradePanel.demoTrading')}</span>
+            <span className="text-[10px] text-[var(--text-muted)]">{t('tradePanel.earnEnergy')}</span>
           </div>
 
           {/* Trade Type & Side */}
@@ -182,8 +184,8 @@ export function TradePanel({ price }: TradePanelProps) {
               onChange={(e) => setSimTradeType(e.target.value as 'spot' | 'futures')}
               className="flex-1 text-[11px] bg-[var(--bg-panel)] text-[var(--text-main)] rounded px-2 py-1.5 border-none focus:outline-none"
             >
-              <option value="spot">现货 ({(FEE_RATES.spot.taker * 100).toFixed(2)}%)</option>
-              <option value="futures">合约 ({(FEE_RATES.futures.taker * 100).toFixed(3)}%)</option>
+              <option value="spot">{t('tradePanel.spot')} ({(FEE_RATES.spot.taker * 100).toFixed(2)}%)</option>
+              <option value="futures">{t('tradePanel.futures')} ({(FEE_RATES.futures.taker * 100).toFixed(3)}%)</option>
             </select>
             <select
               value={simTradeSide}
@@ -214,14 +216,14 @@ export function TradePanel({ price }: TradePanelProps) {
               type="number"
               value={simTradeVolume}
               onChange={(e) => setSimTradeVolume(e.target.value)}
-              placeholder="自定义 (USDT)"
+              placeholder={t('tradePanel.customAmount')}
               className="flex-1 bg-[var(--bg-panel)] text-[var(--text-main)] text-[11px] px-2 py-1.5 rounded border border-transparent focus:border-[var(--brand-yellow)] focus:outline-none"
             />
             <button
               onClick={handleCustomSimTrade}
               className="px-3 py-1.5 text-[11px] bg-[var(--brand-green)] text-white rounded hover:opacity-90 transition-opacity font-bold"
             >
-              交易
+              {t('tradePanel.trade')}
             </button>
           </div>
 
@@ -235,11 +237,11 @@ export function TradePanel({ price }: TradePanelProps) {
             return (
               <div className="mt-2 text-[10px] text-[var(--text-muted)] bg-[var(--bg-panel)] rounded p-2">
                 <div className="flex justify-between">
-                  <span>预计手续费</span>
+                  <span>{t('tradePanel.estimatedFee')}</span>
                   <span className="text-[var(--brand-yellow)]">${fmt(fee)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>预计能量</span>
+                  <span>{t('tradePanel.estimatedEnergy')}</span>
                   <span className="text-[var(--brand-green)] font-bold flex items-center gap-1">
                     <Zap size={10} />+{fmt(energyMinted)}
                     {boost > 0 && <span className="text-[var(--brand-yellow)]">(+{(boost * 100).toFixed(0)}%)</span>}

@@ -688,6 +688,24 @@ export const zh = {
     failed: '通话失败',
   },
 
+  // Trade Panel
+  tradePanel: {
+    demoTrading: '模拟交易',
+    earnEnergy: '获取能量',
+    spot: '现货',
+    futures: '合约',
+    customAmount: '自定义 (USDT)',
+    trade: '交易',
+    estimatedFee: '预计手续费',
+    estimatedEnergy: '预计能量',
+  },
+
+  // Roadshow Ticker
+  roadshowTicker: {
+    roadshow: '路演',
+    viewAll: '查看全部',
+  },
+
   // Appointment Booking
   booking: {
     title: '高级分析师',
