@@ -48,6 +48,8 @@ export function CatBubbleAlert() {
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
   const bubbleRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number | null>(null);
+  const pendingPosition = useRef<{ x: number; y: number } | null>(null);
 
   // 计算未读数量
   const unreadCount = alerts.filter(a => !dismissedIds.has(a.id) && !a.feedback).length;
@@ -63,9 +65,9 @@ export function CatBubbleAlert() {
     };
   }, [position]);
 
-  // 拖拽移动
+  // 拖拽移动 - 使用 RAF 优化
   const handleDragMove = useCallback((clientX: number, clientY: number) => {
-    if (!isDragging || !dragStartRef.current) return;
+    if (!dragStartRef.current) return;
 
     const deltaX = clientX - dragStartRef.current.x;
     const deltaY = clientY - dragStartRef.current.y;
@@ -77,20 +79,36 @@ export function CatBubbleAlert() {
     const maxX = window.innerWidth - 320;
     const maxY = window.innerHeight - 200;
 
-    setPosition({
+    pendingPosition.current = {
       x: Math.max(0, Math.min(newX, maxX)),
       y: Math.max(0, Math.min(newY, maxY)),
-    });
-  }, [isDragging]);
+    };
+
+    // 使用 RAF 批量更新，避免频繁渲染
+    if (rafRef.current === null) {
+      rafRef.current = requestAnimationFrame(() => {
+        if (pendingPosition.current) {
+          setPosition(pendingPosition.current);
+        }
+        rafRef.current = null;
+      });
+    }
+  }, []);
 
   // 拖拽结束
   const handleDragEnd = useCallback(() => {
-    if (isDragging) {
-      setIsDragging(false);
-      dragStartRef.current = null;
-      savePosition(position);
+    setIsDragging(false);
+    dragStartRef.current = null;
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
     }
-  }, [isDragging, position]);
+    // 使用最终位置保存
+    setPosition(prev => {
+      savePosition(prev);
+      return prev;
+    });
+  }, []);
 
   // Mouse events
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -108,17 +126,21 @@ export function CatBubbleAlert() {
   useEffect(() => {
     if (!isDragging) return;
 
-    const handleMouseMove = (e: MouseEvent) => handleDragMove(e.clientX, e.clientY);
+    const handleMouseMove = (e: MouseEvent) => {
+      e.preventDefault();
+      handleDragMove(e.clientX, e.clientY);
+    };
     const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
       const touch = e.touches[0];
       handleDragMove(touch.clientX, touch.clientY);
     };
     const handleMouseUp = () => handleDragEnd();
     const handleTouchEnd = () => handleDragEnd();
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: false });
     window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
     window.addEventListener('touchend', handleTouchEnd);
 
     return () => {
@@ -126,6 +148,9 @@ export function CatBubbleAlert() {
       window.removeEventListener('mouseup', handleMouseUp);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
     };
   }, [isDragging, handleDragMove, handleDragEnd]);
 
@@ -135,11 +160,11 @@ export function CatBubbleAlert() {
     <div
       ref={bubbleRef}
       data-alert-bubble
-      className="fixed z-[99] animate-in slide-in-from-bottom-4 fade-in duration-300"
+      className={`fixed z-[99] left-0 top-0 ${isDragging ? '' : 'animate-in slide-in-from-bottom-4 fade-in duration-300'}`}
       style={{
-        left: position.x,
-        top: position.y,
-        cursor: isDragging ? 'grabbing' : 'default',
+        transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
+        willChange: isDragging ? 'transform' : 'auto',
+        transition: isDragging ? 'none' : undefined,
       }}
     >
       {/* 气泡内容 */}
