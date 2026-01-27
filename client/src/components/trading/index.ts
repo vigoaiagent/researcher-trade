@@ -2,6 +2,7 @@ export { TopNav } from './TopNav';
 export { MarketTicker } from './MarketTicker';
 export { OrderBook } from './OrderBook';
 export { ChartArea } from './ChartArea';
+export { ChartAreaWithTabs } from './ChartAreaWithTabs';
 export { TradePanel } from './TradePanel';
 export { RoboCatIcon } from './RoboCatIcon';
 export { ResearchReportModal } from './ResearchReportModal';

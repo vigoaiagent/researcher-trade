@@ -4,7 +4,7 @@ import { AICatButton } from './components/AICatButton';
 import { ChatPanel } from './components/ChatPanel';
 import { useUserStore, getDemoUsers } from './stores/userStore';
 import { useTranslation } from './i18n';
-import { TopNav, MarketTicker, OrderBook, ChartArea, TradePanel, MobileBottomBar } from './components/trading';
+import { TopNav, MarketTicker, OrderBook, ChartAreaWithTabs, TradePanel, MobileBottomBar } from './components/trading';
 import { CatBubbleAlert, AlertPanel, AlertSettingsPanel } from './components/CatBubbleAlert';
 import { useAlertStore } from './stores/alertStore';
 import { ResearchReportsTicker } from './components/trading/ResearchReportsTicker';
@@ -384,7 +384,7 @@ function TradingPage() {
         <div className="flex-1 flex overflow-hidden">
           {/* Chart Area */}
           <div className="flex-1 flex flex-col min-w-0 md:border-r border-[var(--border-light)]">
-            <ChartArea price={price} symbol={selectedSymbol} />
+            <ChartAreaWithTabs price={price} symbol={selectedSymbol} />
           </div>
 
           {/* Order Book - 移动端隐藏 */}
