@@ -3,7 +3,7 @@ import { ChevronUp, ChevronDown } from 'lucide-react';
 import { PostCard } from './PostCard';
 import { CoinSentimentBar } from './CoinSentimentBar';
 import { mockCoinPrices, mockCoinSentiments } from '../../data/mockCommunity';
-import type { Post, CoinSentiment } from '../../types/community';
+import type { Post } from '../../types/community';
 
 // 代币图标映射 (使用 CoinGecko CDN)
 const COIN_ICONS: Record<string, string> = {

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { X, Minimize2, User, Home, TrendingUp, Users, Eye, PenSquare } from 'lucide-react';
+import { X, Home, TrendingUp, Users, Eye, PenSquare } from 'lucide-react';
 import { HomePage } from './HomePage';
 import { FollowingPage } from './FollowingPage';
 import { PositionsPage } from './PositionsPage';
@@ -127,6 +127,8 @@ export function CommunityPanel({ isOpen, onClose, currentSymbol }: CommunityPane
             isVerified: false,
             isFollowing: false,
             followerCount: 0,
+            followingCount: 0,
+            postCount: 0,
           },
           content: result.post.content,
           images: result.post.images,
