@@ -18,7 +18,7 @@ interface PositionsPageProps {
 // 用户持仓的代币列表（Mock数据，实际应从用户数据获取）
 const USER_HOLDINGS = ['BTC', 'ETH', 'SOL'];
 
-export function PositionsPage({ posts, currentSymbol, onLike, onComment, onShare, onFollow }: PositionsPageProps) {
+export function PositionsPage({ posts, currentSymbol: _currentSymbol, onLike, onComment, onShare, onFollow }: PositionsPageProps) {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 

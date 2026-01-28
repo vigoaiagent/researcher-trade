@@ -20,7 +20,7 @@ export function PostDetailPage({ post, onClose, onLike, onFollow }: PostDetailPa
     viewCount,
     likeCount,
     commentCount,
-    shareCount,
+    shareCount: _shareCount,
     isLiked,
     tags = [],
   } = post;

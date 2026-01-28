@@ -12,6 +12,7 @@ export interface User {
   isResearcher?: boolean; // 是否是研究员
   isVerified?: boolean; // 平台认证
   certificationLabel?: string; // 认证标签
+  isNew?: boolean; // 是否是新晋研究员
 }
 
 export interface Attachment {

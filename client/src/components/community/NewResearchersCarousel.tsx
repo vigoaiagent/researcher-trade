@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, BadgeCheck } from 'lucide-react';
 import { mockUsers } from '../../data/mockCommunity';
-import type { User } from '../../types/community';
 
 interface NewResearchersCarouselProps {
   onUserClick: (userId: string) => void;

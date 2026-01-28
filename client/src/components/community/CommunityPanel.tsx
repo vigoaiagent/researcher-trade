@@ -120,6 +120,7 @@ export function CommunityPanel({ isOpen, onClose, currentSymbol }: CommunityPane
         // 构建新帖子对象
         const newPost: Post = {
           id: result.post.id,
+          userId: result.post.userId,
           user: {
             id: result.post.userId,
             username: '我',
@@ -139,6 +140,7 @@ export function CommunityPanel({ isOpen, onClose, currentSymbol }: CommunityPane
           commentCount: result.post.commentCount,
           shareCount: result.post.shareCount,
           isLiked: result.post.isLiked,
+          type: 'feed',
           tags: result.post.tags,
         };
 
@@ -148,8 +150,10 @@ export function CommunityPanel({ isOpen, onClose, currentSymbol }: CommunityPane
           if (poll.options.length === 2) {
             // PK模式
             newPost.attachments?.push({
+              id: `pk_${Math.random().toString(36).substr(2, 9)}`,
               type: 'pk',
               pk: {
+                id: `pk_${Math.random().toString(36).substr(2, 9)}`,
                 question: poll.question,
                 leftOption: {
                   text: poll.options[0],
@@ -168,8 +172,10 @@ export function CommunityPanel({ isOpen, onClose, currentSymbol }: CommunityPane
           } else {
             // 投票模式
             newPost.attachments?.push({
+              id: `poll_${Math.random().toString(36).substr(2, 9)}`,
               type: 'poll',
               poll: {
+                id: `poll_${Math.random().toString(36).substr(2, 9)}`,
                 question: poll.question,
                 options: poll.options.map(opt => ({
                   id: `opt_${Math.random().toString(36).substr(2, 9)}`,
